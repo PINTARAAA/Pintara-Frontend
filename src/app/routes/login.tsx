@@ -1,34 +1,30 @@
-import { Link } from "react-router"
+import { useNavigate, useSearchParams } from "react-router"
 
 import { AuthLayout } from "@/components/layouts/auth-layout"
-import { Button } from "@/components/ui/button"
-import { ROLE_LABEL, type Role } from "@/app/navigation"
+import { LoginForm } from "@/features/auth/components/login-form"
+import type { LoginNotice } from "@/features/auth/types"
 
 /*
- * SEMENTARA · halaman masuk.
- * Form login (Figma: Login / Default) dan autentikasi belum dibuat; tombol di
- * bawah hanya pintasan untuk melihat area tiap peran selama pengembangan.
+ * /masuk · Figma PINTARA → UI Screen → Umum → 00 · Autentikasi
+ * ?alasan=sesi-berakhir | keluar menampilkan banner informasi.
  */
-const roles: Role[] = ["wali", "tutor", "pengelola"]
+const NOTICES: LoginNotice[] = ["sesi-berakhir", "keluar"]
 
 export default function LoginRoute() {
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const reason = params.get("alasan")
+  const notice = NOTICES.find((n) => n === reason)
+
   return (
     <AuthLayout
       title="Masuk ke akun Anda"
-      description="Form login belum dibuat. Pilih peran untuk melihat tampilannya."
+      description="Gunakan email atau username dan password yang terdaftar."
     >
-      <div className="flex flex-col gap-ns-m">
-        {roles.map((role) => (
-          <Button
-            key={role}
-            variant="secondary"
-            nativeButton={false}
-            render={<Link to={`/${role}`} />}
-          >
-            Masuk sebagai {ROLE_LABEL[role]}
-          </Button>
-        ))}
-      </div>
+      <LoginForm
+        notice={notice}
+        onSuccess={(user) => navigate(`/${user.role}`, { replace: true })}
+      />
     </AuthLayout>
   )
 }

@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 
 import type { NavItem } from "@/components/layouts/app-shell"
+import type { Role } from "@/features/auth/types"
 
 /*
  * Menu navigasi per peran, sesuai Figma PINTARA → Components →
@@ -18,13 +19,7 @@ import type { NavItem } from "@/components/layouts/app-shell"
  *   utility : Akun/Lainnya — akhir Bottom navigation (mobile),
  *             grup bawah Sidebar (desktop)
  */
-export type Role = "wali" | "tutor" | "pengelola"
-
-export const ROLE_LABEL: Record<Role, string> = {
-  wali: "Wali Murid",
-  tutor: "Tutor",
-  pengelola: "Pengelola LBB",
-}
+export type { Role }
 
 export const ROLE_NAV: Record<Role, { main: NavItem[]; utility: NavItem[] }> = {
   wali: {
