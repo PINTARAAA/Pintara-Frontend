@@ -1,0 +1,139 @@
+@theme static {
+  --color-primary-100: #d6dbfc;
+  --color-primary-200: #b0bbf9;
+  --color-primary-300: #8498f6;
+  --color-primary-400: #5275f3;
+  --color-primary-500: #2557d6;
+  --color-primary-600: #1c45ad;
+  --color-primary-700: #143488;
+  --color-primary-800: #0c2564;
+  --color-primary-900: #04143f;
+
+  --color-secondary-100: #feeee2;
+  --color-secondary-200: #fedcc2;
+  --color-secondary-300: #fdc794;
+  --color-secondary-400: #fdb560;
+  --color-secondary-500: #f5a524;
+  --color-secondary-600: #c1811a;
+  --color-secondary-700: #8e5e10;
+  --color-secondary-800: #624008;
+  --color-secondary-900: #362102;
+
+  --color-neutral-white: #ffffff;
+  --color-neutral-200: #f9fafd;
+  --color-neutral-300: #f3f6fb;
+  --color-neutral-400: #eaeff7;
+  --color-neutral-500: #dde5f1;
+  --color-neutral-600: #adc2e6;
+  --color-neutral-700: #6690c8;
+  --color-neutral-800: #415d83;
+  --color-neutral-black: #000000;
+
+  --color-error: #dc2626;
+  --color-info: #0ea5e9;
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-error-subtle: #fce9e9;
+  --color-info-subtle: #e7f6fd;
+  --color-success-subtle: #e8f6ed;
+  --color-warning-subtle: #fef5e7;
+
+  --color-grayscale-text-title: var(--color-neutral-black);
+  --color-grayscale-text-body: var(--color-neutral-black);
+  --color-grayscale-text-subtitle: var(--color-neutral-800);
+  --color-grayscale-text-caption: var(--color-neutral-800);
+  --color-grayscale-text-negative: var(--color-error);
+  --color-grayscale-text-disabled: var(--color-neutral-600);
+
+  --color-grayscale-surface-default: var(--color-neutral-white);
+  --color-grayscale-surface-subtitle: var(--color-neutral-300);
+  --color-grayscale-surface-disabled: var(--color-neutral-400);
+
+  --color-grayscale-border-default: var(--color-neutral-600);
+  --color-grayscale-border-darker: var(--color-neutral-700);
+  --color-grayscale-border-disabled: var(--color-neutral-500);
+
+  --color-primary-surface-subtitle: var(--color-primary-100);
+  --color-primary-surface-lighter: var(--color-primary-300);
+  --color-primary-surface-default: var(--color-primary-500);
+  --color-primary-surface-darker: var(--color-primary-700);
+
+  --color-primary-border-lighter: var(--color-primary-300);
+  --color-primary-border-default: var(--color-primary-500);
+  --color-primary-border-darker: var(--color-primary-700);
+
+  --color-primary-text-label: var(--color-neutral-white);
+  --color-primary-text-primary: var(--color-primary-700);
+
+  --color-secondary-surface-subtitle: var(--color-secondary-100);
+  --color-secondary-surface-lighter: var(--color-secondary-400);
+  --color-secondary-surface-default: var(--color-secondary-500);
+  --color-secondary-surface-darker: var(--color-secondary-600);
+
+  --color-secondary-border-lighter: var(--color-secondary-300);
+  --color-secondary-border-default: var(--color-secondary-200);
+  --color-secondary-border-darker: var(--color-secondary-700);
+
+  --color-secondary-text-label: var(--color-secondary-900);
+
+  --color-semantic-surface-success: var(--color-success-subtle);
+  --color-semantic-surface-warning: var(--color-warning-subtle);
+  --color-semantic-surface-error: var(--color-error-subtle);
+  --color-semantic-surface-info: var(--color-info-subtle);
+
+  --text-h1: 3.0625rem; /* 49px */
+  --text-h1--line-height: 1.2; /* 58.8px */
+  --text-h2: 2.4375rem; /* 39px */
+  --text-h2--line-height: 1.2; /* 46.8px */
+  --text-h3: 1.9375rem; /* 31px */
+  --text-h3--line-height: 1.2; /* 37.2px */
+  --text-h4: 1.5625rem; /* 25px */
+  --text-h4--line-height: 1.2; /* 30px */
+  --text-headline: 1.25rem; /* 20px */
+  --text-headline--line-height: 1.2; /* 24px */
+  --text-body: 1rem; /* 16px */
+  --text-body--line-height: 1;
+  --text-subtitle: 0.8125rem; /* 13px */
+  --text-subtitle--line-height: 1;
+  --text-caption: 0.6875rem; /* 11px */
+  --text-caption--line-height: 1;
+  --text-footnote: 0.625rem; /* 10px */
+  --text-footnote--line-height: 1;
+
+  --spacing-ns-3xs: 2px;
+  --spacing-ns-2xs: 4px;
+  --spacing-ns-xs: 6px;
+  --spacing-ns-s: 8px;
+  --spacing-ns-m: 12px;
+  --spacing-ns-l: 16px;
+  --spacing-ns-xl: 20px;
+  --spacing-ns-2xl: 24px;
+  --spacing-ns-3xl: 32px;
+  --spacing-ns-4xl: 40px;
+}
+
+:root {
+  --comp-radius-sm: 8px;
+  --comp-radius-md: 12px;
+  --comp-radius-lg: 16px;
+
+  --comp-gap-sm: 4px;
+  --comp-gap-md: 8px;
+  --comp-gap-lg: 12px;
+
+  --comp-px-sm: 16px;
+  --comp-px-md: 20px;
+  --comp-px-lg: 24px;
+
+  --comp-py-sm: 8px;
+  --comp-py-md: 12px;
+  --comp-py-lg: 16px;
+
+  --comp-p-icon-sm: 12px;
+  --comp-p-icon-md: 16px;
+  --comp-p-icon-lg: 20px;
+
+  --comp-icon-sm: 20px;
+  --comp-icon-md: 24px;
+  --comp-icon-lg: 32px;
+}
