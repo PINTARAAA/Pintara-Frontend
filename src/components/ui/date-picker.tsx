@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format, isSameMonth, isSameYear, startOfDay } from "date-fns"
-import { id as localeId } from "date-fns/locale"
+import { startOfDay } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 
@@ -13,7 +12,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useControllableState } from "@/hooks/use-controllable-state"
 import { fieldControlVariants, fieldHeight } from "@/lib/field-variants"
+import { formatDate, formatDateLong, formatDateRange } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 /*
@@ -30,41 +31,6 @@ import { cn } from "@/lib/utils"
  *   <FieldDescription>Gunakan format tanggal yang sesuai.</FieldDescription>
  * </Field>
  */
-
-const fmtField = (d: Date) => format(d, "d MMM yyyy", { locale: localeId })
-const fmtLong = (d: Date) => format(d, "d MMMM yyyy", { locale: localeId })
-
-function rangeSummary({ from, to }: DateRange) {
-  if (!from) return null
-  if (!to) return `${fmtLong(from)} – …`
-  if (isSameMonth(from, to)) {
-    return from.getDate() === to.getDate()
-      ? fmtLong(from)
-      : `${from.getDate()}–${fmtLong(to)}`
-  }
-  if (isSameYear(from, to)) {
-    return `${format(from, "d MMMM", { locale: localeId })} – ${fmtLong(to)}`
-  }
-  return `${fmtLong(from)} – ${fmtLong(to)}`
-}
-
-function useControllable<T>(
-  value: T | undefined,
-  defaultValue: T,
-  onChange?: (value: T) => void
-) {
-  const [inner, setInner] = React.useState(defaultValue)
-  const isControlled = value !== undefined
-  const current = isControlled ? value : inner
-  const set = React.useCallback(
-    (next: T) => {
-      if (!isControlled) setInner(next)
-      onChange?.(next)
-    },
-    [isControlled, onChange]
-  )
-  return [current, set] as const
-}
 
 type PickerTriggerProps = Omit<
   React.ComponentProps<typeof PopoverTrigger>,
@@ -163,11 +129,11 @@ function DatePicker({
   className?: string
   calendarProps?: CalendarPassThrough
 }) {
-  const [date, setDate] = useControllable<Date | null>(
+  const [date, setDate] = useControllableState<Date | null>({
     value,
-    defaultValue ?? null,
-    onValueChange
-  )
+    defaultValue: defaultValue ?? null,
+    onChange: onValueChange,
+  })
   const [open, setOpen] = React.useState(false)
   const [draft, setDraft] = React.useState<Date | undefined>()
   const [month, setMonth] = React.useState<Date>(new Date())
@@ -194,7 +160,7 @@ function DatePicker({
             !date && "text-grayscale-text-subtitle"
           )}
         >
-          {date ? fmtField(date) : placeholder}
+          {date ? formatDate(date) : placeholder}
         </span>
       </PickerTrigger>
       <PopoverContent align="start" className="w-80">
@@ -207,7 +173,7 @@ function DatePicker({
           onMonthChange={setMonth}
         />
         <PickerFooter
-          summary={draft ? fmtLong(draft) : null}
+          summary={draft ? formatDateLong(draft) : null}
           canApply={!!draft}
           onToday={() => {
             const today = startOfDay(new Date())
@@ -247,11 +213,11 @@ function DateRangePicker({
   className?: string
   calendarProps?: CalendarPassThrough
 }) {
-  const [range, setRange] = useControllable<DateRange | null>(
+  const [range, setRange] = useControllableState<DateRange | null>({
     value,
-    defaultValue ?? null,
-    onValueChange
-  )
+    defaultValue: defaultValue ?? null,
+    onChange: onValueChange,
+  })
   const [open, setOpen] = React.useState(false)
   const [draft, setDraft] = React.useState<DateRange | undefined>()
   const [month, setMonth] = React.useState<Date>(new Date())
@@ -276,9 +242,9 @@ function DateRangePicker({
       >
         {filled ? (
           <span className="grid min-w-0 flex-1 grid-cols-[1fr_auto_1fr] items-center gap-(--comp-gap-lg)">
-            <span className="truncate">{fmtField(range!.from!)}</span>
+            <span className="truncate">{formatDate(range!.from!)}</span>
             <span aria-hidden="true">–</span>
-            <span className="truncate">{fmtField(range!.to!)}</span>
+            <span className="truncate">{formatDate(range!.to!)}</span>
           </span>
         ) : (
           <span className="min-w-0 flex-1 truncate text-grayscale-text-subtitle">
@@ -296,7 +262,7 @@ function DateRangePicker({
           onMonthChange={setMonth}
         />
         <PickerFooter
-          summary={draft ? rangeSummary(draft) : null}
+          summary={draft?.from ? formatDateRange(draft.from, draft.to) : null}
           canApply={!!(draft?.from && draft.to)}
           onToday={() => {
             const today = startOfDay(new Date())

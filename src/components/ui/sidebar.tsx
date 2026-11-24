@@ -6,6 +6,7 @@ import { useRender } from "@base-ui/react/use-render"
 import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react"
 
 import pintaraLogo from "@/assets/pintara-logo.png"
+import { useControllableState } from "@/hooks/use-controllable-state"
 import { cn } from "@/lib/utils"
 
 /*
@@ -50,15 +51,11 @@ function Sidebar({
   defaultCollapsed?: boolean
   onCollapsedChange?: (collapsed: boolean) => void
 }) {
-  const [inner, setInner] = React.useState(defaultCollapsed)
-  const collapsed = collapsedProp ?? inner
-  const setCollapsed = React.useCallback(
-    (next: boolean) => {
-      if (collapsedProp === undefined) setInner(next)
-      onCollapsedChange?.(next)
-    },
-    [collapsedProp, onCollapsedChange]
-  )
+  const [collapsed, setCollapsed] = useControllableState({
+    value: collapsedProp,
+    defaultValue: defaultCollapsed,
+    onChange: onCollapsedChange,
+  })
 
   return (
     <SidebarContext.Provider value={{ collapsed, setCollapsed }}>

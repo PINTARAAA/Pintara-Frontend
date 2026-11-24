@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
  * Elemen: ikon status 20px · pesan · aksi (Button tertiary sm) · tutup.
  *
  * Komponen ini hanya tampilan; untuk memunculkannya pakai `toast` dari
- * "@/lib/toast" (di atas Sonner) dan pasang <Toaster /> sekali di root app.
+ * "@/components/ui/toast-api" (di atas Sonner) dan pasang <Toaster /> sekali di root app.
  */
 const snackbarBg: Record<FeedbackStatus, string> = {
   success: "bg-success-subtle",

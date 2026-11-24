@@ -5,6 +5,7 @@ import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog
 import { InfoIcon, Trash2Icon, TriangleAlertIcon, XIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { useControllableState } from "@/hooks/use-controllable-state"
 import { cn } from "@/lib/utils"
 
 /*
@@ -269,13 +270,12 @@ function ConfirmDialog({
   showDismiss?: boolean
   confirmDisabled?: boolean
 }) {
-  const [innerOpen, setInnerOpen] = React.useState(false)
+  const [isOpen, setOpen] = useControllableState({
+    value: open,
+    defaultValue: false,
+    onChange: onOpenChange,
+  })
   const [pending, setPending] = React.useState(false)
-  const isOpen = open ?? innerOpen
-  const setOpen = (next: boolean) => {
-    if (open === undefined) setInnerOpen(next)
-    onOpenChange?.(next)
-  }
 
   const handleConfirm = async () => {
     setPending(true)

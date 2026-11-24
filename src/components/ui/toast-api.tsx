@@ -5,8 +5,11 @@ import { Toast } from "@/components/ui/toast"
 import type { FeedbackStatus } from "@/components/ui/status-icon"
 
 /*
- * Pemanggil toast PINTARA di atas Sonner (antrean, posisi, durasi, swipe),
- * dengan tampilan <Toast> sesuai Figma.
+ * API untuk memunculkan toast PINTARA. Sonner mengurus antrean, posisi,
+ * durasi dan swipe; tampilannya dirender oleh <Toast> (./toast.tsx) sesuai
+ * Figma. Pasang <Toaster /> (./sonner.tsx) sekali di root app.
+ *
+ *   import { toast } from "@/components/ui/toast-api"
  *
  *   toast.success("Data berhasil disimpan", {
  *     description: "Perubahan sudah tersimpan.",

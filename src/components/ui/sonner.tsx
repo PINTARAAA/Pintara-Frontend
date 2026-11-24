@@ -3,7 +3,7 @@ import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 /*
  * Toaster · wadah antrean toast (Sonner). Pasang sekali di root app, lalu
- * panggil `toast.success(...)` dkk. dari "@/lib/toast". Tampilan tiap toast
+ * panggil `toast.success(...)` dkk. dari "@/components/ui/toast-api". Tampilan tiap toast
  * dirender oleh <Toast> (src/components/ui/toast.tsx) sesuai Figma PINTARA,
  * jadi gaya bawaan Sonner dimatikan (unstyled) dan lebarnya 480px.
  */
