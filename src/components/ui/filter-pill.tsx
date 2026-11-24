@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 /*
- * FilterPill · "Filter / …" pada Riwayat Les (W7): pil putih ber-border,
+ * FilterPill · "Filter / …" pada Riwayat Les (W7)
+ * dan Status Presensi tutor (T3): pil putih ber-border,
  * padding 12/8, teks Subtitle/Bold + chevron 16px. Membuka Dropdown pilihan
  * tunggal. Bila hanya ada satu pilihan, tampil sebagai label biasa.
  */

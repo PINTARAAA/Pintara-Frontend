@@ -11,7 +11,7 @@ import {
   lessonHistoryQuery,
   type LessonHistory,
 } from "@/features/absensi/api/absensi"
-import { FilterPill } from "@/features/absensi/components/filter-pill"
+import { FilterPill } from "@/components/ui/filter-pill"
 import {
   DashboardList,
   DashboardSection,

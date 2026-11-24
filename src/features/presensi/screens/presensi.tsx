@@ -121,7 +121,7 @@ function Presensi() {
                         <StatusBadge category="presensi" status={s.record.validation} />
                       )
                     }
-                    render={<Link to={`/tutor/presensi/${s.id}`} />}
+                    render={<Link to={`/tutor/presensi/status/${s.id}`} />}
                   />
                 ))}
               </DashboardList>

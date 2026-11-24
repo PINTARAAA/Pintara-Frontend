@@ -46,11 +46,16 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   tutor: [
     /* T2 · Presensi & Dokumentasi */
+    /* T3 · Status Presensi (?bulan=YYYY-MM) */
     {
-      /* SEMENTARA: T3 · Status Presensi belum dibangun */
       path: "presensi/status",
       handle: { title: "Status Presensi", hideBottomNav: true },
-      lazy: placeholderDetail,
+      lazy: () => import("@/pages/presensi/status-presensi").then(toRoute),
+    },
+    {
+      path: "presensi/status/:sessionId",
+      handle: { title: "Detail Presensi", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/detail-presensi").then(toRoute),
     },
     {
       path: "presensi/:sessionId",

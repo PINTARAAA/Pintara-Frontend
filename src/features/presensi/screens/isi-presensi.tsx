@@ -66,7 +66,9 @@ function IsiPresensi() {
       title="Isi Presensi"
       footer={
         session?.record && (
-          <Button onClick={() => navigate("/tutor/presensi/status")}>
+          <Button
+            onClick={() => navigate(`/tutor/presensi/status/${session.id}`)}
+          >
             Lihat Status Presensi
           </Button>
         )
@@ -519,7 +521,9 @@ function SavedScreen({ session }: { session: TutorSession }) {
           </Button>
           <Button
             variant="tertiary"
-            onClick={() => navigate("/tutor/presensi/status", { replace: true })}
+            onClick={() =>
+              navigate(`/tutor/presensi/status/${session.id}`, { replace: true })
+            }
           >
             Lihat status presensi
           </Button>
