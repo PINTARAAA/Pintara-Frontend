@@ -50,10 +50,13 @@ const chevronSize: Record<FieldSize, string> = {
 function SelectTrigger({
   className,
   size = "default",
+  icon,
   children,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   size?: FieldSize
+  /* Ganti chevron, mis. ikon jam pada Time picker */
+  icon?: React.ReactElement<{ className?: string }>
 }) {
   return (
     <SelectPrimitive.Trigger
@@ -70,12 +73,22 @@ function SelectTrigger({
       {children}
       <SelectPrimitive.Icon
         render={
-          <ChevronDownIcon
-            className={cn(
-              "pointer-events-none text-grayscale-text-body transition-transform group-data-popup-open/select-trigger:rotate-180",
-              chevronSize[size]
-            )}
-          />
+          icon ? (
+            React.cloneElement(icon, {
+              className: cn(
+                "pointer-events-none text-grayscale-text-body",
+                chevronSize[size],
+                icon.props.className
+              ),
+            })
+          ) : (
+            <ChevronDownIcon
+              className={cn(
+                "pointer-events-none text-grayscale-text-body transition-transform group-data-popup-open/select-trigger:rotate-180",
+                chevronSize[size]
+              )}
+            />
+          )
         }
       />
     </SelectPrimitive.Trigger>
