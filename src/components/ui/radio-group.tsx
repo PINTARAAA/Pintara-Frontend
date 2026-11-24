@@ -1,34 +1,73 @@
+import * as React from "react"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group"
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 
+import {
+  choiceFocusRing,
+  choiceLabelVariants,
+  type FieldSize,
+} from "@/lib/field-variants"
+
+/*
+ * Radio · Figma PINTARA → Components → 02 · Form Controls → Radio
+ * Size: sm (20px) · default/Medium (24px) · lg (32px), bulat penuh.
+ * Selected: border 2px Primary + titik tengah 10 · 12 · 16px.
+ */
 function RadioGroup({ className, ...props }: RadioGroupPrimitive.Props) {
   return (
     <RadioGroupPrimitive
       data-slot="radio-group"
-      className={cn("grid w-full gap-3", className)}
+      className={cn("grid w-full gap-ns-2xs", className)}
       {...props}
     />
   )
 }
 
-function RadioGroupItem({ className, ...props }: RadioPrimitive.Root.Props) {
-  return (
+const radioSize: Record<FieldSize, string> = {
+  sm: "size-5 *:size-2.5",
+  default: "size-6 *:size-3",
+  lg: "size-8 *:size-4",
+}
+
+function RadioGroupItem({
+  className,
+  size = "default",
+  label,
+  ...props
+}: RadioPrimitive.Root.Props & {
+  size?: FieldSize
+  label?: React.ReactNode
+}) {
+  const control = (
     <RadioPrimitive.Root
       data-slot="radio-group-item"
+      data-size={size}
       className={cn(
-        "group/radio-group-item peer relative flex aspect-square size-4 shrink-0 rounded-full border border-input outline-none group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-data-checked:border-input after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 aria-invalid:aria-checked:border-primary dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground group-has-[:focus-visible]/field-label:data-checked:border-primary dark:data-checked:bg-primary",
+        "group/radio-group-item peer relative flex aspect-square shrink-0 items-center justify-center rounded-full border border-grayscale-border-default bg-grayscale-surface-default transition-colors hover:border-grayscale-border-darker",
+        choiceFocusRing,
+        "data-checked:border-2 data-checked:border-primary-surface-default data-checked:hover:border-primary-surface-darker",
+        "aria-invalid:border-error",
+        "data-disabled:cursor-not-allowed data-disabled:border-grayscale-surface-disabled data-disabled:bg-grayscale-surface-disabled",
+        radioSize[size],
         className
       )}
       {...props}
     >
       <RadioPrimitive.Indicator
         data-slot="radio-group-indicator"
-        className="flex size-4 items-center justify-center"
-      >
-        <span className="absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-foreground" />
-      </RadioPrimitive.Indicator>
+        className="rounded-full bg-primary-surface-default group-hover/radio-group-item:bg-primary-surface-darker group-data-disabled/radio-group-item:bg-grayscale-text-disabled"
+      />
     </RadioPrimitive.Root>
+  )
+
+  if (label == null) return control
+
+  return (
+    <label className={choiceLabelVariants({ size })}>
+      {control}
+      <span>{label}</span>
+    </label>
   )
 }
 

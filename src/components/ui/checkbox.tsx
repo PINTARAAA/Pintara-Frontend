@@ -1,27 +1,76 @@
 "use client"
 
+import * as React from "react"
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
-import { cn } from "cn"
-import { CheckIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { CheckIcon, MinusIcon } from "lucide-react"
 
-function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
-  return (
+import {
+  choiceFocusRing,
+  choiceLabelVariants,
+  type FieldSize,
+} from "@/lib/field-variants"
+
+/*
+ * Checkbox · Figma PINTARA → Components → 02 · Form Controls → Checkbox
+ * Size: sm (20px) · default/Medium (24px) · lg (32px), radius 4.
+ * Value: unchecked · checked · indeterminate. Isi `label` untuk menampilkan
+ * label di sampingnya (Show label).
+ */
+const boxSize: Record<FieldSize, string> = {
+  sm: "size-5 [&_svg]:size-3.5",
+  default: "size-6 [&_svg]:size-4",
+  lg: "size-8 [&_svg]:size-5",
+}
+
+function Checkbox({
+  className,
+  size = "default",
+  label,
+  ...props
+}: CheckboxPrimitive.Root.Props & {
+  size?: FieldSize
+  label?: React.ReactNode
+}) {
+  const control = (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
+      data-size={size}
       className={cn(
-        "peer relative flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input shadow-xs transition-shadow outline-none group-has-disabled/field:opacity-50 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-data-checked:border-input after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 aria-invalid:aria-checked:border-primary dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground group-has-[:focus-visible]/field-label:data-checked:border-primary dark:data-checked:bg-primary",
+        "group/checkbox peer relative flex shrink-0 items-center justify-center rounded-sm border border-grayscale-border-default bg-grayscale-surface-default text-primary-text-label transition-colors hover:border-grayscale-border-darker",
+        choiceFocusRing,
+        "data-checked:border-primary-surface-default data-checked:bg-primary-surface-default data-checked:hover:border-primary-surface-darker data-checked:hover:bg-primary-surface-darker",
+        "data-indeterminate:border-primary-surface-default data-indeterminate:bg-primary-surface-default data-indeterminate:hover:border-primary-surface-darker data-indeterminate:hover:bg-primary-surface-darker",
+        "aria-invalid:border-error",
+        "data-disabled:cursor-not-allowed data-disabled:border-grayscale-surface-disabled data-disabled:bg-grayscale-surface-disabled data-disabled:text-grayscale-text-disabled",
+        boxSize[size],
         className
       )}
       {...props}
     >
       <CheckboxPrimitive.Indicator
         data-slot="checkbox-indicator"
-        className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
+        className="grid place-content-center text-current transition-none"
       >
         <CheckIcon
+          strokeWidth={2.5}
+          className="group-data-indeterminate/checkbox:hidden"
+        />
+        <MinusIcon
+          strokeWidth={2.5}
+          className="hidden group-data-indeterminate/checkbox:block"
         />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
+  )
+
+  if (label == null) return control
+
+  return (
+    <label className={choiceLabelVariants({ size })}>
+      {control}
+      <span>{label}</span>
+    </label>
   )
 }
 

@@ -1,39 +1,66 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
+
+/*
+ * Button · Figma PINTARA → Components → 01 · Actions → Button
+ *
+ * Variant : primary · secondary · tertiary · destructive
+ * Size    : sm · default (Medium) · lg
+ * Icon    : letakkan <svg> sebelum/sesudah label (Left/Right), atau pakai
+ *           size="icon-sm" | "icon" | "icon-lg" untuk Icon=Alone.
+ *
+ * Ukuran mengikuti Token Komponen (radius, gap, padding, icon size) per mode
+ * Small / Medium / Large; warna mengikuti Style Tokens.
+ *
+ * Figma belum mendefinisikan state hover/disabled, jadi state tersebut
+ * memakai token terdekat (lihat masing-masing variant).
+ */
+
+const primary =
+  "bg-primary-surface-default text-primary-text-label hover:bg-primary-600 disabled:bg-grayscale-surface-disabled"
+const secondary =
+  "border-primary-border-default bg-grayscale-surface-default text-primary-surface-default hover:bg-primary-surface-subtitle aria-expanded:bg-primary-surface-subtitle disabled:border-grayscale-border-disabled disabled:bg-grayscale-surface-default"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding leading-none font-normal whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/40 disabled:pointer-events-none disabled:text-grayscale-text-disabled aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        outline:
-          "border-border bg-background shadow-xs hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-        ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        primary,
+        secondary,
+        tertiary:
+          "bg-transparent text-primary-surface-default hover:bg-primary-surface-subtitle aria-expanded:bg-primary-surface-subtitle",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-error text-primary-text-label hover:bg-error/90 focus-visible:ring-destructive/30 disabled:bg-grayscale-surface-disabled",
+        /* Di luar Figma: utilitas netral untuk tombol tutup, navigasi kalender, dll. */
+        ghost:
+          "text-grayscale-text-body hover:bg-muted aria-expanded:bg-muted",
+        link: "h-auto! p-0! text-primary-surface-default underline-offset-4 hover:underline",
+        /* Alias nama shadcn agar komponen bawaan tetap berfungsi */
+        default: primary,
+        outline: secondary,
       },
       size: {
+        /* Small: radius 8 · gap 4 · px 16 · py 8 · icon 20 · teks 13 */
+        sm: "min-h-9 gap-(--comp-gap-sm) rounded-(--comp-radius-sm) px-(--comp-px-sm) py-(--comp-py-sm) text-subtitle [&_svg:not([class*='size-'])]:size-(--comp-icon-sm)",
+        /* Medium: radius 12 · gap 8 · px 20 · py 12 · icon 24 · teks 13 */
         default:
-          "h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),8px)] px-2 text-xs in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5",
-        lg: "h-10 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        icon: "size-9",
-        "icon-xs":
-          "size-6 rounded-[min(var(--radius-md),8px)] in-data-[slot=button-group]:rounded-md [&_svg:not([class*='size-'])]:size-3",
+          "min-h-12 gap-(--comp-gap-md) rounded-(--comp-radius-md) px-(--comp-px-md) py-(--comp-py-md) text-subtitle [&_svg:not([class*='size-'])]:size-(--comp-icon-md)",
+        /* Large: radius 16 · gap 12 · px 24 · py 16 · icon 32 · teks 16 */
+        lg: "min-h-16 gap-(--comp-gap-lg) rounded-(--comp-radius-lg) px-(--comp-px-lg) py-(--comp-py-lg) text-body [&_svg:not([class*='size-'])]:size-(--comp-icon-lg)",
+        /* Icon=Alone: padding = V-Padding, jadi tombol berbentuk persegi */
         "icon-sm":
-          "size-8 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-md",
-        "icon-lg": "size-10",
+          "size-9 rounded-(--comp-radius-sm) [&_svg:not([class*='size-'])]:size-(--comp-icon-sm)",
+        icon: "size-12 rounded-(--comp-radius-md) [&_svg:not([class*='size-'])]:size-(--comp-icon-md)",
+        "icon-lg":
+          "size-16 rounded-(--comp-radius-lg) [&_svg:not([class*='size-'])]:size-(--comp-icon-lg)",
+        /* Di luar Figma: ukuran ringkas untuk tombol tutup dialog/sheet */
+        "icon-xs": "size-7 rounded-md [&_svg:not([class*='size-'])]:size-4",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "primary",
       size: "default",
     },
   }
@@ -41,7 +68,7 @@ const buttonVariants = cva(
 
 function Button({
   className,
-  variant = "default",
+  variant = "primary",
   size = "default",
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
