@@ -23,7 +23,7 @@ export default function PlaceholderRoute() {
         state="empty"
         icon={<ConstructionIcon />}
         title="Sedang dibangun"
-        description={`Layar "${title}" akan dibuat dari page UI Screen di Figma.`}
+        description={`Layar "${title}" masih dalam tahap pembangunan ya!`}
       />
       <Button
         variant="secondary"
