@@ -7,11 +7,14 @@ import { cn } from "@/lib/styles/cn"
 
 function DashboardSection({
   title,
+  description,
   action,
   className,
   children,
 }: {
   title: string
+  /* Keterangan Caption di bawah judul, mis. rentang tanggal "24–30 November 2026" */
+  description?: React.ReactNode
   action?: { label: string; to: string }
   className?: string
   children: React.ReactNode
@@ -20,9 +23,14 @@ function DashboardSection({
   return (
     <section aria-labelledby={headingId} className={cn("flex flex-col gap-ns-m", className)}>
       <div className="flex items-center justify-between gap-ns-s">
-        <h2 id={headingId} className="text-body leading-normal font-bold text-grayscale-text-title">
-          {title}
-        </h2>
+        <div className="flex flex-col gap-ns-2xs leading-normal">
+          <h2 id={headingId} className="text-body font-bold text-grayscale-text-title">
+            {title}
+          </h2>
+          {description != null && (
+            <p className="text-caption text-grayscale-text-caption">{description}</p>
+          )}
+        </div>
         {action && (
           <Button
             variant="tertiary"

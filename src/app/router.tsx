@@ -32,9 +32,30 @@ const beranda: Record<Role, () => Promise<{ Component: React.ComponentType }>> =
 const placeholderDetail = () =>
   import("@/app/routes/placeholder-detail").then(toRoute)
 
+/* Layar tab yang sudah dibangun (sisanya memakai placeholder), kunci = path tab */
+const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType }>> = {
+  "/wali/jadwal": () => import("@/pages/jadwal/jadwal-les").then(toRoute),
+}
+
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   wali: [
+    /* W4 · Jadwal Les & Perubahan Jadwal */
+    {
+      path: "jadwal/pengajuan/:requestId",
+      handle: { title: "Pengajuan Perubahan", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal/detail-pengajuan").then(toRoute),
+    },
+    {
+      path: "jadwal/:routineId",
+      handle: { title: "Detail Jadwal", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal/detail-jadwal").then(toRoute),
+    },
+    {
+      path: "jadwal/:routineId/ubah",
+      handle: { title: "Ajukan Perubahan", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal/ajukan-perubahan").then(toRoute),
+    },
     {
       /* W2 · Pendaftaran Siswa */
       path: "pendaftaran",
@@ -64,7 +85,7 @@ function roleRoutes(role: Role): RouteObject {
       ...tabs.map((tab) => ({
         path: tab.to.replace(`/${role}/`, ""),
         handle: { title: tab.label },
-        lazy: placeholder,
+        lazy: TAB_SCREENS[tab.to] ?? placeholder,
       })),
       ...(EXTRA_ROUTES[role] ?? []),
       /* SEMENTARA: layar detail yang belum dibangun */
