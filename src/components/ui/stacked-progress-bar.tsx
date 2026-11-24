@@ -37,6 +37,7 @@ function StackedProgressBar({
   segments,
   total,
   showLegend,
+  remainderLabel,
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
@@ -44,10 +45,16 @@ function StackedProgressBar({
   /* Total nilai; default = jumlah semua segmen (bar terisi penuh) */
   total?: number
   showLegend?: boolean
+  /* Label legenda untuk sisa yang belum terisi, mis. "Belum bayar" */
+  remainderLabel?: string
 }) {
   const sum = segments.reduce((acc, s) => acc + Math.max(s.value, 0), 0)
   const max = Math.max(total ?? sum, sum, 1)
-  const summary = segments.map((s) => `${s.label} ${s.value}`).join(", ")
+  const remainder = max - sum
+  const summary = [
+    ...segments.map((s) => `${s.label} ${s.value}`),
+    ...(remainderLabel && remainder > 0 ? [`${remainderLabel} ${remainder}`] : []),
+  ].join(", ")
 
   return (
     <div
@@ -78,10 +85,18 @@ function StackedProgressBar({
                 aria-hidden="true"
                 className={cn("size-2 rounded-full", segmentColor[s.tone ?? "primary"])}
               />
-              {s.label}
-              <span className="font-bold">{s.value}</span>
+              {s.label} · {s.value}
             </li>
           ))}
+          {remainderLabel && remainder > 0 && (
+            <li className="inline-flex items-center gap-ns-xs">
+              <span
+                aria-hidden="true"
+                className="size-2 rounded-full bg-grayscale-surface-disabled ring-1 ring-grayscale-border-default ring-inset"
+              />
+              {remainderLabel} · {remainder}
+            </li>
+          )}
         </ul>
       )}
     </div>

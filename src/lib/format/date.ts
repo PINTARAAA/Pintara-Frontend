@@ -1,4 +1,13 @@
-import { format, isSameMonth, isSameYear } from "date-fns"
+import {
+  differenceInHours,
+  differenceInMinutes,
+  format,
+  isSameMonth,
+  isSameYear,
+  isToday,
+  isTomorrow,
+  isYesterday,
+} from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
 /*
@@ -39,4 +48,57 @@ export function formatDateRange(from: Date, to?: Date) {
     return `${format(from, "d MMMM", { locale: localeId })} – ${formatDateLong(to)}`
   }
   return `${formatDateLong(from)} – ${formatDateLong(to)}`
+}
+
+/* "Selamat pagi," dst. sesuai jam (pagi < 11, siang < 15, sore < 18) */
+export function formatGreeting(now = new Date()) {
+  const hour = now.getHours()
+  if (hour < 11) return "Selamat pagi,"
+  if (hour < 15) return "Selamat siang,"
+  if (hour < 18) return "Selamat sore,"
+  return "Selamat malam,"
+}
+
+/* "Hari ini" · "Besok" · "Kemarin" · selain itu "Rabu, 25 Nov" */
+export function formatRelativeDay(date: Date, now = new Date()) {
+  if (isToday(date)) return "Hari ini"
+  if (isTomorrow(date)) return "Besok"
+  if (isYesterday(date)) return "Kemarin"
+  return format(date, isSameYear(date, now) ? "EEEE, d MMM" : "EEEE, d MMM yyyy", {
+    locale: localeId,
+  })
+}
+
+/* Sisa waktu singkat: "30 menit lagi" · "5 jam lagi" · "Besok" · "Sedang berlangsung" */
+export function formatTimeUntil(date: Date, now = new Date()) {
+  const minutes = differenceInMinutes(date, now)
+  if (minutes <= 0) return "Sedang berlangsung"
+  if (minutes < 60) return `${minutes} menit lagi`
+  if (isToday(date)) return `${differenceInHours(date, now)} jam lagi`
+  return formatRelativeDay(date, now)
+}
+
+/* "Rabu, 25 Nov · 16.00–17.30" */
+export function formatSessionTime(start: Date, end: Date) {
+  return `${format(start, "EEEE, d MMM", { locale: localeId })} · ${format(start, "HH.mm")}–${format(end, "HH.mm")}`
+}
+
+/* "16.00–17.30" */
+export function formatTimeRange(start: Date, end: Date) {
+  return `${format(start, "HH.mm")}–${format(end, "HH.mm")}`
+}
+
+/* "Jumat, 27 Nov" */
+export function formatWeekdayDate(date: Date) {
+  return format(date, "EEEE, d MMM", { locale: localeId })
+}
+
+/* "Jum, 14 Nov" — untuk daftar yang padat */
+export function formatShortWeekdayDate(date: Date) {
+  return format(date, "EEE, d MMM", { locale: localeId })
+}
+
+/* "10 Des" — tanggal singkat tanpa tahun */
+export function formatDayMonth(date: Date) {
+  return format(date, "d MMM", { locale: localeId })
 }

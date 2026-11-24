@@ -1,3 +1,5 @@
+import { useMatches } from "react-router"
+
 import { DetailScreen } from "@/components/layouts/detail-screen"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,9 +10,13 @@ import { toast } from "@/components/ui/toast-api"
  * navigation, dengan bilah aksi bawah). Hapus setelah layar asli dibuat.
  */
 export default function PlaceholderDetailRoute() {
+  const title =
+    (useMatches().at(-1)?.handle as { title?: string } | undefined)?.title ??
+    "Detail"
+
   return (
     <DetailScreen
-      title="Contoh Detail"
+      title={title}
       footer={
         <Button
           variant="secondary"

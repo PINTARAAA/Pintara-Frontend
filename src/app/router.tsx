@@ -24,6 +24,11 @@ const toRoute = (module: { default: React.ComponentType }) => ({
 })
 
 const placeholder = () => import("@/app/routes/placeholder").then(toRoute)
+const beranda: Record<Role, () => Promise<{ Component: React.ComponentType }>> = {
+  wali: () => import("@/app/routes/beranda-wali").then(toRoute),
+  tutor: () => import("@/app/routes/beranda-tutor").then(toRoute),
+  pengelola: () => import("@/app/routes/beranda-pengelola").then(toRoute),
+}
 const placeholderDetail = () =>
   import("@/app/routes/placeholder-detail").then(toRoute)
 
@@ -35,16 +40,21 @@ function roleRoutes(role: Role): RouteObject {
     path: role,
     element: <AppShell items={main} utilityItems={utility} />,
     children: [
-      { index: true, handle: { title: home.label }, lazy: placeholder },
+      { index: true, handle: { title: home.label }, lazy: beranda[role] },
       ...tabs.map((tab) => ({
         path: tab.to.replace(`/${role}/`, ""),
         handle: { title: tab.label },
         lazy: placeholder,
       })),
-      /* SEMENTARA: contoh layar detail, diganti layar asli dari Figma */
+      /* SEMENTARA: layar detail yang belum dibangun */
+      {
+        path: "notifikasi",
+        handle: { title: "Notifikasi", hideBottomNav: true },
+        lazy: placeholderDetail,
+      },
       {
         path: "contoh",
-        handle: { hideBottomNav: true },
+        handle: { title: "Contoh Detail", hideBottomNav: true },
         lazy: placeholderDetail,
       },
     ],
