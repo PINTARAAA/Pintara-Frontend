@@ -25,6 +25,7 @@ import {
   DashboardSection,
 } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
 import {
   billsQuery,
   daysUntilDue,
@@ -52,6 +53,7 @@ import { cn } from "@/lib/styles/cn"
 type TabValue = "tagihan" | "riwayat"
 
 function Tagihan() {
+  const unreadNotifications = useUnreadNotifications()
   const [params, setParams] = useSearchParams()
   const tab: TabValue = params.get("tab") === "riwayat" ? "riwayat" : "tagihan"
   const bills = useQuery(billsQuery())
@@ -71,7 +73,7 @@ function Tagihan() {
         action={
           <NotificationButton
             to="/wali/notifikasi"
-            unread={bills.data?.unreadNotifications}
+            unread={unreadNotifications}
           />
         }
         subheader={

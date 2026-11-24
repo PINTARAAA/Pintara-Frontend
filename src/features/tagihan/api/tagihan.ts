@@ -2,7 +2,9 @@ import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
 import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { addNotification } from "@/features/notifikasi/api/notifikasi"
 import type { StatusOf } from "@/lib/constants/status"
+import { formatRupiah } from "@/lib/format/currency"
 
 /*
  * Tagihan & Pembayaran · Figma PINTARA → UI Screen → Wali Murid → W6
@@ -242,7 +244,15 @@ export async function createPayment(
     createdAt: now,
   }
   payments.push(payment)
-  if (payment.status === "berhasil") bill.paid += amount
+  if (payment.status === "berhasil") {
+    bill.paid += amount
+    addNotification({
+      kind: "pembayaran",
+      title: "Pembayaran berhasil",
+      body: `Tagihan ${bill.period.toLocaleDateString("id-ID", { month: "long" })} ${formatRupiah(amount)}`,
+      to: "/wali/tagihan?tab=riwayat",
+    })
+  }
 
   return { payment, bill: { ...bill } }
 }

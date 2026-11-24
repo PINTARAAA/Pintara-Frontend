@@ -18,6 +18,7 @@ import {
 import { HeroCard, HeroCardRow } from "@/features/dashboard/components/hero-card"
 import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
 import { StudentSwitcher } from "@/features/dashboard/components/student-switcher"
 import { TaskList } from "@/features/dashboard/components/task-list"
 import {
@@ -31,6 +32,7 @@ import {
 import { cn } from "@/lib/styles/cn"
 
 function WaliDashboard() {
+  const unreadNotifications = useUnreadNotifications()
   const [studentId, setStudentId] = React.useState<string>()
   const query = useQuery({
     ...waliDashboardQuery(studentId),
@@ -43,7 +45,7 @@ function WaliDashboard() {
       subtitle={formatGreeting()}
       title={data?.parent.name ?? <Skeleton className="h-6 w-48" />}
       action={
-        <NotificationButton to="/wali/notifikasi" unread={data?.unreadNotifications} />
+        <NotificationButton to="/wali/notifikasi" unread={unreadNotifications} />
       }
     >
       {query.isPending ? (

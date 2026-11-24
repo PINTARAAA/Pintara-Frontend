@@ -20,6 +20,7 @@ import {
 import { firstName } from "@/features/absensi/lib/format"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
 import { formatShortWeekdayDate, formatWeekdayDate } from "@/lib/format/date"
 
 /*
@@ -34,6 +35,7 @@ import { formatShortWeekdayDate, formatWeekdayDate } from "@/lib/format/date"
 type TabValue = "perlu-validasi" | "riwayat"
 
 function ValidasiAbsensi() {
+  const unreadNotifications = useUnreadNotifications()
   const [params, setParams] = useSearchParams()
   const tab: TabValue =
     params.get("tab") === "riwayat" ? "riwayat" : "perlu-validasi"
@@ -59,7 +61,7 @@ function ValidasiAbsensi() {
         action={
           <NotificationButton
             to="/wali/notifikasi"
-            unread={data?.unreadNotifications}
+            unread={unreadNotifications}
           />
         }
         subheader={

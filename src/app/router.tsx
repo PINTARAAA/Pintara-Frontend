@@ -44,6 +44,12 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   wali: [
+    /* W9 · Notifikasi */
+    {
+      path: "notifikasi",
+      handle: { title: "Notifikasi", hideBottomNav: true },
+      lazy: () => import("@/pages/notifikasi/notifikasi-wali").then(toRoute),
+    },
     /* W7 · Riwayat Les */
     {
       path: "riwayat",
@@ -115,10 +121,24 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   ],
 }
 
+const PLACEHOLDER_DETAILS: RouteObject[] = [
+  {
+    path: "notifikasi",
+    handle: { title: "Notifikasi", hideBottomNav: true },
+    lazy: placeholderDetail,
+  },
+  {
+    path: "contoh",
+    handle: { title: "Contoh Detail", hideBottomNav: true },
+    lazy: placeholderDetail,
+  },
+]
+
 /* Route satu peran: semua layarnya di dalam AppShell */
 function roleRoutes(role: Role): RouteObject {
   const { main, utility } = ROLE_NAV[role]
   const [home, ...tabs] = [...main, ...utility]
+  const extras = EXTRA_ROUTES[role] ?? []
   return {
     path: role,
     element: <AppShell items={main} utilityItems={utility} />,
@@ -129,18 +149,11 @@ function roleRoutes(role: Role): RouteObject {
         handle: { title: tab.label },
         lazy: TAB_SCREENS[tab.to] ?? placeholder,
       })),
-      ...(EXTRA_ROUTES[role] ?? []),
-      /* SEMENTARA: layar detail yang belum dibangun */
-      {
-        path: "notifikasi",
-        handle: { title: "Notifikasi", hideBottomNav: true },
-        lazy: placeholderDetail,
-      },
-      {
-        path: "contoh",
-        handle: { title: "Contoh Detail", hideBottomNav: true },
-        lazy: placeholderDetail,
-      },
+      ...extras,
+      /* SEMENTARA: layar detail yang belum dibangun (dilewati bila sudah ada) */
+      ...PLACEHOLDER_DETAILS.filter(
+        (p) => !extras.some((route) => route.path === p.path)
+      ),
     ],
   }
 }

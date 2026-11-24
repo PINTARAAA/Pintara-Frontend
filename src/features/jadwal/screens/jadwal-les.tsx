@@ -12,6 +12,7 @@ import {
 } from "@/features/dashboard/components/dashboard-section"
 import { EmptyNote } from "@/features/dashboard/components/empty-note"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
 import { StudentSwitcher } from "@/features/dashboard/components/student-switcher"
 import {
   formatTimeSlot,
@@ -39,6 +40,7 @@ import { cn } from "@/lib/styles/cn"
  * Anak yang dipilih disimpan di ?siswa=… agar tetap sama saat kembali.
  */
 function JadwalLes() {
+  const unreadNotifications = useUnreadNotifications()
   const [params, setParams] = useSearchParams()
   const studentId = params.get("siswa") ?? undefined
   const query = useQuery({
@@ -53,7 +55,7 @@ function JadwalLes() {
       action={
         <NotificationButton
           to="/wali/notifikasi"
-          unread={data?.unreadNotifications}
+          unread={unreadNotifications}
         />
       }
     >

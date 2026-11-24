@@ -11,6 +11,7 @@ import {
 import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
 import { STUDENTS, type WaliStudent } from "@/features/dashboard/api/wali-dashboard"
 import type { ScheduleChangeInput } from "@/features/jadwal/schemas/perubahan-jadwal-schema"
+import { addNotification } from "@/features/notifikasi/api/notifikasi"
 
 /*
  * Jadwal Les & Perubahan Jadwal · Figma PINTARA → UI Screen → Wali Murid → W4
@@ -329,5 +330,13 @@ export async function submitScheduleChange(
     submittedAt: new Date(),
   }
   changeRequests.push(request)
+  const from = WEEKDAYS[request.from.weekday]
+  const to = WEEKDAYS[request.to.weekday]
+  addNotification({
+    kind: "jadwal",
+    title: "Pengajuan perubahan jadwal terkirim",
+    body: `${from === to ? from : `${from} → ${to}`}, ${request.to.startTime} · menunggu Pengelola`,
+    to: `/wali/jadwal/pengajuan/${request.id}`,
+  })
   return request
 }
