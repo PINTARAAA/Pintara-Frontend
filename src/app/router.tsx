@@ -1,33 +1,75 @@
 import type * as React from "react"
-import { createBrowserRouter } from "react-router"
+import { createBrowserRouter, Navigate, Outlet, type RouteObject } from "react-router"
 
+import { ROLE_NAV, type Role } from "@/app/navigation"
 import { PageLoader } from "@/app/page-loader"
 import RouteError from "@/app/routes/error"
+import { AppFrame } from "@/components/layouts/app-frame"
+import { AppShell } from "@/components/layouts/app-shell"
 
 /*
  * Daftar route aplikasi.
  *
- * Tiap halaman di-lazy-load (`lazy`) agar hanya diunduh saat dibuka.
- * File route meng-export default komponennya; `toRoute` mengubahnya ke
- * bentuk yang diminta react-router ({ Component }).
+ *   /masuk                      → AuthLayout
+ *   /:peran/…  (wali, tutor, pengelola) → AppShell
+ *     ├─ layar tab              → bottom nav (mobile) / sidebar (desktop)
+ *     └─ layar detail/formulir  → handle.hideBottomNav: tanpa bottom nav di
+ *                                 mobile, sidebar tetap tampil di desktop
  *
- * Menambah halaman:
- *   { path: "pendaftaran", lazy: () => import("@/app/routes/pendaftaran").then(toRoute) }
+ * Tiap halaman di-lazy-load agar hanya diunduh saat dibuka. File route
+ * meng-export default komponennya; `toRoute` mengubahnya ke { Component }.
  */
 const toRoute = (module: { default: React.ComponentType }) => ({
   Component: module.default,
 })
 
+const placeholder = () => import("@/app/routes/placeholder").then(toRoute)
+const placeholderDetail = () =>
+  import("@/app/routes/placeholder-detail").then(toRoute)
+
+/* Route satu peran: semua layarnya di dalam AppShell */
+function roleRoutes(role: Role): RouteObject {
+  const { main, utility } = ROLE_NAV[role]
+  const [home, ...tabs] = [...main, ...utility]
+  return {
+    path: role,
+    element: <AppShell items={main} utilityItems={utility} />,
+    children: [
+      { index: true, handle: { title: home.label }, lazy: placeholder },
+      ...tabs.map((tab) => ({
+        path: tab.to.replace(`/${role}/`, ""),
+        handle: { title: tab.label },
+        lazy: placeholder,
+      })),
+      /* SEMENTARA: contoh layar detail, diganti layar asli dari Figma */
+      {
+        path: "contoh",
+        handle: { hideBottomNav: true },
+        lazy: placeholderDetail,
+      },
+    ],
+  }
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: (
+      <AppFrame>
+        <Outlet />
+      </AppFrame>
+    ),
     errorElement: <RouteError />,
     hydrateFallbackElement: <PageLoader />,
     children: [
+      { index: true, element: <Navigate to="/masuk" replace /> },
       {
-        index: true,
-        lazy: () => import("@/app/routes/home").then(toRoute),
+        path: "masuk",
+        lazy: () => import("@/app/routes/login").then(toRoute),
       },
+      roleRoutes("wali"),
+      roleRoutes("tutor"),
+      roleRoutes("pengelola"),
       {
         path: "*",
         lazy: () => import("@/app/routes/not-found").then(toRoute),

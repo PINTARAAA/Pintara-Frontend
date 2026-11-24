@@ -5,12 +5,16 @@ import { TopAppBar } from "@/components/ui/top-app-bar"
 import { cn } from "@/lib/styles/cn"
 
 /*
- * DetailScreen · kerangka layar turunan (detail, formulir, konfirmasi),
- * tampil tanpa bottom navigation.
- * Figma: Top app bar "Detail" (tombol kembali + judul + aksi opsional)
- * menempel di atas; konten padding 16 (bawah 24), gap 16; bilah aksi
- * opsional menempel di bawah (latar putih, garis atas Grayscale/Border/
- * disabled, padding 12/16/16, gap 12, tombol mengisi lebar).
+ * DetailScreen · kerangka layar turunan (detail, formulir, konfirmasi).
+ * Pasang `handle: { hideBottomNav: true }` pada route-nya.
+ *
+ * Mobile (sesuai Figma): Top app bar "Detail" (kembali + judul + aksi)
+ *   menempel di atas; konten padding 16 (bawah 24), gap 16; bilah aksi
+ *   menempel di bawah (latar putih, garis atas Grayscale/Border/disabled,
+ *   padding 12/16/16, gap 12, tombol mengisi lebar).
+ * Desktop (≥ lg): konten maks. 768px (48rem) agar baris teks & formulir
+ *   tetap nyaman dibaca; bilah aksi tidak lagi menempel, tombolnya rata kanan
+ *   di akhir konten dengan lebar sesuai label.
  *
  * <DetailScreen title="Detail Jadwal"
  *   footer={<Button variant="secondary">Ajukan Perubahan Jadwal</Button>}>
@@ -33,7 +37,7 @@ function DetailScreen({
   action?: React.ReactNode
   /* Area menempel di bawah top app bar, mis. Progress stepper formulir */
   subheader?: React.ReactNode
-  /* Isi bilah aksi bawah, biasanya satu atau dua Button */
+  /* Isi bilah aksi, biasanya satu atau dua Button */
   footer?: React.ReactNode
   /* muted = latar abu (detail), default = latar putih (formulir) */
   surface?: "muted" | "default"
@@ -45,7 +49,7 @@ function DetailScreen({
   return (
     <div
       className={cn(
-        "flex flex-1 flex-col",
+        "flex flex-1 flex-col [--gutter:var(--spacing-ns-l)] lg:[--gutter:max(var(--spacing-ns-3xl),calc((100%-48rem)/2))]",
         surface === "default"
           ? "bg-grayscale-surface-default"
           : "bg-grayscale-surface-subtitle"
@@ -57,9 +61,10 @@ function DetailScreen({
           title={title}
           onBack={onBack ?? (() => navigate(-1))}
           action={action}
+          className="px-(--gutter) lg:py-ns-l"
         />
         {subheader != null && (
-          <div className="border-b border-grayscale-border-disabled bg-grayscale-surface-default px-ns-l py-ns-m">
+          <div className="border-b border-grayscale-border-disabled bg-grayscale-surface-default px-(--gutter) py-ns-m">
             {subheader}
           </div>
         )}
@@ -67,7 +72,7 @@ function DetailScreen({
 
       <main
         className={cn(
-          "flex flex-1 flex-col gap-ns-l px-ns-l pt-ns-l pb-ns-2xl",
+          "flex flex-1 flex-col gap-ns-l px-(--gutter) pt-ns-l pb-ns-2xl lg:flex-none lg:pt-ns-2xl",
           className
         )}
       >
@@ -75,7 +80,12 @@ function DetailScreen({
       </main>
 
       {footer != null && (
-        <div className="sticky bottom-0 z-10 flex gap-ns-m border-t border-grayscale-border-disabled bg-grayscale-surface-default px-ns-l pt-ns-m pb-[max(var(--spacing-ns-l),env(safe-area-inset-bottom))] *:flex-1">
+        <div
+          className={cn(
+            "sticky bottom-0 z-10 flex gap-ns-m border-t border-grayscale-border-disabled bg-grayscale-surface-default px-(--gutter) pt-ns-m pb-[max(var(--spacing-ns-l),env(safe-area-inset-bottom))] *:flex-1",
+            "lg:static lg:justify-end lg:border-t-0 lg:bg-transparent lg:pt-0 lg:pb-ns-3xl lg:*:flex-none"
+          )}
+        >
           {footer}
         </div>
       )}
