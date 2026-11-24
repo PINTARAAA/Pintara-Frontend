@@ -32,6 +32,25 @@ const beranda: Record<Role, () => Promise<{ Component: React.ComponentType }>> =
 const placeholderDetail = () =>
   import("@/app/routes/placeholder-detail").then(toRoute)
 
+/* Layar turunan per peran (di luar tab navigasi) */
+const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
+  wali: [
+    {
+      /* W2 · Pendaftaran Siswa */
+      path: "pendaftaran",
+      handle: { title: "Daftar Siswa Baru", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/pendaftaran/pendaftaran-siswa").then(toRoute),
+    },
+    {
+      /* SEMENTARA: W3 · Status Pendaftaran belum dibangun */
+      path: "pendaftaran/status",
+      handle: { title: "Status Pendaftaran", hideBottomNav: true },
+      lazy: placeholderDetail,
+    },
+  ],
+}
+
 /* Route satu peran: semua layarnya di dalam AppShell */
 function roleRoutes(role: Role): RouteObject {
   const { main, utility } = ROLE_NAV[role]
@@ -46,6 +65,7 @@ function roleRoutes(role: Role): RouteObject {
         handle: { title: tab.label },
         lazy: placeholder,
       })),
+      ...(EXTRA_ROUTES[role] ?? []),
       /* SEMENTARA: layar detail yang belum dibangun */
       {
         path: "notifikasi",

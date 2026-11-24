@@ -81,6 +81,7 @@ function DetailScreen({
 
       {footer != null && (
         <div
+          data-slot="action-bar"
           className={cn(
             "sticky bottom-0 z-10 flex gap-ns-m border-t border-grayscale-border-disabled bg-grayscale-surface-default px-(--gutter) pt-ns-m pb-[max(var(--spacing-ns-l),env(safe-area-inset-bottom))] *:flex-1",
             "lg:static lg:justify-end lg:border-t-0 lg:bg-transparent lg:pt-0 lg:pb-ns-3xl lg:*:flex-none"

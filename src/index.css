@@ -133,3 +133,16 @@
     @apply font-sans;
     }
 }
+/*
+ * Toast di atas bilah aksi yang menempel (DetailScreen, mobile) agar tidak
+ * menutupi tombol, sesuai frame Figma "Pendaftaran / Error - Gagal mengirim".
+ * Tinggi bilah aksi: pt 12 + tombol 48 + pb max(16, safe-area) + border 1.
+ */
+@media (width < 64rem) {
+  body:has([data-slot="action-bar"]) [data-sonner-toaster][data-y-position="bottom"] {
+    bottom: calc(
+      var(--mobile-offset-bottom, 16px) + 61px +
+        max(16px, env(safe-area-inset-bottom))
+    );
+  }
+}
