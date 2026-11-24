@@ -37,11 +37,23 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/wali/jadwal": () => import("@/pages/jadwal/jadwal-les").then(toRoute),
   "/wali/absensi": () =>
     import("@/pages/absensi/validasi-absensi").then(toRoute),
+  "/wali/tagihan": () => import("@/pages/tagihan/tagihan").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   wali: [
+    /* W6 · Tagihan & Pembayaran */
+    {
+      path: "tagihan/:billId",
+      handle: { title: "Detail Tagihan", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/detail-tagihan").then(toRoute),
+    },
+    {
+      path: "tagihan/:billId/bayar",
+      handle: { title: "Pembayaran", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/bayar-tagihan").then(toRoute),
+    },
     /* W5 · Validasi Absensi & Ulasan */
     {
       path: "absensi/:sessionId",

@@ -1,18 +1,24 @@
 import * as React from "react"
-import { CircleCheckIcon } from "lucide-react"
+import { CircleCheckIcon, CircleXIcon } from "lucide-react"
 
 import { cn } from "@/lib/styles/cn"
 
 function ResultScreen({
   title,
+  highlight,
   description,
+  status = "success",
   align = "center",
   footer,
   footerVariant = "plain",
   children,
 }: {
   title: React.ReactNode
+  /* Nilai besar di bawah judul (H3/Bold), mis. nominal "Rp450.000" */
+  highlight?: React.ReactNode
   description?: React.ReactNode
+  /* success = ikon centang hijau; error = ikon silang merah (mis. Pembayaran gagal) */
+  status?: "success" | "error"
   align?: "center" | "top"
   footer?: React.ReactNode
   footerVariant?: "plain" | "bar"
@@ -26,15 +32,33 @@ function ResultScreen({
           align === "center" && "justify-center"
         )}
       >
-        <div className="flex size-22 shrink-0 items-center justify-center rounded-full bg-success-subtle">
-          <CircleCheckIcon
-            aria-hidden="true"
-            strokeWidth={2}
-            className="size-11 text-grayscale-text-body"
-          />
+        <div
+          className={cn(
+            "flex size-22 shrink-0 items-center justify-center rounded-full",
+            status === "error" ? "bg-error-subtle" : "bg-success-subtle"
+          )}
+        >
+          {status === "error" ? (
+            <CircleXIcon
+              aria-hidden="true"
+              strokeWidth={2}
+              className="size-11 text-grayscale-text-body"
+            />
+          ) : (
+            <CircleCheckIcon
+              aria-hidden="true"
+              strokeWidth={2}
+              className="size-11 text-grayscale-text-body"
+            />
+          )}
         </div>
         <div className="flex flex-col gap-ns-s text-center">
           <h1 className="text-h4 font-bold text-grayscale-text-title">{title}</h1>
+          {highlight != null && (
+            <p className="text-h3 font-bold text-grayscale-text-title">
+              {highlight}
+            </p>
+          )}
           {description != null && (
             <p className="text-subtitle leading-normal text-grayscale-text-body">
               {description}
