@@ -38,6 +38,7 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/wali/absensi": () =>
     import("@/pages/absensi/validasi-absensi").then(toRoute),
   "/wali/tagihan": () => import("@/pages/tagihan/tagihan").then(toRoute),
+  "/wali/akun": () => import("@/pages/akun/akun-wali").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */

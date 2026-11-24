@@ -165,7 +165,8 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-ns-m sm:flex-row sm:justify-end",
+        /* Figma: Batal (secondary) · Konfirmasi (primary) berdampingan rata kanan */
+        "flex flex-wrap justify-end gap-ns-m",
         className
       )}
       {...props}
