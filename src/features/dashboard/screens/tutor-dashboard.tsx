@@ -26,14 +26,6 @@ import {
   formatWeekdayDate,
 } from "@/lib/format/date"
 
-/*
- * Beranda Tutor · Figma PINTARA → UI Screen → Tutor → T1 · Beranda
- *
- * Mobile (sesuai Figma): Les berikutnya → Perlu tindakan → Jadwal
- *   berikutnya → Rekap bulan ini, satu kolom.
- * Desktop (≥ lg): dua kolom — kartu les & tugas presensi di atas,
- *   jadwal & rekap di bawah.
- */
 function TutorDashboard() {
   const query = useQuery(tutorDashboardQuery())
   const data = query.data

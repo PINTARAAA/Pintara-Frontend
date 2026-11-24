@@ -1,4 +1,4 @@
-import { WaliDashboard } from "@/features/dashboard/components/wali-dashboard"
+import { WaliDashboard } from "@/features/dashboard/screens/wali-dashboard"
 
 export default function BerandaWaliRoute() {
   return <WaliDashboard />

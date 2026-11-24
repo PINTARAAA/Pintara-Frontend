@@ -30,16 +30,6 @@ import {
 } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 
-/*
- * Beranda Wali Murid · Figma PINTARA → UI Screen → Wali Murid → W1 · Beranda
- *
- * Mobile (sesuai Figma): pemilih anak → Les berikutnya → Perlu tindakan →
- *   Jadwal minggu ini → Riwayat sesi, satu kolom.
- * Desktop (≥ lg): dua kolom — kartu les & tugas di baris atas (informasi
- *   paling mendesak langsung terlihat), jadwal & riwayat di bawahnya.
- * Ganti anak memuat ulang data tanpa mengosongkan layar (data lama tetap
- *   tampil redup sampai data baru siap).
- */
 function WaliDashboard() {
   const [studentId, setStudentId] = React.useState<string>()
   const query = useQuery({

@@ -5,11 +5,6 @@ import { Button } from "@/components/ui/button"
 import { List } from "@/components/ui/list-item"
 import { cn } from "@/lib/styles/cn"
 
-/*
- * DashboardSection · bagian beranda (Figma: "Section / Perlu tindakan",
- * "Section / Jadwal minggu ini", …): judul Body/Bold + aksi "Lihat …"
- * (Button tertiary sm) di kanan, lalu isi dengan jarak 12px.
- */
 function DashboardSection({
   title,
   action,
@@ -45,7 +40,6 @@ function DashboardSection({
   )
 }
 
-/* Wadah daftar putih ber-border radius 12 (Figma: Tasks, Schedule, History) */
 function DashboardList({ className, ...props }: React.ComponentProps<typeof List>) {
   return (
     <List
