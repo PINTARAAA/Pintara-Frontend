@@ -169,6 +169,22 @@ const OPEN_STATUSES: ChangeRequestStatus[] = [
 export const isOpenRequest = (r: ChangeRequest) =>
   OPEN_STATUSES.includes(r.status)
 
+/* Jumlah sesi terjadwal anak dari sekarang sampai `until` (W7 · Riwayat Les) */
+export function countUpcomingSessions(studentId: string, until: Date) {
+  const now = new Date()
+  let count = 0
+  for (const r of routines.filter((r) => r.studentId === studentId)) {
+    for (
+      let start = nextSessionStart(r.weekday, r.startTime, now);
+      start <= until;
+      start = addDays(start, 7)
+    ) {
+      count++
+    }
+  }
+  return count
+}
+
 /* ---------- Daftar jadwal ---------- */
 
 export type WaliSchedule = {

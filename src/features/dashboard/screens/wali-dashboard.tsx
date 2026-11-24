@@ -123,7 +123,7 @@ function WaliDashboard() {
 
             <DashboardSection
               title="Riwayat sesi"
-              action={{ label: "Lihat semua", to: "/wali/absensi" }}
+              action={{ label: "Lihat semua", to: "/wali/riwayat" }}
             >
               {data.history.length > 0 ? (
                 <DashboardList>
@@ -133,7 +133,7 @@ function WaliDashboard() {
                       title={`${item.subject} · ${formatShortWeekdayDate(item.date)}`}
                       description={item.topic}
                       badge={<StatusBadge category="presensi" status={item.status} />}
-                      render={<Link to="/wali/absensi" />}
+                      render={<Link to="/wali/riwayat" />}
                     />
                   ))}
                 </DashboardList>

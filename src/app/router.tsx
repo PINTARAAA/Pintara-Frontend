@@ -43,6 +43,17 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   wali: [
+    /* W7 · Riwayat Les */
+    {
+      path: "riwayat",
+      handle: { title: "Riwayat Les", hideBottomNav: true },
+      lazy: () => import("@/pages/absensi/riwayat-les").then(toRoute),
+    },
+    {
+      path: "riwayat/:sessionId",
+      handle: { title: "Detail Sesi", hideBottomNav: true },
+      lazy: () => import("@/pages/absensi/detail-riwayat").then(toRoute),
+    },
     /* W6 · Tagihan & Pembayaran */
     {
       path: "tagihan/:billId",
