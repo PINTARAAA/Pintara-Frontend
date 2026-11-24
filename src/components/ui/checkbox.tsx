@@ -2,14 +2,14 @@
 
 import * as React from "react"
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 import { CheckIcon, MinusIcon } from "lucide-react"
 
 import {
   choiceFocusRing,
   choiceLabelVariants,
   type FieldSize,
-} from "@/lib/field-variants"
+} from "@/lib/styles/field-variants"
 
 /*
  * Checkbox · Figma PINTARA → Components → 02 · Form Controls → Checkbox

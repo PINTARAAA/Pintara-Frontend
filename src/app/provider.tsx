@@ -2,7 +2,7 @@ import * as React from "react"
 import { QueryClientProvider } from "@tanstack/react-query"
 
 import { Toaster } from "@/components/ui/sonner"
-import { queryClient } from "@/lib/query-client"
+import { queryClient } from "@/lib/api/query-client"
 
 /*
  * AppProvider · semua provider global aplikasi di satu tempat.

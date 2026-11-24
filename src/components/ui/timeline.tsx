@@ -1,7 +1,7 @@
 import * as React from "react"
 import { CheckIcon, XIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 
 /*
  * Timeline · Figma PINTARA → Components → 05 · Data Display → Timeline item

@@ -3,7 +3,7 @@ import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { ChevronRightIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 
 /*
  * List item · Figma PINTARA → Components → 05 · Data Display → List item

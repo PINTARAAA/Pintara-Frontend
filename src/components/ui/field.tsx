@@ -1,8 +1,8 @@
 import * as React from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 
 import { Label } from "@/components/ui/label"
-import type { FieldSize } from "@/lib/field-variants"
+import type { FieldSize } from "@/lib/styles/field-variants"
 
 /*
  * Field · pembungkus Label + kontrol + Helper row, sesuai struktur Input &

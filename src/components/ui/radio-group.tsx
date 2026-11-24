@@ -1,13 +1,13 @@
 import * as React from "react"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 
 import {
   choiceFocusRing,
   choiceLabelVariants,
   type FieldSize,
-} from "@/lib/field-variants"
+} from "@/lib/styles/field-variants"
 
 /*
  * Radio · Figma PINTARA → Components → 02 · Form Controls → Radio

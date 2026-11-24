@@ -5,8 +5,8 @@ import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog
 import { InfoIcon, Trash2Icon, TriangleAlertIcon, XIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { useControllableState } from "@/hooks/use-controllable-state"
-import { cn } from "@/lib/utils"
+import { useControllableState } from "@/hooks/state/use-controllable-state"
+import { cn } from "@/lib/styles/cn"
 
 /*
  * Confirmation modal · Figma PINTARA → Components → 06 · Feedback & Overlay

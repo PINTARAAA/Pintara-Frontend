@@ -6,8 +6,8 @@ import { useRender } from "@base-ui/react/use-render"
 import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react"
 
 import pintaraLogo from "@/assets/pintara-logo.png"
-import { useControllableState } from "@/hooks/use-controllable-state"
-import { cn } from "@/lib/utils"
+import { useControllableState } from "@/hooks/state/use-controllable-state"
+import { cn } from "@/lib/styles/cn"
 
 /*
  * Sidebar · Figma PINTARA → Components → 04 · Navigation → Sidebar

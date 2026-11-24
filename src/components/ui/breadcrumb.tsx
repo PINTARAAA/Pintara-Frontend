@@ -2,7 +2,7 @@ import * as React from "react"
 import { useRender } from "@base-ui/react/use-render"
 import { mergeProps } from "@base-ui/react/merge-props"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 
 /*
  * Breadcrumb · Figma PINTARA → Components → 04 · Navigation → Breadcrumb

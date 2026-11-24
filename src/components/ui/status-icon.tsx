@@ -6,7 +6,7 @@ import {
   type LucideProps,
 } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 
 /*
  * Ikon status semantik pada Toast, Snackbar dan Alert banner Figma PINTARA:

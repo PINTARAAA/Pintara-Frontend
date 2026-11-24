@@ -1,7 +1,7 @@
 import * as React from "react"
 
-import type { StatusTone } from "@/lib/status"
-import { cn } from "@/lib/utils"
+import type { StatusTone } from "@/lib/constants/status"
+import { cn } from "@/lib/styles/cn"
 
 /*
  * Stacked progress bar · Figma PINTARA → Components → 05 · Data Display

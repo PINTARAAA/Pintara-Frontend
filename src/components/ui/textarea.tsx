@@ -1,7 +1,7 @@
 import * as React from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/styles/cn"
 
-import { fieldControlVariants, type FieldSize } from "@/lib/field-variants"
+import { fieldControlVariants, type FieldSize } from "@/lib/styles/field-variants"
 
 /*
  * Textarea · Figma PINTARA → Components → 02 · Form Controls → Textarea
