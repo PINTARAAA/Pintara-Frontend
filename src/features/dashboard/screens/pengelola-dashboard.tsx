@@ -15,14 +15,6 @@ import { TaskList } from "@/features/dashboard/components/task-list"
 import { formatRupiahCompact } from "@/lib/format/currency"
 import { formatDayMonth, formatGreeting, formatWeekdayDate } from "@/lib/format/date"
 
-/*
- * Beranda Pengelola LBB · Figma PINTARA → UI Screen → Pengelola → P1 · Beranda
- *
- * Mobile (sesuai Figma): Hari ini → Perlu tindakan → Tagihan bulan ini.
- * Desktop (≥ lg): ringkasan "Hari ini" dan tagihan berdampingan di atas;
- *   "Perlu tindakan" selebar halaman dengan daftar dua kolom agar semua
- *   antrean kerja terlihat sekaligus.
- */
 function PengelolaDashboard() {
   const query = useQuery(pengelolaDashboardQuery())
   const data = query.data

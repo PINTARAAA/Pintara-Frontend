@@ -35,7 +35,8 @@ export type WaliDashboard = {
   unreadNotifications: number
 }
 
-const STUDENTS: WaliStudent[] = [
+/* Anak-anak wali (data contoh), dipakai juga oleh layar Jadwal Les */
+export const STUDENTS: WaliStudent[] = [
   { id: "s1", name: "Aisyah Putri", initials: "AP", grade: "Kelas 8" },
   { id: "s2", name: "Fikri Ramadhan", initials: "FR", grade: "Kelas 5" },
 ]

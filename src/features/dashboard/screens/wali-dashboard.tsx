@@ -18,6 +18,7 @@ import {
 import { HeroCard, HeroCardRow } from "@/features/dashboard/components/hero-card"
 import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
 import { StudentSwitcher } from "@/features/dashboard/components/student-switcher"
 import { TaskList } from "@/features/dashboard/components/task-list"
 import {
@@ -30,17 +31,8 @@ import {
 } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 
-/*
- * Beranda Wali Murid · Figma PINTARA → UI Screen → Wali Murid → W1 · Beranda
- *
- * Mobile (sesuai Figma): pemilih anak → Les berikutnya → Perlu tindakan →
- *   Jadwal minggu ini → Riwayat sesi, satu kolom.
- * Desktop (≥ lg): dua kolom — kartu les & tugas di baris atas (informasi
- *   paling mendesak langsung terlihat), jadwal & riwayat di bawahnya.
- * Ganti anak memuat ulang data tanpa mengosongkan layar (data lama tetap
- *   tampil redup sampai data baru siap).
- */
 function WaliDashboard() {
+  const unreadNotifications = useUnreadNotifications()
   const [studentId, setStudentId] = React.useState<string>()
   const query = useQuery({
     ...waliDashboardQuery(studentId),
@@ -53,7 +45,7 @@ function WaliDashboard() {
       subtitle={formatGreeting()}
       title={data?.parent.name ?? <Skeleton className="h-6 w-48" />}
       action={
-        <NotificationButton to="/wali/notifikasi" unread={data?.unreadNotifications} />
+        <NotificationButton to="/wali/notifikasi" unread={unreadNotifications} />
       }
     >
       {query.isPending ? (
@@ -133,7 +125,7 @@ function WaliDashboard() {
 
             <DashboardSection
               title="Riwayat sesi"
-              action={{ label: "Lihat semua", to: "/wali/absensi" }}
+              action={{ label: "Lihat semua", to: "/wali/riwayat" }}
             >
               {data.history.length > 0 ? (
                 <DashboardList>
@@ -143,7 +135,7 @@ function WaliDashboard() {
                       title={`${item.subject} · ${formatShortWeekdayDate(item.date)}`}
                       description={item.topic}
                       badge={<StatusBadge category="presensi" status={item.status} />}
-                      render={<Link to="/wali/absensi" />}
+                      render={<Link to="/wali/riwayat" />}
                     />
                   ))}
                 </DashboardList>

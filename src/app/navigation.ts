@@ -11,14 +11,6 @@ import {
 
 import type { NavItem } from "@/components/layouts/app-shell"
 import type { Role } from "@/features/auth/types"
-
-/*
- * Menu navigasi per peran, sesuai Figma PINTARA → Components →
- * Bottom navigation (Role = Wali Murid · Tutor · Pengelola).
- *   main    : menu utama (item pertama = Beranda, index route peran)
- *   utility : Akun/Lainnya — akhir Bottom navigation (mobile),
- *             grup bawah Sidebar (desktop)
- */
 export type { Role }
 
 export const ROLE_NAV: Record<Role, { main: NavItem[]; utility: NavItem[] }> = {
