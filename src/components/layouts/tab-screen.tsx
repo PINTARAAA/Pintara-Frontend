@@ -21,23 +21,33 @@ function TabScreen({
   title,
   subtitle,
   action,
+  subheader,
   className,
   children,
 }: {
   title: React.ReactNode
   subtitle?: React.ReactNode
   action?: React.ReactNode
+  /* Area menempel di bawah top app bar, mis. Tabs ("Tabs wrap" di Figma) */
+  subheader?: React.ReactNode
   className?: string
   children: React.ReactNode
 }) {
   return (
     <div className="flex flex-1 flex-col [--gutter:var(--spacing-ns-l)] lg:[--gutter:max(var(--spacing-ns-3xl),calc((100%-72rem)/2))]">
-      <TopAppBar
-        title={title}
-        subtitle={subtitle}
-        action={action}
-        className="sticky top-0 z-10 px-(--gutter) lg:py-ns-l"
-      />
+      <div className="sticky top-0 z-10">
+        <TopAppBar
+          title={title}
+          subtitle={subtitle}
+          action={action}
+          className="px-(--gutter) lg:py-ns-l"
+        />
+        {subheader != null && (
+          <div className="bg-grayscale-surface-default px-(--gutter) pt-ns-s">
+            {subheader}
+          </div>
+        )}
+      </div>
       <main
         className={cn(
           "flex flex-1 flex-col gap-ns-2xl px-(--gutter) pt-ns-l pb-ns-2xl lg:pt-ns-2xl lg:pb-ns-3xl",

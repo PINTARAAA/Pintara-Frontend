@@ -35,11 +35,29 @@ const placeholderDetail = () =>
 /* Layar tab yang sudah dibangun (sisanya memakai placeholder), kunci = path tab */
 const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType }>> = {
   "/wali/jadwal": () => import("@/pages/jadwal/jadwal-les").then(toRoute),
+  "/wali/absensi": () =>
+    import("@/pages/absensi/validasi-absensi").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   wali: [
+    /* W5 · Validasi Absensi & Ulasan */
+    {
+      path: "absensi/:sessionId",
+      handle: { title: "Detail Sesi", hideBottomNav: true },
+      lazy: () => import("@/pages/absensi/detail-sesi").then(toRoute),
+    },
+    {
+      path: "absensi/:sessionId/keberatan",
+      handle: { title: "Ajukan Keberatan", hideBottomNav: true },
+      lazy: () => import("@/pages/absensi/ajukan-keberatan").then(toRoute),
+    },
+    {
+      path: "absensi/:sessionId/ulasan",
+      handle: { title: "Beri Ulasan", hideBottomNav: true },
+      lazy: () => import("@/pages/absensi/beri-ulasan").then(toRoute),
+    },
     /* W4 · Jadwal Les & Perubahan Jadwal */
     {
       path: "jadwal/pengajuan/:requestId",
