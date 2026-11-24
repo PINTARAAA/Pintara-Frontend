@@ -45,10 +45,13 @@ function FormGroup({
 function SummaryRow({
   label,
   align = "start",
+  labelClassName,
   children,
 }: {
   label: React.ReactNode
   align?: "start" | "between"
+  /* Lebar label default 110px (Ringkasan W2); W3 memakai 100px */
+  labelClassName?: string
   children: React.ReactNode
 }) {
   return (
@@ -61,7 +64,8 @@ function SummaryRow({
       <dt
         className={cn(
           "text-caption text-grayscale-text-caption",
-          align === "start" && "w-[110px] shrink-0"
+          align === "start" && "w-[110px] shrink-0",
+          labelClassName
         )}
       >
         {label}

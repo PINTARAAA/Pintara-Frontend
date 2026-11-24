@@ -1,6 +1,6 @@
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FormProvider, useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
 
@@ -54,9 +54,12 @@ function PendaftaranSiswa() {
   const [step, setStep] = React.useState(0)
   /* Langkah yang sudah dicoba dilanjutkan, untuk menampilkan banner error */
   const [attempted, setAttempted] = React.useState<Set<number>>(new Set())
-  const [alreadyRegistered, setAlreadyRegistered] = React.useState(false)
+  /* Diisi ID pendaftaran aktif yang sudah ada (error "Siswa sudah terdaftar") */
+  const [existingId, setExistingId] = React.useState<string | null>(null)
+  const alreadyRegistered = existingId != null
   const [result, setResult] = React.useState<PendaftaranResult | null>(null)
 
+  const queryClient = useQueryClient()
   const defaults = useQuery(pendaftaranDefaultsQuery())
 
   const form = useForm<PendaftaranInput>({
@@ -76,12 +79,13 @@ function PendaftaranSiswa() {
     /* Saat offline langsung gagal (toast) alih-alih menunggu koneksi diam-diam */
     networkMode: "always",
     onSuccess: (data) => {
+      void queryClient.invalidateQueries({ queryKey: ["pendaftaran", "status"] })
       setResult(data)
       window.scrollTo({ top: 0 })
     },
     onError: (error) => {
       if (error instanceof PendaftaranError) {
-        setAlreadyRegistered(true)
+        setExistingId(error.registrationId ?? "")
         window.scrollTo({ top: 0, behavior: "smooth" })
       } else {
         toast.error("Pendaftaran gagal dikirim", {
@@ -108,13 +112,13 @@ function PendaftaranSiswa() {
   const handleBack = () => {
     if (step === 0) navigate(-1)
     else {
-      setAlreadyRegistered(false)
+      setExistingId(null)
       goTo(step - 1)
     }
   }
 
   const handleSubmit = form.handleSubmit((values) => {
-    setAlreadyRegistered(false)
+    setExistingId(null)
     submit.mutate(values)
   })
 
@@ -190,7 +194,12 @@ function PendaftaranSiswa() {
               description={`${form.getValues("studentName")} (${form.getValues("grade")}) sudah memiliki pendaftaran aktif. Data tidak disimpan.`}
               action={{
                 label: "Lihat status pendaftaran",
-                onClick: () => navigate("/wali/pendaftaran/status"),
+                onClick: () =>
+                  navigate(
+                    existingId
+                      ? `/wali/pendaftaran/status?id=${encodeURIComponent(existingId)}`
+                      : "/wali/pendaftaran/status"
+                  ),
               }}
             />
           )}

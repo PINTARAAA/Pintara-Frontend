@@ -64,7 +64,12 @@ function PendaftaranBerhasil({ result }: { result: PendaftaranResult }) {
         <Button
           size="lg"
           nativeButton={false}
-          render={<Link to="/wali/pendaftaran/status" replace />}
+          render={
+            <Link
+              to={`/wali/pendaftaran/status?id=${encodeURIComponent(result.id)}`}
+              replace
+            />
+          }
         >
           Pantau Status Pendaftaran
         </Button>

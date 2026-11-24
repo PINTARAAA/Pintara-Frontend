@@ -43,10 +43,11 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
         import("@/pages/pendaftaran/pendaftaran-siswa").then(toRoute),
     },
     {
-      /* SEMENTARA: W3 · Status Pendaftaran belum dibangun */
+      /* W3 · Status Pendaftaran (?id=… untuk pendaftaran tertentu) */
       path: "pendaftaran/status",
       handle: { title: "Status Pendaftaran", hideBottomNav: true },
-      lazy: placeholderDetail,
+      lazy: () =>
+        import("@/pages/pendaftaran/status-pendaftaran").then(toRoute),
     },
   ],
 }
