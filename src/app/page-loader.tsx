@@ -1,4 +1,3 @@
-/* Tampilan saat halaman (route lazy) pertama kali diunduh */
 export function PageLoader() {
   return (
     <div

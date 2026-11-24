@@ -3,7 +3,7 @@ import { createBrowserRouter, Navigate, Outlet, type RouteObject } from "react-r
 
 import { ROLE_NAV, type Role } from "@/app/navigation"
 import { PageLoader } from "@/app/page-loader"
-import RouteError from "@/app/routes/error"
+import RouteError from "@/pages/error/error"
 import { AppFrame } from "@/components/layouts/app-frame"
 import { AppShell } from "@/components/layouts/app-shell"
 
@@ -25,9 +25,9 @@ const toRoute = (module: { default: React.ComponentType }) => ({
 
 const placeholder = () => import("@/app/routes/placeholder").then(toRoute)
 const beranda: Record<Role, () => Promise<{ Component: React.ComponentType }>> = {
-  wali: () => import("@/app/routes/beranda-wali").then(toRoute),
-  tutor: () => import("@/app/routes/beranda-tutor").then(toRoute),
-  pengelola: () => import("@/app/routes/beranda-pengelola").then(toRoute),
+  wali: () => import("@/pages/dashboard/beranda-wali").then(toRoute),
+  tutor: () => import("@/pages/dashboard/beranda-tutor").then(toRoute),
+  pengelola: () => import("@/pages/dashboard/beranda-pengelola").then(toRoute),
 }
 const placeholderDetail = () =>
   import("@/app/routes/placeholder-detail").then(toRoute)
@@ -75,14 +75,14 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/masuk" replace /> },
       {
         path: "masuk",
-        lazy: () => import("@/app/routes/login").then(toRoute),
+        lazy: () => import("@/pages/auth/login").then(toRoute),
       },
       roleRoutes("wali"),
       roleRoutes("tutor"),
       roleRoutes("pengelola"),
       {
         path: "*",
-        lazy: () => import("@/app/routes/not-found").then(toRoute),
+        lazy: () => import("@/pages/error/not-found").then(toRoute),
       },
     ],
   },
