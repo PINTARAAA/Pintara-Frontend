@@ -272,6 +272,80 @@ export const attendanceStatusQuery = (month?: Date) =>
     queryFn: () => getAttendanceStatus(month),
   })
 
+/* ---------- T4 · Riwayat les tutor ---------- */
+
+export type TutorHistory = {
+  months: Date[]
+  month: Date
+  /* Nama siswa yang diajar (untuk filter) */
+  students: string[]
+  /* null = semua siswa */
+  student: string | null
+  sessions: TutorSession[]
+  summary: {
+    held: number
+    cancelled: number
+    studentCount: number
+    byStudent: { name: string; count: number }[]
+  }
+}
+
+/* TODO(backend): httpClient.get("/tutor/riwayat", { params: { bulan, siswa } }) */
+export async function getTutorHistory(
+  month?: Date,
+  student?: string | null
+): Promise<TutorHistory> {
+  assertMockAllowed()
+  await delay()
+
+  const now = new Date()
+  const current = monthStart(now)
+  const active = monthStart(month ?? current)
+  const keys = new Set([current.getTime(), active.getTime()])
+  sessions.forEach((s) => keys.add(monthStart(s.start).getTime()))
+  const months = [...keys].sort((a, b) => b - a).map((t) => new Date(t))
+
+  const students = [...new Set(sessions.map((s) => s.student.name))].sort()
+  const selected = student && students.includes(student) ? student : null
+
+  const inMonth = sessions
+    .filter(
+      (s) =>
+        isSameMonth(s.start, active) &&
+        !isAfter(s.start, now) &&
+        (!selected || s.student.name === selected)
+    )
+    .sort((a, b) => b.start.getTime() - a.start.getTime())
+
+  const held = inMonth.filter((s) => s.record?.held)
+  const byStudent = new Map<string, number>()
+  held.forEach((s) =>
+    byStudent.set(s.student.name, (byStudent.get(s.student.name) ?? 0) + 1)
+  )
+
+  return {
+    months,
+    month: active,
+    students,
+    student: selected,
+    sessions: inMonth,
+    summary: {
+      held: held.length,
+      cancelled: inMonth.filter((s) => s.record && !s.record.held).length,
+      studentCount: new Set(inMonth.map((s) => s.student.name)).size,
+      byStudent: [...byStudent]
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
+    },
+  }
+}
+
+export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
+  queryOptions({
+    queryKey: ["presensi", "riwayat", month?.getTime() ?? "now", student ?? "semua"],
+    queryFn: () => getTutorHistory(month, student),
+  })
+
 /* ---------- Detail ---------- */
 
 export class NotFoundError extends Error {
