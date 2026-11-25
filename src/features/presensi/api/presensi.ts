@@ -52,6 +52,13 @@ export type AttendanceRecord = {
   objection?: { reason: string; at: Date }
   /* Waktu wali menyetujui kehadiran */
   validatedAt?: Date
+  /*
+   * Hasil tinjauan keberatan oleh Pengelola (P6). corrected = waktu
+   * pelaksanaan dikoreksi; false = data tutor dinyatakan sesuai.
+   */
+  review?: { corrected: boolean; note: string; at: Date }
+  /* Verifikasi final Pengelola (P6): masuk rekap honor, tutor tak bisa ubah */
+  finalAt?: Date
 }
 
 export type TutorSession = {
@@ -346,6 +353,49 @@ export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
     queryKey: ["presensi", "riwayat", month?.getTime() ?? "now", student ?? "semua"],
     queryFn: () => getTutorHistory(month, student),
   })
+
+/* ---------- P6 · Verifikasi final presensi (pengelola) ---------- */
+
+/* Presensi lengkap = sudah divalidasi wali (atau ditinjau Pengelola), belum final */
+export const isReadyForFinal = (s: TutorSession) =>
+  !!s.record && s.record.validation === "sudah_divalidasi" && !s.record.finalAt
+
+/* Tandai final semua presensi lengkap pada bulan tsb; kembalikan jumlahnya */
+export function finalizeReadySessions(month: Date) {
+  const now = new Date()
+  const ready = sessions.filter(
+    (s) => isReadyForFinal(s) && isSameMonth(s.start, month)
+  )
+  ready.forEach((s) => {
+    if (s.record) s.record.finalAt = now
+  })
+  return ready.length
+}
+
+export type ObjectionResolution =
+  | { corrected: true; actualStart: string; actualEnd: string; note: string }
+  | { corrected: false; note: string }
+
+/* Tinjauan keberatan: presensi kembali lengkap (siap diverifikasi final) */
+export function resolveObjection(id: string, input: ObjectionResolution) {
+  const session = find(id)
+  const record = session.record
+  if (!record || record.validation !== "keberatan") {
+    throw new AttendanceError("already_filled")
+  }
+  if (input.corrected) {
+    record.actualStart = input.actualStart
+    record.actualEnd = input.actualEnd
+  }
+  record.validation = "sudah_divalidasi"
+  record.validatedAt = new Date()
+  record.review = {
+    corrected: input.corrected,
+    note: input.note.trim(),
+    at: new Date(),
+  }
+  return structuredClone(session)
+}
 
 /* ---------- T7 · Sumber notifikasi tutor ---------- */
 

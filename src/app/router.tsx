@@ -102,6 +102,17 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Pengajuan Perubahan", hideBottomNav: true },
       lazy: () => import("@/pages/jadwal-les/tinjau-pengajuan").then(toRoute),
     },
+    /* P6 · Verifikasi Final Presensi (?bulan=YYYY-MM) */
+    {
+      path: "presensi",
+      handle: { title: "Verifikasi Presensi", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/verifikasi-presensi").then(toRoute),
+    },
+    {
+      path: "presensi/keberatan/:sessionId",
+      handle: { title: "Tinjau Keberatan", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/tinjau-keberatan").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
      * perbaiki data (P2) dan menu Lainnya (P8–P13)

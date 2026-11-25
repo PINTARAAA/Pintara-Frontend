@@ -70,7 +70,7 @@ export async function getPengelolaDashboard(): Promise<PengelolaDashboard> {
         title: "Tinjau keberatan presensi",
         description: "Dari wali murid",
         count: 1,
-        to: "/pengelola/les",
+        to: "/pengelola/presensi",
       },
       {
         id: "final",
@@ -78,7 +78,7 @@ export async function getPengelolaDashboard(): Promise<PengelolaDashboard> {
         title: "Verifikasi final presensi",
         description: "Siap dihitung ke rekap honor",
         count: 18,
-        to: "/pengelola/les",
+        to: "/pengelola/presensi",
       },
     ],
     billing: {
