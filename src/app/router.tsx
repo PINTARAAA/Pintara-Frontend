@@ -126,9 +126,31 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Catat Pembayaran", hideBottomNav: true },
       lazy: () => import("@/pages/tagihan/catat-pembayaran-honor").then(toRoute),
     },
+    /* P8 · Laporan Keuangan (?bulan=YYYY-MM) */
+    {
+      path: "laporan-keuangan",
+      handle: { title: "Laporan Keuangan", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/laporan-keuangan").then(toRoute),
+    },
+    {
+      path: "laporan-keuangan/tagihan",
+      handle: { title: "Tagihan Siswa", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/tagihan-siswa").then(toRoute),
+    },
+    {
+      path: "laporan-keuangan/tagihan/:billId",
+      handle: { title: "Rincian Tagihan", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/rincian-tagihan-siswa").then(toRoute),
+    },
+    {
+      path: "laporan-keuangan/tagihan/:billId/bayar",
+      handle: { title: "Catat Pembayaran", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/tagihan/catat-pembayaran-tagihan").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
-     * perbaiki data (P2) dan menu Lainnya (P8–P13)
+     * perbaiki data (P2) dan menu Lainnya (P9–P13)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
@@ -136,7 +158,6 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       ["siswa", "Data Siswa"],
       ["akun", "Manajemen Akun"],
       ["riwayat", "Rekap & Riwayat Les"],
-      ["laporan-keuangan", "Laporan Keuangan"],
       ["pengaturan-notifikasi", "Pengaturan Notifikasi"],
       ["riwayat-notifikasi", "Riwayat Notifikasi"],
     ].map(([path, title]) => ({

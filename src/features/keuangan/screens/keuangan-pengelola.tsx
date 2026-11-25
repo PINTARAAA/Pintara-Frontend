@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
-import { DownloadIcon, ReceiptIcon, UserIcon } from "lucide-react"
+import { DownloadIcon, UserIcon } from "lucide-react"
 import { Link, useNavigate, useSearchParams } from "react-router"
 
 import { TabScreen } from "@/components/layouts/tab-screen"
@@ -30,6 +30,10 @@ import {
   type HonorRecap,
   type TutorHonor,
 } from "@/features/keuangan/api/honor"
+import { availableMonths } from "@/features/keuangan/api/laporan"
+import { StudentBillsPanel } from "@/features/keuangan/components/student-bills-panel"
+import { UnduhLaporanSheet } from "@/features/keuangan/components/unduh-laporan-sheet"
+import { parseMonth } from "@/features/keuangan/lib/month"
 import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
 import { formatDayMonth } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
@@ -41,23 +45,17 @@ import { cn } from "@/lib/styles/cn"
  * "Honor / Rekap": pil periode → [belum dihitung: info presensi final,
  * peringatan tarif, cara perhitungan, Hitung Rekap Honor] atau [ringkasan
  * total + bar dibayar/belum → Belum dibayar → Sudah dibayar].
- * Tab, bulan disimpan di ?tab=tagihan&bulan=YYYY-MM. Tab Tagihan Siswa
- * dan tombol unduh laporan menyusul di P8.
+ * Tab, bulan disimpan di ?tab=tagihan&bulan=YYYY-MM. Tab Tagihan Siswa dan
+ * tombol unduh laporan memakai komponen P8 · Laporan Keuangan.
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 const monthName = (d: Date) => format(d, "MMMM", { locale: localeId })
 const stamp = (d: Date) => format(d, "d MMM, HH.mm", { locale: localeId })
 const PREVIEW = 3
 
-function parseMonth(value: string | null) {
-  if (!value || !/^\d{4}-\d{2}$/.test(value)) return undefined
-  const [y, m] = value.split("-").map(Number)
-  return new Date(y, m - 1, 1)
-}
-
 function KeuanganPengelola() {
   const [params, setParams] = useSearchParams()
-  const navigate = useNavigate()
+  const [sheetOpen, setSheetOpen] = React.useState(false)
   const tab = params.get("tab") === "tagihan" ? "tagihan" : "honor"
   const month = parseMonth(params.get("bulan"))
 
@@ -79,8 +77,7 @@ function KeuanganPengelola() {
         action={
           <TopAppBarButton
             label="Unduh laporan keuangan"
-            /* SEMENTARA: layar Unduh laporan (P8) */
-            onClick={() => navigate("/pengelola/laporan-keuangan")}
+            onClick={() => setSheetOpen(true)}
           >
             <DownloadIcon />
           </TopAppBarButton>
@@ -101,15 +98,21 @@ function KeuanganPengelola() {
           />
         </TabsContent>
         <TabsContent value="tagihan" className="flex flex-col">
-          {/* SEMENTARA: diganti layar Laporan Keuangan · Tagihan siswa (P8) */}
-          <DataState
-            state="empty"
-            icon={<ReceiptIcon />}
-            title="Tagihan siswa"
-            description="Daftar tagihan dan pembayaran siswa akan tampil di sini (P8 · Laporan Keuangan)."
+          <StudentBillsPanel
+            month={month}
+            className="lg:max-w-3xl"
+            onMonthChange={(key) =>
+              setParam("bulan", key === monthKey(new Date()) ? null : key)
+            }
           />
         </TabsContent>
       </TabScreen>
+      <UnduhLaporanSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        months={availableMonths()}
+        month={month ?? new Date()}
+      />
     </Tabs>
   )
 }
