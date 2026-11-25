@@ -43,10 +43,26 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/tutor/presensi": () => import("@/pages/presensi/presensi").then(toRoute),
   "/tutor/riwayat": () => import("@/pages/presensi/riwayat-tutor").then(toRoute),
   "/tutor/akun": () => import("@/pages/akun/akun-tutor").then(toRoute),
+  "/pengelola/lainnya": () =>
+    import("@/pages/akun/lainnya-pengelola").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
+  /* SEMENTARA: tujuan menu Lainnya (P1) memakai placeholder sampai P8–P13 dibuat */
+  pengelola: [
+    ["tutor", "Data Tutor"],
+    ["siswa", "Data Siswa"],
+    ["akun", "Manajemen Akun"],
+    ["riwayat", "Rekap & Riwayat Les"],
+    ["laporan-keuangan", "Laporan Keuangan"],
+    ["pengaturan-notifikasi", "Pengaturan Notifikasi"],
+    ["riwayat-notifikasi", "Riwayat Notifikasi"],
+  ].map(([path, title]) => ({
+    path,
+    handle: { title, hideBottomNav: true },
+    lazy: placeholderDetail,
+  })),
   tutor: [
     /* T7 · Notifikasi */
     {
