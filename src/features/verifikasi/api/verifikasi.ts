@@ -63,7 +63,21 @@ export type PengelolaRegistration = {
   status: RegistrationStatus
   verifiedAt?: Date
   rejection?: { reason: RejectReason; message: string; at: Date }
+  /* Diisi setelah pengelola memilih tutor (P3 · Pencocokan Tutor) */
+  match?: { tutorId: string; tutorName: string; at: Date }
 }
+
+/*
+ * Bisa ditolak: masih menunggu verifikasi, atau sudah terverifikasi tetapi
+ * belum ada tutor yang cocok (alternatif "Tolak pendaftaran" di P3).
+ */
+export const canReject = (r: PengelolaRegistration) =>
+  r.status === "menunggu_verifikasi" ||
+  (r.status === "terverifikasi" && !r.match)
+
+/* Antre pencocokan: terverifikasi dan belum punya tutor */
+export const needsTutor = (r: PengelolaRegistration) =>
+  r.status === "terverifikasi" && !r.match
 
 /* "Kelas 11 SMA" */
 export const gradeLabel = (s: PengelolaRegistration["student"]) =>
@@ -174,15 +188,20 @@ const registrations: PengelolaRegistration[] = [
     submittedAt: at(-24, 20, 10),
     status: "terverifikasi",
     verifiedAt: at(-23, 9, 30),
+    match: {
+      tutorId: "tt-budi",
+      tutorName: "Kak Budi Santoso",
+      at: at(-22, 14, 0),
+    },
   },
   {
     id: "reg-0112",
     number: "REG-2026-0112",
     student: {
-      name: "Salsa Amelia",
-      grade: "4",
-      level: "SD",
-      school: "SD Negeri Bancaran 2",
+      name: "Salma Azzahra",
+      grade: "7",
+      level: "SMP",
+      school: "SMP Negeri 3 Bangkalan",
       address: "Jl. Raya Tanjung Bumi No. 3, Bangkalan",
     },
     parent: {
@@ -192,14 +211,14 @@ const registrations: PengelolaRegistration[] = [
       email: "wahyu.hidayat@gmail.com",
     },
     needs: {
-      subjects: ["Matematika", "Bahasa Indonesia"],
+      subjects: ["Bahasa Inggris"],
       perWeek: 2,
-      days: ["Selasa", "Kamis"],
+      days: ["Selasa", "Jumat"],
       startTime: "15.00",
     },
-    submittedAt: at(-6, 18, 45),
+    submittedAt: at(-4, 18, 45),
     status: "terverifikasi",
-    verifiedAt: at(-5, 8, 20),
+    verifiedAt: at(-3, 8, 20),
   },
   {
     id: "reg-0107",
@@ -328,8 +347,12 @@ export const registrationQuery = (id: string) =>
 
 /* ---------- Aksi ---------- */
 
-function findPending(id: string) {
+function ensureOnline() {
   if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
+}
+
+function findPending(id: string) {
+  ensureOnline()
   const registration = find(id)
   if (registration.status !== "menunggu_verifikasi")
     throw new AlreadyProcessedError()
@@ -356,11 +379,36 @@ export async function rejectRegistration(
 ): Promise<PengelolaRegistration> {
   assertMockAllowed()
   await delay(800)
-  const registration = findPending(id)
+  ensureOnline()
+  const registration = find(id)
+  if (!canReject(registration)) throw new AlreadyProcessedError()
   registration.status = "ditolak"
   registration.rejection = {
     reason: input.reason,
     message: input.message.trim(),
+    at: new Date(),
+  }
+  return structuredClone(registration)
+}
+
+/* ---------- P3 · Pencocokan Tutor ---------- */
+
+/* Salinan pendaftaran untuk modul pencocokan (dibaca tanpa jeda) */
+export function snapshotRegistrations() {
+  return structuredClone(registrations)
+}
+
+/* Tetapkan tutor terpilih; penawaran dikirim terpisah (P4) */
+export function assignTutor(
+  id: string,
+  tutor: { id: string; name: string }
+): PengelolaRegistration {
+  ensureOnline()
+  const registration = find(id)
+  if (!needsTutor(registration)) throw new AlreadyProcessedError()
+  registration.match = {
+    tutorId: tutor.id,
+    tutorName: tutor.name,
     at: new Date(),
   }
   return structuredClone(registration)

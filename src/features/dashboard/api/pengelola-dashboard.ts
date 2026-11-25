@@ -62,7 +62,7 @@ export async function getPengelolaDashboard(): Promise<PengelolaDashboard> {
         title: "Cocokkan tutor",
         description: "Siswa terverifikasi belum punya tutor",
         count: 2,
-        to: "/pengelola/pendaftaran",
+        to: "/pengelola/les",
       },
       {
         id: "keberatan",

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm, useWatch } from "react-hook-form"
-import { useNavigate, useParams } from "react-router"
+import { useNavigate, useParams, useSearchParams } from "react-router"
 import { z } from "zod"
 
 import { DetailScreen } from "@/components/layouts/detail-screen"
@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast-api"
 import {
   AlreadyProcessedError,
+  canReject,
   gradeLabel,
   NotFoundError,
   REJECT_REASONS,
@@ -35,6 +36,8 @@ import { rejectionTemplate } from "@/features/verifikasi/lib/format"
  * (Radio, wajib) → Pesan untuk wali (Textarea wajib, maks. 500; terisi
  * templat sesuai alasan dan boleh diubah). Bilah aksi: Batal · Tolak
  * Pendaftaran (Destructive). Setelah terkirim kembali ke detail + toast.
+ * Juga dipakai dari P3 ("Tolak pendaftaran" bila tutor belum tersedia);
+ * ?alasan=… memilih alasan awal beserta templat pesannya.
  */
 const MESSAGE_MAX = 500
 const REASON_VALUES = REJECT_REASONS.map((r) => r.value) as [
@@ -58,7 +61,7 @@ function TolakPendaftaran() {
   const query = useQuery(registrationQuery(registrationId))
   const registration = query.data
 
-  if (registration?.status === "menunggu_verifikasi") {
+  if (registration && canReject(registration)) {
     return <RejectFormScreen registration={registration} />
   }
 
@@ -81,7 +84,7 @@ function TolakPendaftaran() {
               ? "Pendaftaran tidak ditemukan"
               : "Pendaftaran sudah diproses"
           }
-          description="Hanya pendaftaran yang menunggu verifikasi yang bisa ditolak."
+          description="Hanya pendaftaran yang menunggu verifikasi atau belum punya tutor yang bisa ditolak."
           action={{
             label: "Kembali ke Pendaftaran",
             onClick: () =>
@@ -100,10 +103,17 @@ function RejectFormScreen({
 }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [params] = useSearchParams()
+  const initialReason = REASON_VALUES.find((r) => r === params.get("alasan"))
   const form = useForm<RejectForm>({
     resolver: zodResolver(schema),
     mode: "onTouched",
-    defaultValues: { message: "" },
+    defaultValues: {
+      reason: initialReason,
+      message: initialReason
+        ? rejectionTemplate(initialReason, registration)
+        : "",
+    },
   })
   const { errors } = form.formState
   const message = useWatch({ control: form.control, name: "message" }) ?? ""

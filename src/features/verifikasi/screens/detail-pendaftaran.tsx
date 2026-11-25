@@ -22,6 +22,7 @@ import { TopAppBarButton } from "@/components/ui/top-app-bar"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import {
   AlreadyProcessedError,
+  needsTutor,
   NotFoundError,
   REJECT_REASONS,
   registrationQuery,
@@ -41,7 +42,7 @@ import {
  * Data Wali → Kebutuhan Belajar (label 104px). Menu ⋯: hubungi wali,
  * perbaiki data. Bilah aksi sesuai status:
  *   menunggu      : Tolak (→ form tolak) · Verifikasi (Confirmation modal)
- *   terverifikasi : Ke Daftar · Cocokkan Tutor (P3)
+ *   terverifikasi : Ke Daftar · Cocokkan Tutor (P3, selama belum ada tutor)
  *   ditolak       : Ke Daftar (+ kartu alasan penolakan)
  */
 const LIST = "/pengelola/pendaftaran"
@@ -182,10 +183,10 @@ function Actions({
       >
         Ke Daftar
       </Button>
-      {registration.status === "terverifikasi" && (
+      {needsTutor(registration) && (
         <Button
           nativeButton={false}
-          render={<Link to={`/pengelola/pencocokan/${registration.id}`} />}
+          render={<Link to={`/pengelola/les/pencocokan/${registration.id}`} />}
         >
           Cocokkan Tutor
         </Button>
@@ -342,8 +343,10 @@ function RegistrationDetails({
 
       {r.status === "terverifikasi" && r.verifiedAt && (
         <p className="text-caption text-grayscale-text-caption leading-normal">
-          Diverifikasi {stamp(r.verifiedAt)}. Langkah berikutnya: cocokkan tutor
-          untuk {firstName(r.student.name)}.
+          Diverifikasi {stamp(r.verifiedAt)}.{" "}
+          {r.match
+            ? `Tutor: ${r.match.tutorName} (dipilih ${stamp(r.match.at)}).`
+            : `Langkah berikutnya: cocokkan tutor untuk ${firstName(r.student.name)}.`}
         </p>
       )}
     </>

@@ -45,6 +45,7 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/tutor/akun": () => import("@/pages/akun/akun-tutor").then(toRoute),
   "/pengelola/pendaftaran": () =>
     import("@/pages/verifikasi/verifikasi-pendaftaran").then(toRoute),
+  "/pengelola/les": () => import("@/pages/pencocokan/les-pengelola").then(toRoute),
   "/pengelola/lainnya": () =>
     import("@/pages/akun/lainnya-pengelola").then(toRoute),
 }
@@ -63,13 +64,19 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Tolak Pendaftaran", hideBottomNav: true },
       lazy: () => import("@/pages/verifikasi/tolak-pendaftaran").then(toRoute),
     },
+    /* P3 · Pencocokan Tutor (?sebagian=1 → kecocokan sebagian) */
+    {
+      path: "les/pencocokan/:registrationId",
+      handle: { title: "Cocokkan Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/pencocokan/cocokkan-tutor").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
-     * perbaiki data (P2), pencocokan tutor (P3), dan menu Lainnya (P8–P13)
+     * perbaiki data (P2), buat penawaran (P4), dan menu Lainnya (P8–P13)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
-      ["pencocokan/:registrationId", "Cocokkan Tutor"],
+      ["les/penawaran/:registrationId/buat", "Buat Penawaran"],
       ["tutor", "Data Tutor"],
       ["siswa", "Data Siswa"],
       ["akun", "Manajemen Akun"],
