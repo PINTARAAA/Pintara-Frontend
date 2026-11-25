@@ -43,26 +43,46 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/tutor/presensi": () => import("@/pages/presensi/presensi").then(toRoute),
   "/tutor/riwayat": () => import("@/pages/presensi/riwayat-tutor").then(toRoute),
   "/tutor/akun": () => import("@/pages/akun/akun-tutor").then(toRoute),
+  "/pengelola/pendaftaran": () =>
+    import("@/pages/verifikasi/verifikasi-pendaftaran").then(toRoute),
   "/pengelola/lainnya": () =>
     import("@/pages/akun/lainnya-pengelola").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
-  /* SEMENTARA: tujuan menu Lainnya (P1) memakai placeholder sampai P8–P13 dibuat */
   pengelola: [
-    ["tutor", "Data Tutor"],
-    ["siswa", "Data Siswa"],
-    ["akun", "Manajemen Akun"],
-    ["riwayat", "Rekap & Riwayat Les"],
-    ["laporan-keuangan", "Laporan Keuangan"],
-    ["pengaturan-notifikasi", "Pengaturan Notifikasi"],
-    ["riwayat-notifikasi", "Riwayat Notifikasi"],
-  ].map(([path, title]) => ({
-    path,
-    handle: { title, hideBottomNav: true },
-    lazy: placeholderDetail,
-  })),
+    /* P2 · Verifikasi Pendaftaran */
+    {
+      path: "pendaftaran/:registrationId",
+      handle: { title: "Detail Pendaftaran", hideBottomNav: true },
+      lazy: () => import("@/pages/verifikasi/detail-pendaftaran").then(toRoute),
+    },
+    {
+      path: "pendaftaran/:registrationId/tolak",
+      handle: { title: "Tolak Pendaftaran", hideBottomNav: true },
+      lazy: () => import("@/pages/verifikasi/tolak-pendaftaran").then(toRoute),
+    },
+    /*
+     * SEMENTARA: layar yang belum dibuat memakai placeholder —
+     * perbaiki data (P2), pencocokan tutor (P3), dan menu Lainnya (P8–P13)
+     */
+    ...[
+      ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
+      ["pencocokan/:registrationId", "Cocokkan Tutor"],
+      ["tutor", "Data Tutor"],
+      ["siswa", "Data Siswa"],
+      ["akun", "Manajemen Akun"],
+      ["riwayat", "Rekap & Riwayat Les"],
+      ["laporan-keuangan", "Laporan Keuangan"],
+      ["pengaturan-notifikasi", "Pengaturan Notifikasi"],
+      ["riwayat-notifikasi", "Riwayat Notifikasi"],
+    ].map(([path, title]) => ({
+      path,
+      handle: { title, hideBottomNav: true },
+      lazy: placeholderDetail,
+    })),
+  ],
   tutor: [
     /* T7 · Notifikasi */
     {
