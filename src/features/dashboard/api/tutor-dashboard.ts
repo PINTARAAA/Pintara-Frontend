@@ -30,7 +30,6 @@ export type TutorDashboard = {
     waitingParent: number
     disputed: number
   }
-  unreadNotifications: number
 }
 
 export async function getTutorDashboard(): Promise<TutorDashboard> {
@@ -78,7 +77,6 @@ export async function getTutorDashboard(): Promise<TutorDashboard> {
       waitingParent: 2,
       disputed: 1,
     },
-    unreadNotifications: 1,
   }
 }
 

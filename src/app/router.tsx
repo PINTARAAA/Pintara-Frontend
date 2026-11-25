@@ -39,10 +39,45 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
     import("@/pages/absensi/validasi-absensi").then(toRoute),
   "/wali/tagihan": () => import("@/pages/tagihan/tagihan").then(toRoute),
   "/wali/akun": () => import("@/pages/akun/akun-wali").then(toRoute),
+  "/tutor/jadwal": () => import("@/pages/jadwal/jadwal-tutor").then(toRoute),
+  "/tutor/presensi": () => import("@/pages/presensi/presensi").then(toRoute),
+  "/tutor/riwayat": () => import("@/pages/presensi/riwayat-tutor").then(toRoute),
+  "/tutor/akun": () => import("@/pages/akun/akun-tutor").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
+  tutor: [
+    /* T7 · Notifikasi */
+    {
+      path: "notifikasi",
+      handle: { title: "Notifikasi", hideBottomNav: true },
+      lazy: () => import("@/pages/notifikasi/notifikasi-tutor").then(toRoute),
+    },
+    /* T5 · Jadwal */
+    {
+      path: "jadwal/:sessionId",
+      handle: { title: "Detail Jadwal", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal/detail-jadwal-tutor").then(toRoute),
+    },
+    /* T2 · Presensi & Dokumentasi */
+    /* T3 · Status Presensi (?bulan=YYYY-MM) */
+    {
+      path: "presensi/status",
+      handle: { title: "Status Presensi", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/status-presensi").then(toRoute),
+    },
+    {
+      path: "presensi/status/:sessionId",
+      handle: { title: "Detail Presensi", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/detail-presensi").then(toRoute),
+    },
+    {
+      path: "presensi/:sessionId",
+      handle: { title: "Isi Presensi", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/isi-presensi").then(toRoute),
+    },
+  ],
   wali: [
     /* W9 · Notifikasi */
     {
