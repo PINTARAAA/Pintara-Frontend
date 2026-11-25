@@ -687,3 +687,27 @@ export async function setStudentStatus(
 
 /* Mata pelajaran untuk filter daftar siswa (gabungan semua mapel) */
 export const STUDENT_SUBJECTS = TUTOR_SUBJECTS
+
+/* ---------- Direktori untuk Manajemen Akun (P10) ---------- */
+
+/* Akun tutor mengikuti Data Tutor: satu tutor = satu akun login */
+export function tutorDirectory() {
+  return tutors.map((t) => ({
+    id: t.id,
+    name: t.name,
+    email: t.email,
+    phone: t.phone,
+    joinedAt: t.joinedAt,
+    status: t.status,
+  }))
+}
+
+/* Siswa yang bisa ditautkan ke akun wali */
+export function studentDirectory() {
+  return students.map((s) => ({
+    id: s.id,
+    name: s.name,
+    grade: s.grade,
+    status: s.status,
+  }))
+}

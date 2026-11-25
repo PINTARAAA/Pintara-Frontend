@@ -179,16 +179,36 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Profil Siswa", hideBottomNav: true },
       lazy: () => import("@/pages/data-master/profil-siswa").then(toRoute),
     },
+    /* P10 · Manajemen Akun (?peran=wali|tutor|pengelola&q=…) */
+    {
+      path: "akun",
+      handle: { title: "Manajemen Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/manajemen-akun").then(toRoute),
+    },
+    {
+      path: "akun/tambah",
+      handle: { title: "Tambah Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/form-akun").then(toRoute),
+    },
+    {
+      path: "akun/:accountId",
+      handle: { title: "Detail Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/detail-akun").then(toRoute),
+    },
+    {
+      path: "akun/:accountId/ubah",
+      handle: { title: "Ubah Data Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/form-akun").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
      * perbaiki data (P2), tambah/ubah siswa (belum ada di Figma P9),
-     * dan menu Lainnya (P10–P13)
+     * dan menu Lainnya (P11–P13)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
       ["siswa/tambah", "Tambah Siswa"],
       ["siswa/:studentId/ubah", "Ubah Profil Siswa"],
-      ["akun", "Manajemen Akun"],
       ["riwayat", "Rekap & Riwayat Les"],
       ["pengaturan-notifikasi", "Pengaturan Notifikasi"],
       ["riwayat-notifikasi", "Riwayat Notifikasi"],
