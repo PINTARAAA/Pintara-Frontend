@@ -711,3 +711,16 @@ export function studentDirectory() {
     status: s.status,
   }))
 }
+
+/* Pasangan les rutin (siswa × tutor × mapel) untuk Rekap & Riwayat Les (P11) */
+export function lessonDirectory() {
+  return students.flatMap((s) =>
+    s.lessons.map((l) => ({
+      studentId: s.id,
+      studentName: s.name,
+      grade: s.grade,
+      ...l,
+      tutorId: tutors.find((t) => t.name === l.tutorName)?.id ?? l.tutorName,
+    }))
+  )
+}

@@ -200,16 +200,21 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Ubah Data Akun", hideBottomNav: true },
       lazy: () => import("@/pages/manajemen-akun/form-akun").then(toRoute),
     },
+    /* P11 · Rekap & Riwayat Les (?tab=…&bulan=YYYY-MM&tutor=…&siswa=…) */
+    {
+      path: "riwayat",
+      handle: { title: "Rekap & Riwayat Les", hideBottomNav: true },
+      lazy: () => import("@/pages/rekap-les/rekap-les").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
      * perbaiki data (P2), tambah/ubah siswa (belum ada di Figma P9),
-     * dan menu Lainnya (P11–P13)
+     * dan menu Lainnya (P12–P13)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
       ["siswa/tambah", "Tambah Siswa"],
       ["siswa/:studentId/ubah", "Ubah Profil Siswa"],
-      ["riwayat", "Rekap & Riwayat Les"],
       ["pengaturan-notifikasi", "Pengaturan Notifikasi"],
       ["riwayat-notifikasi", "Riwayat Notifikasi"],
     ].map(([path, title]) => ({
