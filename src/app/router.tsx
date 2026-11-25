@@ -46,6 +46,8 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/pengelola/pendaftaran": () =>
     import("@/pages/verifikasi/verifikasi-pendaftaran").then(toRoute),
   "/pengelola/les": () => import("@/pages/pencocokan/les-pengelola").then(toRoute),
+  "/pengelola/keuangan": () =>
+    import("@/pages/tagihan/keuangan-pengelola").then(toRoute),
   "/pengelola/lainnya": () =>
     import("@/pages/akun/lainnya-pengelola").then(toRoute),
 }
@@ -112,6 +114,17 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       path: "presensi/keberatan/:sessionId",
       handle: { title: "Tinjau Keberatan", hideBottomNav: true },
       lazy: () => import("@/pages/presensi/tinjau-keberatan").then(toRoute),
+    },
+    /* P7 · Rekap & Pembayaran Honor (:month = YYYY-MM) */
+    {
+      path: "keuangan/honor/:month/:tutorId",
+      handle: { title: "Rincian Honor", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/rincian-honor").then(toRoute),
+    },
+    {
+      path: "keuangan/honor/:month/:tutorId/bayar",
+      handle: { title: "Catat Pembayaran", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/catat-pembayaran-honor").then(toRoute),
     },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —

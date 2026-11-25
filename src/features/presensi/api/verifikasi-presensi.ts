@@ -37,18 +37,26 @@ type Counts = {
 }
 
 /* Angka contoh tutor lain untuk bulan berjalan (bulan lalu: semua final) */
-const otherTutors: { name: string; counts: Counts }[] = [
+const otherTutors: { name: string; subjects: string[]; counts: Counts }[] = [
   {
     name: "Kak Laila Fitri",
+    subjects: ["Matematika"],
     counts: { final: 52, ready: 7, waiting: 1, notCollected: 1 },
   },
   {
     name: "Kak Dimas Arya",
+    subjects: ["Fisika", "Matematika"],
     counts: { final: 48, ready: 5, waiting: 1, notCollected: 1 },
   },
   {
     name: "Kak Nadia Safitri",
+    subjects: ["Bahasa Inggris"],
     counts: { final: 41, ready: 0, waiting: 1, notCollected: 0 },
+  },
+  {
+    name: "Kak Yoga Pratama",
+    subjects: ["Fisika"],
+    counts: { final: 6, ready: 0, waiting: 0, notCollected: 0 },
   },
 ]
 
@@ -191,4 +199,51 @@ export async function reviewObjection(
     to: "/wali/riwayat",
   })
   return session
+}
+
+/* ---------- P7 · Sumber rekap honor ---------- */
+
+export type FinalByTutor = {
+  tutor: string
+  /* Jumlah presensi final per mapel */
+  bySubject: Record<string, number>
+  /* Rincian sesi (hanya tersedia untuk data per sesi, mis. Kak Budi) */
+  sessions?: TutorSession[]
+}
+
+/* Presensi terverifikasi final per tutor pada bulan tsb (dibaca tanpa jeda) */
+export function finalByTutor(month: Date): FinalByTutor[] {
+  const now = new Date()
+  const active = startOfMonth(month)
+  const isCurrent = isSameMonth(active, now)
+
+  const budi = snapshotTutorSessions().filter(
+    (s) => isSameMonth(s.start, active) && s.record?.finalAt
+  )
+  const budiBySubject: Record<string, number> = {}
+  budi.forEach((s) => {
+    budiBySubject[s.subject] = (budiBySubject[s.subject] ?? 0) + 1
+  })
+
+  const others = otherTutors.map((t) => {
+    const finals = isCurrent ? t.counts.final : total(t.counts)
+    const bySubject: Record<string, number> = {}
+    t.subjects.forEach((subject, i) => {
+      const share = Math.floor(finals / t.subjects.length)
+      bySubject[subject] =
+        i === 0 ? finals - share * (t.subjects.length - 1) : share
+    })
+    return { tutor: t.name, bySubject }
+  })
+
+  return [
+    { tutor: BUDI.name, bySubject: budiBySubject, sessions: budi },
+    ...others,
+  ].filter((t) => Object.values(t.bySubject).some((n) => n > 0))
+}
+
+/* Ringkasan singkat untuk P7 · Belum dihitung: "178 dari 186 presensi sudah final" */
+export function finalProgress(month: Date) {
+  const overview = buildOverview(month)
+  return { final: overview.final, total: overview.total }
 }
