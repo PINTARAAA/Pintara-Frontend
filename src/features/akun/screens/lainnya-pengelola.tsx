@@ -16,12 +16,12 @@ import { ListItem } from "@/components/ui/list-item"
 import { pengelolaMenuQuery } from "@/features/akun/api/akun"
 import { LogoutItem } from "@/features/akun/components/account-help"
 import { AccountProfile } from "@/features/akun/components/account-profile"
-import { pengelolaDashboardQuery } from "@/features/dashboard/api/pengelola-dashboard"
 import {
   DashboardList,
   DashboardSection,
 } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
 
 /*
  * P1 · Menu Lainnya (pengelola) · Figma "Lainnya / Pengelola"
@@ -34,11 +34,7 @@ import { NotificationButton } from "@/features/dashboard/components/notification
 function LainnyaPengelola() {
   const query = useQuery(pengelolaMenuQuery())
   const data = query.data
-  /* TODO(P14): ganti dengan jumlah dari layar Notifikasi pengelola */
-  const unread = useQuery({
-    ...pengelolaDashboardQuery(),
-    select: (d) => d.unreadNotifications,
-  }).data
+  const unread = usePengelolaUnreadNotifications()
 
   return (
     <TabScreen

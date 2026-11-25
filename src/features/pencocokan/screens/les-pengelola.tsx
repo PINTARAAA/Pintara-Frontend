@@ -12,7 +12,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { pengelolaDashboardQuery } from "@/features/dashboard/api/pengelola-dashboard"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
 import { scheduleBoardQuery } from "@/features/jadwal-les/api/jadwal-les"
@@ -25,6 +24,7 @@ import {
   type PengelolaRegistration,
 } from "@/features/verifikasi/api/verifikasi"
 import { formatDaysAgo } from "@/features/verifikasi/lib/format"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
 
 /*
  * Les (tab pengelola) · tab Pencocokan · Penawaran · Jadwal.
@@ -58,11 +58,7 @@ function LesPengelola() {
       schedule.data.toSchedule.length + schedule.data.requests.length,
   }
 
-  /* TODO(P14): ganti dengan jumlah dari layar Notifikasi pengelola */
-  const unread = useQuery({
-    ...pengelolaDashboardQuery(),
-    select: (d) => d.unreadNotifications,
-  }).data
+  const unread = usePengelolaUnreadNotifications()
 
   return (
     <Tabs

@@ -234,6 +234,12 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       lazy: () =>
         import("@/pages/riwayat-notifikasi/detail-notifikasi").then(toRoute),
     },
+    /* P14 · Notifikasi */
+    {
+      path: "notifikasi",
+      handle: { title: "Notifikasi", hideBottomNav: true },
+      lazy: () => import("@/pages/notifikasi/notifikasi-pengelola").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
      * perbaiki data (P2) dan tambah/ubah siswa (belum ada di Figma P9)

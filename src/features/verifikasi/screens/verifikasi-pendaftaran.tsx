@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { ListItem } from "@/components/ui/list-item"
 import { Tabs, TabsCount, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { pengelolaDashboardQuery } from "@/features/dashboard/api/pengelola-dashboard"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
 import {
@@ -29,6 +28,7 @@ import {
 } from "@/features/verifikasi/api/verifikasi"
 import { formatDaysAgo } from "@/features/verifikasi/lib/format"
 import { cn } from "@/lib/styles/cn"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
 
 /*
  * P2 · Verifikasi Pendaftaran (tab pengelola) · Figma "Verifikasi
@@ -71,11 +71,7 @@ function VerifikasiPendaftaran() {
   const levelParam = params.get("jenjang")?.toUpperCase()
   const level = LEVELS.find((l) => l === levelParam)
 
-  /* TODO(P14): ganti dengan jumlah dari layar Notifikasi pengelola */
-  const unread = useQuery({
-    ...pengelolaDashboardQuery(),
-    select: (d) => d.unreadNotifications,
-  }).data
+  const unread = usePengelolaUnreadNotifications()
 
   const list = useQuery({
     ...registrationsQuery({ status: tab.value, query, level }),
