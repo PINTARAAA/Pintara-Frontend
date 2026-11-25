@@ -1,19 +1,18 @@
-import * as React from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { InfoIcon, LogOutIcon, PhoneIcon, UserIcon } from "lucide-react"
-import { Link, useNavigate } from "react-router"
+import { useQuery } from "@tanstack/react-query"
+import { UserIcon } from "lucide-react"
+import { Link } from "react-router"
 
 import { TabScreen } from "@/components/layouts/tab-screen"
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataState } from "@/components/ui/data-state"
 import { ListItem } from "@/components/ui/list-item"
-import { logout, waliAccountQuery } from "@/features/akun/api/akun"
+import { waliAccountQuery } from "@/features/akun/api/akun"
+import { AccountHelp } from "@/features/akun/components/account-help"
+import { AccountProfile } from "@/features/akun/components/account-profile"
 import {
   DashboardList,
   DashboardSection,
 } from "@/features/dashboard/components/dashboard-section"
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 
 /*
@@ -24,21 +23,8 @@ import { SummaryRow } from "@/features/pendaftaran/components/form-group"
  * PINTARA) → Keluar (Confirmation modal, lalu ke /masuk?alasan=keluar).
  */
 function AkunWali() {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const query = useQuery(waliAccountQuery())
   const account = query.data
-  const [confirmLogout, setConfirmLogout] = React.useState(false)
-  const [aboutOpen, setAboutOpen] = React.useState(false)
-
-  const handleLogout = async () => {
-    await logout()
-    /* Buang data akun sebelumnya agar tidak tampil ke pengguna berikutnya */
-    queryClient.clear()
-    navigate("/masuk?alasan=keluar", { replace: true })
-  }
-
-  const studentNames = account?.students.map((s) => s.name.split(" ")[0])
 
   return (
     <TabScreen title="Akun">
@@ -54,23 +40,12 @@ function AkunWali() {
       ) : account ? (
         <div className="grid gap-ns-2xl lg:grid-cols-2 lg:items-start">
           <div className="flex flex-col gap-ns-2xl">
-            <section
-              aria-label="Profil"
-              className="flex items-center gap-ns-m rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default p-ns-l"
-            >
-              <InitialsAvatar
-                initials={account.initials}
-                className="size-14 text-body"
-              />
-              <div className="flex min-w-0 flex-1 flex-col gap-ns-2xs leading-normal">
-                <p className="text-body font-bold text-grayscale-text-title">
-                  {account.name}
-                </p>
-                <p className="truncate text-caption text-grayscale-text-caption">
-                  {account.role} · {account.email}
-                </p>
-              </div>
-            </section>
+            <AccountProfile
+              name={account.name}
+              initials={account.initials}
+              role={account.role}
+              email={account.email}
+            />
 
             <DashboardSection title="Siswa tertaut">
               <DashboardList>
@@ -113,64 +88,14 @@ function AkunWali() {
           </div>
 
           <div className="flex flex-col gap-ns-2xl">
-            <DashboardSection title="Bantuan">
-              <DashboardList>
-                <ListItem
-                  icon={<PhoneIcon />}
-                  title="Hubungi Pengelola LBB"
-                  description={`WhatsApp ${account.lbbContact.name} · ${account.lbbContact.display}`}
-                  chevron
-                  render={
-                    <a
-                      href={`https://wa.me/${account.lbbContact.whatsapp}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    />
-                  }
-                />
-                <ListItem
-                  icon={<InfoIcon />}
-                  title="Tentang PINTARA"
-                  description={`Versi ${account.appVersion}`}
-                  chevron
-                  render={<button type="button" onClick={() => setAboutOpen(true)} />}
-                />
-              </DashboardList>
-            </DashboardSection>
-
-            <DashboardList>
-              <ListItem
-                icon={<LogOutIcon />}
-                title="Keluar"
-                render={
-                  <button type="button" onClick={() => setConfirmLogout(true)} />
-                }
-              />
-            </DashboardList>
+            <AccountHelp
+              lbbContact={account.lbbContact}
+              appVersion={account.appVersion}
+              logoutDescription={`Anda perlu masuk lagi dengan email/username dan password untuk mengakses data ${account.students.map((s) => s.name.split(" ")[0]).join(" dan ")}.`}
+            />
           </div>
         </div>
       ) : null}
-
-      <ConfirmDialog
-        open={confirmLogout}
-        onOpenChange={setConfirmLogout}
-        showIcon={false}
-        showDismiss={false}
-        title="Keluar dari PINTARA?"
-        description={`Anda perlu masuk lagi dengan email/username dan password untuk mengakses data ${studentNames?.join(" dan ") ?? "anak Anda"}.`}
-        confirmLabel="Keluar"
-        onConfirm={handleLogout}
-      />
-
-      <ConfirmDialog
-        open={aboutOpen}
-        onOpenChange={setAboutOpen}
-        showCancel={false}
-        title="Tentang PINTARA"
-        description={`PINTARA membantu wali murid, tutor, dan Pengelola LBB mengelola les privat: pendaftaran, jadwal, presensi, dan pembayaran. Versi ${account?.appVersion ?? "-"}.`}
-        confirmLabel="Tutup"
-        onConfirm={() => undefined}
-      />
     </TabScreen>
   )
 }

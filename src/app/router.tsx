@@ -42,6 +42,7 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/tutor/jadwal": () => import("@/pages/jadwal/jadwal-tutor").then(toRoute),
   "/tutor/presensi": () => import("@/pages/presensi/presensi").then(toRoute),
   "/tutor/riwayat": () => import("@/pages/presensi/riwayat-tutor").then(toRoute),
+  "/tutor/akun": () => import("@/pages/akun/akun-tutor").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */
