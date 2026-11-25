@@ -148,14 +148,46 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       lazy: () =>
         import("@/pages/tagihan/catat-pembayaran-tagihan").then(toRoute),
     },
+    /* P9 · Data Tutor & Siswa (?q=…&mapel=…&lokasi=…&status=…) */
+    {
+      path: "tutor",
+      handle: { title: "Data Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/data-tutor").then(toRoute),
+    },
+    {
+      path: "tutor/tambah",
+      handle: { title: "Tambah Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/form-tutor").then(toRoute),
+    },
+    {
+      path: "tutor/:tutorId",
+      handle: { title: "Profil Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/profil-tutor").then(toRoute),
+    },
+    {
+      path: "tutor/:tutorId/ubah",
+      handle: { title: "Ubah Profil Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/form-tutor").then(toRoute),
+    },
+    {
+      path: "siswa",
+      handle: { title: "Data Siswa", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/data-siswa").then(toRoute),
+    },
+    {
+      path: "siswa/:studentId",
+      handle: { title: "Profil Siswa", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/profil-siswa").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
-     * perbaiki data (P2) dan menu Lainnya (P9–P13)
+     * perbaiki data (P2), tambah/ubah siswa (belum ada di Figma P9),
+     * dan menu Lainnya (P10–P13)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
-      ["tutor", "Data Tutor"],
-      ["siswa", "Data Siswa"],
+      ["siswa/tambah", "Tambah Siswa"],
+      ["siswa/:studentId/ubah", "Ubah Profil Siswa"],
       ["akun", "Manajemen Akun"],
       ["riwayat", "Rekap & Riwayat Les"],
       ["pengaturan-notifikasi", "Pengaturan Notifikasi"],
