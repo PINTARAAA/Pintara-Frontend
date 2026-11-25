@@ -33,7 +33,7 @@ import { NotFoundError } from "@/features/verifikasi/api/verifikasi"
  * Kartu judul (siswa × tutor, waktu kirim, badge) → Progres penugasan
  * (Timeline) → Ringkasan penawaran → [Pesan untuk tutor]. Bilah aksi:
  *   menunggu : Catat Ditolak (→ form) · Catat Diterima (→ layar hasil)
- *   diterima : Atur Jadwal Les (P5)
+ *   diterima : Atur Jadwal Les (P5 · form jadwal untuk penawaran ini)
  *   ditolak  : Cari Tutor Lain (P3)
  */
 const LES = "/pengelola/les"
@@ -252,7 +252,10 @@ function Actions({
   }
   if (offer.status === "diterima") {
     return (
-      <Button nativeButton={false} render={<Link to={`${LES}?tab=jadwal`} />}>
+      <Button
+        nativeButton={false}
+        render={<Link to={`${LES}/jadwal/atur/${offer.id}`} />}
+      >
         Atur Jadwal Les
       </Button>
     )
@@ -279,7 +282,7 @@ function AcceptedResult({ offer }: { offer: Offer }) {
           <Button
             size="lg"
             nativeButton={false}
-            render={<Link to={`${LES}?tab=jadwal`} replace />}
+            render={<Link to={`${LES}/jadwal/atur/${offer.id}`} replace />}
           >
             Atur Jadwal Les
           </Button>

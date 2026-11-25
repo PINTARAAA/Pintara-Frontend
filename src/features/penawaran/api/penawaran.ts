@@ -349,3 +349,8 @@ export async function recordDeclined(
 
 export const declineLabel = (reason: DeclineReason) =>
   DECLINE_REASONS.find((r) => r.value === reason)?.label ?? "Lainnya"
+
+/* Salinan semua penawaran (dibaca P5 · Atur Jadwal Les tanpa jeda) */
+export function snapshotOffers() {
+  return structuredClone(offers)
+}

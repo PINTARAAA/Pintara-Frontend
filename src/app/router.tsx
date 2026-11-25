@@ -86,6 +86,22 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Catat Penolakan", hideBottomNav: true },
       lazy: () => import("@/pages/penawaran/catat-penolakan").then(toRoute),
     },
+    /* P5 · Atur Jadwal Les */
+    {
+      path: "les/jadwal/atur/:offerId",
+      handle: { title: "Atur Jadwal Les", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal-les/atur-jadwal").then(toRoute),
+    },
+    {
+      path: "les/jadwal/:pairId/ubah",
+      handle: { title: "Atur Jadwal Les", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal-les/atur-jadwal").then(toRoute),
+    },
+    {
+      path: "les/jadwal/pengajuan/:requestId",
+      handle: { title: "Pengajuan Perubahan", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal-les/tinjau-pengajuan").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
      * perbaiki data (P2) dan menu Lainnya (P8–P13)

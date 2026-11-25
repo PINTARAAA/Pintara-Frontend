@@ -1,5 +1,5 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query"
-import { CalendarIcon, UserIcon } from "lucide-react"
+import { UserIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
 import { TabScreen } from "@/components/layouts/tab-screen"
@@ -15,6 +15,8 @@ import {
 import { pengelolaDashboardQuery } from "@/features/dashboard/api/pengelola-dashboard"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { scheduleBoardQuery } from "@/features/jadwal-les/api/jadwal-les"
+import { SchedulePanel } from "@/features/jadwal-les/components/schedule-panel"
 import { offersQuery } from "@/features/penawaran/api/penawaran"
 import { OffersPanel } from "@/features/penawaran/components/offers-panel"
 import { matchingQueueQuery } from "@/features/pencocokan/api/pencocokan"
@@ -30,7 +32,7 @@ import { formatDaysAgo } from "@/features/verifikasi/lib/format"
  * P3 · Pencocokan Tutor · Figma "Pencocokan / Daftar siswa" dan
  * "Pencocokan / Kosong": siswa terverifikasi yang belum punya tutor
  * (ketuk → pilih kandidat tutor). Tab aktif disimpan di ?tab=….
- * Tab Penawaran: P4 (OffersPanel). Tab Jadwal (P5) belum dibuat.
+ * Tab Penawaran: P4 (OffersPanel). Tab Jadwal: P5 (SchedulePanel).
  */
 const TABS = [
   { value: "pencocokan", label: "Pencocokan" },
@@ -45,11 +47,15 @@ function LesPengelola() {
     TABS.find((t) => t.value === params.get("tab"))?.value ?? "pencocokan"
   const queue = useQuery(matchingQueueQuery())
   const offers = useQuery(offersQuery())
+  const schedule = useQuery(scheduleBoardQuery())
   /* Counter tab: perlu tindakan (siswa tanpa tutor · penawaran belum selesai) */
   const counts: Partial<Record<TabValue, number>> = {
     pencocokan: queue.data?.length,
     penawaran:
       offers.data && offers.data.waiting.length + offers.data.unsent.length,
+    jadwal:
+      schedule.data &&
+      schedule.data.toSchedule.length + schedule.data.requests.length,
   }
 
   /* TODO(P14): ganti dengan jumlah dari layar Notifikasi pengelola */
@@ -93,13 +99,7 @@ function LesPengelola() {
           <OffersPanel query={offers} />
         </TabsContent>
         <TabsContent value="jadwal" className="flex flex-col">
-          {/* SEMENTARA: diganti layar Atur Jadwal Les (P5) */}
-          <DataState
-            state="empty"
-            icon={<CalendarIcon />}
-            title="Jadwal les"
-            description="Pengaturan jadwal les akan tampil di sini (P5 · Atur Jadwal Les)."
-          />
+          <SchedulePanel query={schedule} />
         </TabsContent>
       </TabScreen>
     </Tabs>
