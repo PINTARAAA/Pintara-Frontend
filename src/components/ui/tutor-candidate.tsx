@@ -60,12 +60,12 @@ function TutorCandidate({
         >
           {initials}
         </span>
-        <div className="flex min-w-0 flex-1 flex-col gap-ns-3xs leading-normal">
-          <span className="text-subtitle font-bold text-grayscale-text-title">
+        <div className="flex min-w-0 flex-1 flex-col gap-ns-2xs leading-normal">
+          <span className="text-subtitle leading-normal font-bold text-grayscale-text-title">
             {name}
           </span>
           {education != null && (
-            <span className="text-caption text-grayscale-text-caption">
+            <span className="text-caption leading-normal text-grayscale-text-caption">
               {education}
             </span>
           )}

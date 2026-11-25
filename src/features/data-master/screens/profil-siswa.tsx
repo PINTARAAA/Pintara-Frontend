@@ -133,11 +133,11 @@ function ProfilSiswa() {
                       aria-hidden="true"
                       className="text-grayscale-text-title size-5 shrink-0"
                     />
-                    <div className="gap-ns-3xs flex min-w-0 flex-col">
-                      <p className="text-subtitle text-grayscale-text-title font-bold">
+                    <div className="gap-ns-2xs flex min-w-0 flex-col">
+                      <p className="text-subtitle leading-normal text-grayscale-text-title font-bold">
                         {l.subject} · setiap {l.day}
                       </p>
-                      <p className="text-caption text-grayscale-text-caption">
+                      <p className="text-caption leading-normal text-grayscale-text-caption">
                         {l.from}–{l.until} · {l.tutorName}
                       </p>
                     </div>

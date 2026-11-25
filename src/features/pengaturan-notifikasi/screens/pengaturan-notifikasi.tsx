@@ -64,9 +64,13 @@ function SettingGroup({
 }) {
   return (
     <section className="gap-ns-m flex flex-col">
-      <div className="gap-ns-2xs flex flex-col leading-normal">
-        <h2 className="text-body text-grayscale-text-title font-bold">{title}</h2>
-        <p className="text-caption text-grayscale-text-caption">{description}</p>
+      <div className="gap-ns-2xs flex flex-col">
+        <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
+          {title}
+        </h2>
+        <p className="text-caption text-grayscale-text-caption leading-normal">
+          {description}
+        </p>
       </div>
       <ul className="border-grayscale-border-default bg-grayscale-surface-default flex flex-col overflow-hidden rounded-(--comp-radius-md) border">
         {items.map((s) => (
@@ -115,12 +119,12 @@ function SettingRow({ setting: s }: { setting: NotificationSetting }) {
     <li className="border-grayscale-border-disabled hover:bg-grayscale-surface-subtitle relative flex items-center transition-colors not-last:border-b">
       <Link
         to={to}
-        className="gap-ns-3xs py-ns-m pl-ns-l pr-ns-m focus-visible:ring-primary-border-lighter flex min-w-0 flex-1 flex-col leading-normal outline-none focus-visible:ring-2 focus-visible:ring-inset"
+        className="gap-ns-2xs py-ns-m pl-ns-l pr-ns-m focus-visible:ring-primary-border-lighter flex min-w-0 flex-1 flex-col leading-normal outline-none focus-visible:ring-2 focus-visible:ring-inset"
       >
-        <span className="text-subtitle text-grayscale-text-title font-bold">
+        <span className="text-subtitle leading-normal text-grayscale-text-title font-bold">
           {s.title}
         </span>
-        <span className="text-caption text-grayscale-text-caption">
+        <span className="text-caption leading-normal text-grayscale-text-caption">
           {describeSetting(s)}
         </span>
       </Link>

@@ -196,11 +196,11 @@ function SettingForm({ setting }: { setting: NotificationSetting }) {
       )}
 
       <label className="gap-ns-m bg-grayscale-surface-subtitle px-ns-l py-ns-m flex cursor-pointer items-center rounded-(--comp-radius-md) leading-normal">
-        <span className="gap-ns-3xs flex min-w-0 flex-1 flex-col">
-          <span className="text-subtitle text-grayscale-text-title font-bold">
+        <span className="gap-ns-2xs flex min-w-0 flex-1 flex-col">
+          <span className="text-subtitle leading-normal text-grayscale-text-title font-bold">
             {setting.group === "pengingat" ? "Pengingat aktif" : "Notifikasi aktif"}
           </span>
-          <span className="text-caption text-grayscale-text-caption">
+          <span className="text-caption leading-normal text-grayscale-text-caption">
             {setting.activeNote}
           </span>
         </span>
