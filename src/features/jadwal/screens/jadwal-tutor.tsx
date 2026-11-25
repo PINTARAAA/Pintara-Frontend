@@ -7,12 +7,12 @@ import { TabScreen } from "@/components/layouts/tab-screen"
 import { DataState } from "@/components/ui/data-state"
 import { FilterPill } from "@/components/ui/filter-pill"
 import { ListItem } from "@/components/ui/list-item"
-import { tutorDashboardQuery } from "@/features/dashboard/api/tutor-dashboard"
 import {
   DashboardList,
   DashboardSection,
 } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
 import {
   tutorScheduleQuery,
   type TutorScheduleDay,
@@ -42,11 +42,7 @@ function JadwalTutor() {
     placeholderData: keepPreviousData,
   })
   const data = query.data
-  /* TODO(T7): ganti dengan jumlah dari layar Notifikasi tutor */
-  const unread = useQuery({
-    ...tutorDashboardQuery(),
-    select: (d) => d.unreadNotifications,
-  }).data
+  const unread = useTutorUnreadNotifications()
 
   return (
     <TabScreen

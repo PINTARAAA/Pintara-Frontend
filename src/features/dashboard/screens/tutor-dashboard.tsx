@@ -8,6 +8,7 @@ import { DataState } from "@/components/ui/data-state"
 import { ListItem } from "@/components/ui/list-item"
 import { Skeleton } from "@/components/ui/skeleton"
 import { tutorDashboardQuery } from "@/features/dashboard/api/tutor-dashboard"
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton"
 import {
   DashboardList,
@@ -29,13 +30,14 @@ import {
 function TutorDashboard() {
   const query = useQuery(tutorDashboardQuery())
   const data = query.data
+  const unread = useTutorUnreadNotifications()
 
   return (
     <TabScreen
       subtitle={formatGreeting()}
       title={data?.tutor.name ?? <Skeleton className="h-6 w-48" />}
       action={
-        <NotificationButton to="/tutor/notifikasi" unread={data?.unreadNotifications} />
+        <NotificationButton to="/tutor/notifikasi" unread={unread} />
       }
     >
       {query.isPending ? (

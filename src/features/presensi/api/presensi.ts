@@ -347,6 +347,13 @@ export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
     queryFn: () => getTutorHistory(month, student),
   })
 
+/* ---------- T7 · Sumber notifikasi tutor ---------- */
+
+/* Salinan semua sesi tutor (notifikasi presensi terlewat & keberatan) */
+export function snapshotTutorSessions() {
+  return structuredClone(sessions)
+}
+
 /* ---------- T5 · Pertemuan sebelumnya ---------- */
 
 /* Sesi terlaksana terakhir bersama siswa sebelum `before` (semua mapel) */

@@ -163,6 +163,14 @@ function weekRange(week: number, now = new Date()) {
   return { from, to: addDays(from, 6) }
 }
 
+/* Sesi terjadwal pada satu hari, urut jam (dipakai pengingat T7) */
+export function tutorSessionsOn(date: Date) {
+  return routines
+    .filter((r) => r.weekday === getDay(date))
+    .map((r) => toSession(r, date))
+    .sort((a, b) => a.start.getTime() - b.start.getTime())
+}
+
 /* ---------- Daftar per minggu ---------- */
 
 export async function getTutorSchedule(week = 0): Promise<TutorSchedule> {
@@ -175,11 +183,7 @@ export async function getTutorSchedule(week = 0): Promise<TutorSchedule> {
 
   const allDays = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(from, i)
-    const sessions = routines
-      .filter((r) => r.weekday === getDay(date))
-      .map((r) => toSession(r, date))
-      .sort((a, b) => a.start.getTime() - b.start.getTime())
-    return { date, sessions }
+    return { date, sessions: tutorSessionsOn(date) }
   })
 
   return {

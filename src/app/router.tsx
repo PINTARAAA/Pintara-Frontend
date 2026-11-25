@@ -48,6 +48,12 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   tutor: [
+    /* T7 · Notifikasi */
+    {
+      path: "notifikasi",
+      handle: { title: "Notifikasi", hideBottomNav: true },
+      lazy: () => import("@/pages/notifikasi/notifikasi-tutor").then(toRoute),
+    },
     /* T5 · Jadwal */
     {
       path: "jadwal/:sessionId",

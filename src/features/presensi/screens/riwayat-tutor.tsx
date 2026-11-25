@@ -21,12 +21,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
-import { tutorDashboardQuery } from "@/features/dashboard/api/tutor-dashboard"
 import {
   DashboardList,
   DashboardSection,
 } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
 import {
   tutorHistoryQuery,
   type TutorHistory,
@@ -67,11 +67,7 @@ function RiwayatTutor() {
     placeholderData: keepPreviousData,
   })
   const data = query.data
-  /* TODO(T7): ganti dengan jumlah dari layar Notifikasi tutor */
-  const unread = useQuery({
-    ...tutorDashboardQuery(),
-    select: (d) => d.unreadNotifications,
-  }).data
+  const unread = useTutorUnreadNotifications()
 
   const applyFilter = (next: { month: string; student: string }) => {
     const search = new URLSearchParams()

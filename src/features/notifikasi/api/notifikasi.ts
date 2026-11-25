@@ -25,15 +25,17 @@ export type NotificationKind =
   | "pembayaran"
   | "les"
 
-export type AppNotification = {
+export type AppNotification<Kind extends string = NotificationKind> = {
   id: string
-  kind: NotificationKind
+  kind: Kind
   title: string
   body: string
   createdAt: Date
   read: boolean
   /* Tujuan saat notifikasi diketuk */
   to: string
+  /* Keterangan pengganti waktu, mis. "sedang ditinjau Pengelola" */
+  status?: string
 }
 
 /* ---------- Data contoh ---------- */
@@ -119,9 +121,9 @@ async function allNotifications() {
 
 /* ---------- Query ---------- */
 
-export type NotificationList = {
-  unread: AppNotification[]
-  read: AppNotification[]
+export type NotificationList<Kind extends string = NotificationKind> = {
+  unread: AppNotification<Kind>[]
+  read: AppNotification<Kind>[]
 }
 
 export async function getNotifications(): Promise<NotificationList> {

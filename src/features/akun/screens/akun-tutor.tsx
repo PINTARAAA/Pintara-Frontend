@@ -6,9 +6,9 @@ import { DataState } from "@/components/ui/data-state"
 import { tutorAccountQuery } from "@/features/akun/api/akun"
 import { AccountHelp } from "@/features/akun/components/account-help"
 import { AccountProfile } from "@/features/akun/components/account-profile"
-import { tutorDashboardQuery } from "@/features/dashboard/api/tutor-dashboard"
 import { DashboardSection } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import { formatRupiah } from "@/lib/format/currency"
 
@@ -23,11 +23,7 @@ import { formatRupiah } from "@/lib/format/currency"
 function AkunTutor() {
   const query = useQuery(tutorAccountQuery())
   const account = query.data
-  /* TODO(T7): ganti dengan jumlah dari layar Notifikasi tutor */
-  const unread = useQuery({
-    ...tutorDashboardQuery(),
-    select: (d) => d.unreadNotifications,
-  }).data
+  const unread = useTutorUnreadNotifications()
 
   return (
     <TabScreen
