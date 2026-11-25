@@ -30,7 +30,10 @@ import {
   NotFoundError,
   type PengelolaRegistration,
 } from "@/features/verifikasi/api/verifikasi"
-import { formatRequestedSchedule } from "@/features/verifikasi/lib/format"
+import {
+  formatRequestedSchedule,
+  formatShortAddress,
+} from "@/features/verifikasi/lib/format"
 
 /*
  * P3 · Cocokkan Tutor · Figma "Pencocokan / Kandidat tutor",
@@ -48,12 +51,6 @@ const firstName = (name: string) => name.trim().split(/\s+/)[0]
 /* "0821-4455-6677" → "6282144556677" (format wa.me) */
 const toWhatsapp = (phone: string) =>
   phone.replace(/\D/g, "").replace(/^0/, "62")
-/* "Perum Griya Utama Blok C-7, Bangkalan" → "Perum Griya Utama, Bangkalan" */
-const shortAddress = (address: string) => {
-  const [street, ...rest] = address.split(",")
-  const short = street.replace(/\s+(Blok|No\.)\s.*$/i, "")
-  return [short, ...rest].join(",")
-}
 
 function CocokkanTutor() {
   const { registrationId = "" } = useParams()
@@ -141,6 +138,8 @@ function CandidatePicker({
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: ["pencocokan"] })
       void queryClient.invalidateQueries({ queryKey: ["verifikasi"] })
+      /* Muncul di "Belum dikirim" pada tab Penawaran (P4) */
+      void queryClient.invalidateQueries({ queryKey: ["penawaran"] })
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] })
       onSaved(result)
     },
@@ -243,7 +242,7 @@ function StudentNeeds({
       </p>
       <p className="text-caption text-grayscale-text-caption">
         {r.needs.subjects.join(", ")} · {formatRequestedSchedule(r.needs)} ·{" "}
-        {shortAddress(r.student.address)}
+        {formatShortAddress(r.student.address)}
       </p>
     </section>
   )

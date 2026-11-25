@@ -70,13 +70,28 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Cocokkan Tutor", hideBottomNav: true },
       lazy: () => import("@/pages/pencocokan/cocokkan-tutor").then(toRoute),
     },
+    /* P4 · Penawaran Tutor */
+    {
+      path: "les/penawaran/:registrationId/buat",
+      handle: { title: "Buat Penawaran", hideBottomNav: true },
+      lazy: () => import("@/pages/penawaran/buat-penawaran").then(toRoute),
+    },
+    {
+      path: "les/penawaran/:offerId",
+      handle: { title: "Detail Penawaran", hideBottomNav: true },
+      lazy: () => import("@/pages/penawaran/detail-penawaran").then(toRoute),
+    },
+    {
+      path: "les/penawaran/:offerId/ditolak",
+      handle: { title: "Catat Penolakan", hideBottomNav: true },
+      lazy: () => import("@/pages/penawaran/catat-penolakan").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
-     * perbaiki data (P2), buat penawaran (P4), dan menu Lainnya (P8–P13)
+     * perbaiki data (P2) dan menu Lainnya (P8–P13)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
-      ["les/penawaran/:registrationId/buat", "Buat Penawaran"],
       ["tutor", "Data Tutor"],
       ["siswa", "Data Siswa"],
       ["akun", "Manajemen Akun"],

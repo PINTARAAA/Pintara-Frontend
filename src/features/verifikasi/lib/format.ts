@@ -49,3 +49,10 @@ export function rejectionTemplate(
       return ""
   }
 }
+
+/* "Perum Griya Utama Blok C-7, Bangkalan" → "Perum Griya Utama, Bangkalan" */
+export function formatShortAddress(address: string) {
+  const [street, ...rest] = address.split(",")
+  const short = street.replace(/\s+(Blok|No\.)\s.*$/i, "")
+  return [short, ...rest].join(",")
+}

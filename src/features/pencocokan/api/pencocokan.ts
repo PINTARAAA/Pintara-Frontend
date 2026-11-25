@@ -41,6 +41,14 @@ type Tutor = {
   until: string
   rating: number
   activeStudents: number
+  /* Tarif tutor per sesi (Rupiah) */
+  rate: number
+  /*
+   * Slot yang baru saja terisi siswa lain, mis. "Senin 19.00". Belum
+   * tercermin di kriteria ketersediaan (data jadwal tersinkron berkala),
+   * jadi baru ketahuan saat penawaran akan dikirim (P4 · Error).
+   */
+  takenSlots?: string[]
   /* Jarak ke alamat les per pendaftaran (dari layanan peta di backend) */
   distanceKm: Record<string, number>
   defaultDistanceKm: number
@@ -62,6 +70,7 @@ const tutors: Tutor[] = [
     until: "21.00",
     rating: 4.8,
     activeStudents: 4,
+    rate: 60_000,
     distanceKm: { "reg-0115": 2.1 },
     defaultDistanceKm: 4.2,
   },
@@ -78,6 +87,7 @@ const tutors: Tutor[] = [
     until: "21.00",
     rating: 4.9,
     activeStudents: 6,
+    rate: 55_000,
     distanceKm: { "reg-0115": 3.4 },
     defaultDistanceKm: 3.1,
   },
@@ -94,6 +104,8 @@ const tutors: Tutor[] = [
     until: "21.00",
     rating: 4.6,
     activeStudents: 2,
+    rate: 65_000,
+    takenSlots: ["Senin 19.00"],
     distanceKm: { "reg-0115": 6.8 },
     defaultDistanceKm: 7.5,
   },
@@ -110,6 +122,7 @@ const tutors: Tutor[] = [
     until: "18.00",
     rating: 4.7,
     activeStudents: 5,
+    rate: 50_000,
     distanceKm: { "reg-0112": 1.8 },
     defaultDistanceKm: 2.5,
   },
@@ -126,6 +139,7 @@ const tutors: Tutor[] = [
     until: "17.00",
     rating: 4.5,
     activeStudents: 3,
+    rate: 50_000,
     distanceKm: { "reg-0112": 8.2 },
     defaultDistanceKm: 6.4,
   },
@@ -268,7 +282,9 @@ export async function getMatchingCandidates(
   const registration = snapshotRegistrations().find((r) => r.id === id)
   if (!registration) throw new NotFoundError()
 
+  const declined = registration.declinedTutorIds ?? []
   const candidates = tutors
+    .filter((t) => !declined.includes(t.id))
     .map((t) => evaluate(t, registration))
     .filter((c) => !c.criteria[0].label.startsWith("Belum mengajar"))
     .sort(
@@ -296,4 +312,35 @@ export async function selectTutor(registrationId: string, tutorId: string) {
   const tutor = tutors.find((t) => t.id === tutorId)
   if (!tutor) throw new Error("Tutor tidak ditemukan.")
   return assignTutor(registrationId, { id: tutor.id, name: tutor.name })
+}
+
+/* ---------- Untuk penawaran (P4) ---------- */
+
+export type OfferTutorInfo = {
+  id: string
+  name: string
+  shortName: string
+  rate: number
+  distanceKm: number
+  /* Slot jadwal diminta yang sudah terisi siswa lain, mis. "Senin 19.00" */
+  takenSlot: string | null
+}
+
+export function getOfferTutorInfo(
+  tutorId: string,
+  registration: PengelolaRegistration
+): OfferTutorInfo {
+  const tutor = tutors.find((t) => t.id === tutorId)
+  if (!tutor) throw new Error("Tutor tidak ditemukan.")
+  const slots = registration.needs.days.map(
+    (d) => `${d} ${registration.needs.startTime}`
+  )
+  return {
+    id: tutor.id,
+    name: tutor.name,
+    shortName: tutor.shortName,
+    rate: tutor.rate,
+    distanceKm: tutor.distanceKm[registration.id] ?? tutor.defaultDistanceKm,
+    takenSlot: slots.find((slot) => tutor.takenSlots?.includes(slot)) ?? null,
+  }
 }

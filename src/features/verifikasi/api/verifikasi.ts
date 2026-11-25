@@ -65,6 +65,8 @@ export type PengelolaRegistration = {
   rejection?: { reason: RejectReason; message: string; at: Date }
   /* Diisi setelah pengelola memilih tutor (P3 · Pencocokan Tutor) */
   match?: { tutorId: string; tutorName: string; at: Date }
+  /* Tutor yang menolak penawaran untuk siswa ini (P4); tidak dicalonkan lagi */
+  declinedTutorIds?: string[]
 }
 
 /*
@@ -219,6 +221,8 @@ const registrations: PengelolaRegistration[] = [
     submittedAt: at(-4, 18, 45),
     status: "terverifikasi",
     verifiedAt: at(-3, 8, 20),
+    /* Kak Nadia menolak penawaran (lihat riwayat penawaran P4) */
+    declinedTutorIds: ["tt-nadia"],
   },
   {
     id: "reg-0107",
@@ -411,5 +415,21 @@ export function assignTutor(
     tutorName: tutor.name,
     at: new Date(),
   }
+  return structuredClone(registration)
+}
+
+/*
+ * Lepas tutor terpilih: penawaran ditolak tutor (declined) atau tutor tidak
+ * lagi tersedia saat penawaran akan dikirim. Siswa kembali ke antrean P3.
+ */
+export function releaseMatch(id: string, options: { declined?: boolean } = {}) {
+  const registration = find(id)
+  if (registration.match && options.declined) {
+    registration.declinedTutorIds = [
+      ...(registration.declinedTutorIds ?? []),
+      registration.match.tutorId,
+    ]
+  }
+  registration.match = undefined
   return structuredClone(registration)
 }

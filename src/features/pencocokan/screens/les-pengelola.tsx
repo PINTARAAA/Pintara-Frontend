@@ -1,5 +1,5 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query"
-import { CalendarIcon, SendIcon, UserIcon } from "lucide-react"
+import { CalendarIcon, UserIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
 import { TabScreen } from "@/components/layouts/tab-screen"
@@ -15,6 +15,8 @@ import {
 import { pengelolaDashboardQuery } from "@/features/dashboard/api/pengelola-dashboard"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import { offersQuery } from "@/features/penawaran/api/penawaran"
+import { OffersPanel } from "@/features/penawaran/components/offers-panel"
 import { matchingQueueQuery } from "@/features/pencocokan/api/pencocokan"
 import {
   gradeLabel,
@@ -28,7 +30,7 @@ import { formatDaysAgo } from "@/features/verifikasi/lib/format"
  * P3 · Pencocokan Tutor · Figma "Pencocokan / Daftar siswa" dan
  * "Pencocokan / Kosong": siswa terverifikasi yang belum punya tutor
  * (ketuk → pilih kandidat tutor). Tab aktif disimpan di ?tab=….
- * Tab Penawaran (P4) dan Jadwal (P5) belum dibuat.
+ * Tab Penawaran: P4 (OffersPanel). Tab Jadwal (P5) belum dibuat.
  */
 const TABS = [
   { value: "pencocokan", label: "Pencocokan" },
@@ -42,6 +44,13 @@ function LesPengelola() {
   const tab: TabValue =
     TABS.find((t) => t.value === params.get("tab"))?.value ?? "pencocokan"
   const queue = useQuery(matchingQueueQuery())
+  const offers = useQuery(offersQuery())
+  /* Counter tab: perlu tindakan (siswa tanpa tutor · penawaran belum selesai) */
+  const counts: Partial<Record<TabValue, number>> = {
+    pencocokan: queue.data?.length,
+    penawaran:
+      offers.data && offers.data.waiting.length + offers.data.unsent.length,
+  }
 
   /* TODO(P14): ganti dengan jumlah dari layar Notifikasi pengelola */
   const unread = useQuery({
@@ -69,8 +78,8 @@ function LesPengelola() {
             {TABS.map((t) => (
               <TabsTrigger key={t.value} value={t.value}>
                 {t.label}
-                {t.value === "pencocokan" && (queue.data?.length ?? 0) > 0 && (
-                  <TabsCount>{queue.data?.length}</TabsCount>
+                {(counts[t.value] ?? 0) > 0 && (
+                  <TabsCount>{counts[t.value]}</TabsCount>
                 )}
               </TabsTrigger>
             ))}
@@ -81,13 +90,7 @@ function LesPengelola() {
           <MatchingPanel query={queue} />
         </TabsContent>
         <TabsContent value="penawaran" className="flex flex-col">
-          {/* SEMENTARA: diganti layar Penawaran Tutor (P4) */}
-          <DataState
-            state="empty"
-            icon={<SendIcon />}
-            title="Penawaran tutor"
-            description="Daftar penawaran ke tutor akan tampil di sini (P4 · Penawaran Tutor)."
-          />
+          <OffersPanel query={offers} />
         </TabsContent>
         <TabsContent value="jadwal" className="flex flex-col">
           {/* SEMENTARA: diganti layar Atur Jadwal Les (P5) */}
