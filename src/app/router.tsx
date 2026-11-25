@@ -221,16 +221,27 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       lazy: () =>
         import("@/pages/pengaturan-notifikasi/ubah-notifikasi").then(toRoute),
     },
+    /* P13 · Riwayat Notifikasi (?status=…&jenis=…&periode=…) */
+    {
+      path: "riwayat-notifikasi",
+      handle: { title: "Riwayat Notifikasi", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/riwayat-notifikasi/riwayat-notifikasi").then(toRoute),
+    },
+    {
+      path: "riwayat-notifikasi/:logId",
+      handle: { title: "Detail Notifikasi", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/riwayat-notifikasi/detail-notifikasi").then(toRoute),
+    },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
-     * perbaiki data (P2), tambah/ubah siswa (belum ada di Figma P9),
-     * dan Riwayat Notifikasi (P13)
+     * perbaiki data (P2) dan tambah/ubah siswa (belum ada di Figma P9)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
       ["siswa/tambah", "Tambah Siswa"],
       ["siswa/:studentId/ubah", "Ubah Profil Siswa"],
-      ["riwayat-notifikasi", "Riwayat Notifikasi"],
     ].map(([path, title]) => ({
       path,
       handle: { title, hideBottomNav: true },
