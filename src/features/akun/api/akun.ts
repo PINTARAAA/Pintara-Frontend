@@ -8,6 +8,7 @@ import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
  * TODO(backend):
  *   getWaliAccount()  → httpClient.get("/wali/akun")
  *   getTutorAccount() → httpClient.get("/tutor/akun")
+ *   getPengelolaMenu() → httpClient.get("/pengelola/lainnya")
  *   logout()         → httpClient.post("/auth/logout") lalu hapus sesi lokal
  *
  * Data akun hanya bisa diubah oleh Pengelola LBB, jadi layar ini hanya baca.
@@ -102,6 +103,38 @@ export const tutorAccountQuery = () =>
     queryKey: ["akun", "tutor"],
     queryFn: getTutorAccount,
     staleTime: 5 * 60_000,
+  })
+
+/* P1 · Menu Lainnya: profil pengelola + ringkasan untuk keterangan menu */
+export type PengelolaMenu = {
+  name: string
+  initials: string
+  role: string
+  email: string
+  tutors: { total: number; active: number }
+  students: { total: number; active: number }
+  failedNotifications: number
+}
+
+export async function getPengelolaMenu(): Promise<PengelolaMenu> {
+  assertMockAllowed()
+  await delay()
+
+  return {
+    name: "Nurul Laila (Kak Ila)",
+    initials: "NL",
+    role: "Pengelola LBB",
+    email: "ila@jelajahilmu.id",
+    tutors: { total: 70, active: 64 },
+    students: { total: 100, active: 92 },
+    failedNotifications: 2,
+  }
+}
+
+export const pengelolaMenuQuery = () =>
+  queryOptions({
+    queryKey: ["akun", "pengelola"],
+    queryFn: getPengelolaMenu,
   })
 
 export async function logout() {

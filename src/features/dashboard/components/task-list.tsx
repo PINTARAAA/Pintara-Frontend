@@ -51,9 +51,9 @@ function TaskList({
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success-subtle text-success">
           <CircleCheckIcon className="size-5" aria-hidden="true" />
         </span>
-        <div className="flex flex-col gap-ns-3xs leading-normal">
-          <p className="text-subtitle font-bold text-grayscale-text-title">{emptyTitle}</p>
-          <p className="text-caption text-grayscale-text-caption">{emptyDescription}</p>
+        <div className="flex flex-col gap-ns-2xs leading-normal">
+          <p className="text-subtitle leading-normal font-bold text-grayscale-text-title">{emptyTitle}</p>
+          <p className="text-caption leading-normal text-grayscale-text-caption">{emptyDescription}</p>
         </div>
       </div>
     )

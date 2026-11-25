@@ -43,10 +43,217 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
   "/tutor/presensi": () => import("@/pages/presensi/presensi").then(toRoute),
   "/tutor/riwayat": () => import("@/pages/presensi/riwayat-tutor").then(toRoute),
   "/tutor/akun": () => import("@/pages/akun/akun-tutor").then(toRoute),
+  "/pengelola/pendaftaran": () =>
+    import("@/pages/verifikasi/verifikasi-pendaftaran").then(toRoute),
+  "/pengelola/les": () => import("@/pages/pencocokan/les-pengelola").then(toRoute),
+  "/pengelola/keuangan": () =>
+    import("@/pages/tagihan/keuangan-pengelola").then(toRoute),
+  "/pengelola/lainnya": () =>
+    import("@/pages/akun/lainnya-pengelola").then(toRoute),
 }
 
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
+  pengelola: [
+    /* P2 · Verifikasi Pendaftaran */
+    {
+      path: "pendaftaran/:registrationId",
+      handle: { title: "Detail Pendaftaran", hideBottomNav: true },
+      lazy: () => import("@/pages/verifikasi/detail-pendaftaran").then(toRoute),
+    },
+    {
+      path: "pendaftaran/:registrationId/tolak",
+      handle: { title: "Tolak Pendaftaran", hideBottomNav: true },
+      lazy: () => import("@/pages/verifikasi/tolak-pendaftaran").then(toRoute),
+    },
+    /* P3 · Pencocokan Tutor (?sebagian=1 → kecocokan sebagian) */
+    {
+      path: "les/pencocokan/:registrationId",
+      handle: { title: "Cocokkan Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/pencocokan/cocokkan-tutor").then(toRoute),
+    },
+    /* P4 · Penawaran Tutor */
+    {
+      path: "les/penawaran/:registrationId/buat",
+      handle: { title: "Buat Penawaran", hideBottomNav: true },
+      lazy: () => import("@/pages/penawaran/buat-penawaran").then(toRoute),
+    },
+    {
+      path: "les/penawaran/:offerId",
+      handle: { title: "Detail Penawaran", hideBottomNav: true },
+      lazy: () => import("@/pages/penawaran/detail-penawaran").then(toRoute),
+    },
+    {
+      path: "les/penawaran/:offerId/ditolak",
+      handle: { title: "Catat Penolakan", hideBottomNav: true },
+      lazy: () => import("@/pages/penawaran/catat-penolakan").then(toRoute),
+    },
+    /* P5 · Atur Jadwal Les */
+    {
+      path: "les/jadwal/atur/:offerId",
+      handle: { title: "Atur Jadwal Les", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal-les/atur-jadwal").then(toRoute),
+    },
+    {
+      path: "les/jadwal/:pairId/ubah",
+      handle: { title: "Atur Jadwal Les", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal-les/atur-jadwal").then(toRoute),
+    },
+    {
+      path: "les/jadwal/pengajuan/:requestId",
+      handle: { title: "Pengajuan Perubahan", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal-les/tinjau-pengajuan").then(toRoute),
+    },
+    /* P6 · Verifikasi Final Presensi (?bulan=YYYY-MM) */
+    {
+      path: "presensi",
+      handle: { title: "Verifikasi Presensi", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/verifikasi-presensi").then(toRoute),
+    },
+    {
+      path: "presensi/keberatan/:sessionId",
+      handle: { title: "Tinjau Keberatan", hideBottomNav: true },
+      lazy: () => import("@/pages/presensi/tinjau-keberatan").then(toRoute),
+    },
+    /* P7 · Rekap & Pembayaran Honor (:month = YYYY-MM) */
+    {
+      path: "keuangan/honor/:month/:tutorId",
+      handle: { title: "Rincian Honor", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/rincian-honor").then(toRoute),
+    },
+    {
+      path: "keuangan/honor/:month/:tutorId/bayar",
+      handle: { title: "Catat Pembayaran", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/catat-pembayaran-honor").then(toRoute),
+    },
+    /* P8 · Laporan Keuangan (?bulan=YYYY-MM) */
+    {
+      path: "laporan-keuangan",
+      handle: { title: "Laporan Keuangan", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/laporan-keuangan").then(toRoute),
+    },
+    {
+      path: "laporan-keuangan/tagihan",
+      handle: { title: "Tagihan Siswa", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/tagihan-siswa").then(toRoute),
+    },
+    {
+      path: "laporan-keuangan/tagihan/:billId",
+      handle: { title: "Rincian Tagihan", hideBottomNav: true },
+      lazy: () => import("@/pages/tagihan/rincian-tagihan-siswa").then(toRoute),
+    },
+    {
+      path: "laporan-keuangan/tagihan/:billId/bayar",
+      handle: { title: "Catat Pembayaran", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/tagihan/catat-pembayaran-tagihan").then(toRoute),
+    },
+    /* P9 · Data Tutor & Siswa (?q=…&mapel=…&lokasi=…&status=…) */
+    {
+      path: "tutor",
+      handle: { title: "Data Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/data-tutor").then(toRoute),
+    },
+    {
+      path: "tutor/tambah",
+      handle: { title: "Tambah Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/form-tutor").then(toRoute),
+    },
+    {
+      path: "tutor/:tutorId",
+      handle: { title: "Profil Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/profil-tutor").then(toRoute),
+    },
+    {
+      path: "tutor/:tutorId/ubah",
+      handle: { title: "Ubah Profil Tutor", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/form-tutor").then(toRoute),
+    },
+    {
+      path: "siswa",
+      handle: { title: "Data Siswa", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/data-siswa").then(toRoute),
+    },
+    {
+      path: "siswa/:studentId",
+      handle: { title: "Profil Siswa", hideBottomNav: true },
+      lazy: () => import("@/pages/data-master/profil-siswa").then(toRoute),
+    },
+    /* P10 · Manajemen Akun (?peran=wali|tutor|pengelola&q=…) */
+    {
+      path: "akun",
+      handle: { title: "Manajemen Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/manajemen-akun").then(toRoute),
+    },
+    {
+      path: "akun/tambah",
+      handle: { title: "Tambah Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/form-akun").then(toRoute),
+    },
+    {
+      path: "akun/:accountId",
+      handle: { title: "Detail Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/detail-akun").then(toRoute),
+    },
+    {
+      path: "akun/:accountId/ubah",
+      handle: { title: "Ubah Data Akun", hideBottomNav: true },
+      lazy: () => import("@/pages/manajemen-akun/form-akun").then(toRoute),
+    },
+    /* P11 · Rekap & Riwayat Les (?tab=…&bulan=YYYY-MM&tutor=…&siswa=…) */
+    {
+      path: "riwayat",
+      handle: { title: "Rekap & Riwayat Les", hideBottomNav: true },
+      lazy: () => import("@/pages/rekap-les/rekap-les").then(toRoute),
+    },
+    /* P12 · Pengaturan Notifikasi */
+    {
+      path: "pengaturan-notifikasi",
+      handle: { title: "Pengaturan Notifikasi", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/pengaturan-notifikasi/pengaturan-notifikasi").then(
+          toRoute
+        ),
+    },
+    {
+      path: "pengaturan-notifikasi/:settingId",
+      handle: { title: "Ubah Notifikasi", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/pengaturan-notifikasi/ubah-notifikasi").then(toRoute),
+    },
+    /* P13 · Riwayat Notifikasi (?status=…&jenis=…&periode=…) */
+    {
+      path: "riwayat-notifikasi",
+      handle: { title: "Riwayat Notifikasi", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/riwayat-notifikasi/riwayat-notifikasi").then(toRoute),
+    },
+    {
+      path: "riwayat-notifikasi/:logId",
+      handle: { title: "Detail Notifikasi", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/riwayat-notifikasi/detail-notifikasi").then(toRoute),
+    },
+    /* P14 · Notifikasi */
+    {
+      path: "notifikasi",
+      handle: { title: "Notifikasi", hideBottomNav: true },
+      lazy: () => import("@/pages/notifikasi/notifikasi-pengelola").then(toRoute),
+    },
+    /*
+     * SEMENTARA: layar yang belum dibuat memakai placeholder —
+     * perbaiki data (P2) dan tambah/ubah siswa (belum ada di Figma P9)
+     */
+    ...[
+      ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
+      ["siswa/tambah", "Tambah Siswa"],
+      ["siswa/:studentId/ubah", "Ubah Profil Siswa"],
+    ].map(([path, title]) => ({
+      path,
+      handle: { title, hideBottomNav: true },
+      lazy: placeholderDetail,
+    })),
+  ],
   tutor: [
     /* T7 · Notifikasi */
     {

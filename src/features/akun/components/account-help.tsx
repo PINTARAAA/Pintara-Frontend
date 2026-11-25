@@ -13,8 +13,7 @@ import {
 
 /*
  * Bagian bawah layar Akun (W8 · T6): Bantuan (Hubungi Pengelola LBB via
- * WhatsApp, Tentang PINTARA) → Keluar (Confirmation modal, lalu ke
- * /masuk?alasan=keluar setelah cache data dibuang).
+ * WhatsApp, Tentang PINTARA) → Keluar.
  */
 function AccountHelp({
   lbbContact,
@@ -25,17 +24,7 @@ function AccountHelp({
   appVersion: string
   logoutDescription: string
 }) {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const [confirmLogout, setConfirmLogout] = React.useState(false)
   const [aboutOpen, setAboutOpen] = React.useState(false)
-
-  const handleLogout = async () => {
-    await logout()
-    /* Buang data akun sebelumnya agar tidak tampil ke pengguna berikutnya */
-    queryClient.clear()
-    navigate("/masuk?alasan=keluar", { replace: true })
-  }
 
   return (
     <>
@@ -64,24 +53,7 @@ function AccountHelp({
         </DashboardList>
       </DashboardSection>
 
-      <DashboardList>
-        <ListItem
-          icon={<LogOutIcon />}
-          title="Keluar"
-          render={<button type="button" onClick={() => setConfirmLogout(true)} />}
-        />
-      </DashboardList>
-
-      <ConfirmDialog
-        open={confirmLogout}
-        onOpenChange={setConfirmLogout}
-        showIcon={false}
-        showDismiss={false}
-        title="Keluar dari PINTARA?"
-        description={logoutDescription}
-        confirmLabel="Keluar"
-        onConfirm={handleLogout}
-      />
+      <LogoutItem description={logoutDescription} />
 
       <ConfirmDialog
         open={aboutOpen}
@@ -96,4 +68,44 @@ function AccountHelp({
   )
 }
 
-export { AccountHelp }
+/*
+ * Grup "Keluar" (W8 · T6 · P1): Confirmation modal, lalu ke
+ * /masuk?alasan=keluar setelah cache data dibuang.
+ */
+function LogoutItem({ description }: { description: string }) {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [open, setOpen] = React.useState(false)
+
+  const handleLogout = async () => {
+    await logout()
+    /* Buang data akun sebelumnya agar tidak tampil ke pengguna berikutnya */
+    queryClient.clear()
+    navigate("/masuk?alasan=keluar", { replace: true })
+  }
+
+  return (
+    <>
+      <DashboardList>
+        <ListItem
+          icon={<LogOutIcon />}
+          title="Keluar"
+          render={<button type="button" onClick={() => setOpen(true)} />}
+        />
+      </DashboardList>
+
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        showIcon={false}
+        showDismiss={false}
+        title="Keluar dari PINTARA?"
+        description={description}
+        confirmLabel="Keluar"
+        onConfirm={handleLogout}
+      />
+    </>
+  )
+}
+
+export { AccountHelp, LogoutItem }

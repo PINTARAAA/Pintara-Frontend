@@ -14,9 +14,11 @@ import { NotificationButton } from "@/features/dashboard/components/notification
 import { TaskList } from "@/features/dashboard/components/task-list"
 import { formatRupiahCompact } from "@/lib/format/currency"
 import { formatDayMonth, formatGreeting, formatWeekdayDate } from "@/lib/format/date"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
 
 function PengelolaDashboard() {
   const query = useQuery(pengelolaDashboardQuery())
+  const unread = usePengelolaUnreadNotifications()
   const data = query.data
 
   return (
@@ -24,7 +26,7 @@ function PengelolaDashboard() {
       subtitle={formatGreeting()}
       title={data?.admin.name ?? <Skeleton className="h-6 w-48" />}
       action={
-        <NotificationButton to="/pengelola/notifikasi" unread={data?.unreadNotifications} />
+        <NotificationButton to="/pengelola/notifikasi" unread={unread} />
       }
     >
       {query.isPending ? (
