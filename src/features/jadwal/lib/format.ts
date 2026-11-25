@@ -38,3 +38,28 @@ export const CHANGE_STATUS_LABEL: Record<ChangeRequestStatus, string> = {
   disetujui: "Disetujui",
   ditolak: "Ditolak",
 }
+
+/* ---------- Jadwal tutor (T5) ---------- */
+
+/*
+ * Rentang minggu ringkas untuk pil:
+ *   bulan sama → "24–30 Nov 2026"
+ *   tahun sama → "29 Nov – 5 Des 2026"
+ *   beda tahun → "28 Des 2026 – 3 Jan 2027"
+ */
+export function formatWeekRange(from: Date, to: Date) {
+  const opts = { locale: localeId }
+  if (from.getFullYear() !== to.getFullYear()) {
+    return `${format(from, "d MMM yyyy", opts)} – ${format(to, "d MMM yyyy", opts)}`
+  }
+  if (from.getMonth() !== to.getMonth()) {
+    return `${format(from, "d MMM", opts)} – ${format(to, "d MMM yyyy", opts)}`
+  }
+  return `${from.getDate()}–${format(to, "d MMM yyyy", opts)}`
+}
+
+/* ["Kamis"] → "Kamis" · ["Kamis", "Minggu"] → "Kamis dan Minggu" · 3+ → "A, B, dan C" */
+export function joinDays(days: string[]) {
+  if (days.length <= 2) return days.join(" dan ")
+  return `${days.slice(0, -1).join(", ")}, dan ${days.at(-1)}`
+}

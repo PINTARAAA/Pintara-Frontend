@@ -150,6 +150,7 @@ const sessions: TutorSession[] = [
       actualEnd: "10.30",
       studentPresent: true,
       topic: "Fungsi kuadrat",
+      notes: "Lanjut latihan grafik fungsi",
       submittedAt: slot(previousSaturday(today), 10, 5).start,
       validation: "belum_divalidasi",
     },
@@ -345,6 +346,18 @@ export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
     queryKey: ["presensi", "riwayat", month?.getTime() ?? "now", student ?? "semua"],
     queryFn: () => getTutorHistory(month, student),
   })
+
+/* ---------- T5 · Pertemuan sebelumnya ---------- */
+
+/* Sesi terlaksana terakhir bersama siswa sebelum `before` (semua mapel) */
+export function findLastHeldSession(studentName: string, before: Date) {
+  const last = sessions
+    .filter(
+      (s) => s.student.name === studentName && s.record?.held && s.start < before
+    )
+    .sort((a, b) => b.start.getTime() - a.start.getTime())[0]
+  return last ? structuredClone(last) : null
+}
 
 /* ---------- Detail ---------- */
 

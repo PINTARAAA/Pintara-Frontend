@@ -39,6 +39,7 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
     import("@/pages/absensi/validasi-absensi").then(toRoute),
   "/wali/tagihan": () => import("@/pages/tagihan/tagihan").then(toRoute),
   "/wali/akun": () => import("@/pages/akun/akun-wali").then(toRoute),
+  "/tutor/jadwal": () => import("@/pages/jadwal/jadwal-tutor").then(toRoute),
   "/tutor/presensi": () => import("@/pages/presensi/presensi").then(toRoute),
   "/tutor/riwayat": () => import("@/pages/presensi/riwayat-tutor").then(toRoute),
 }
@@ -46,6 +47,12 @@ const TAB_SCREENS: Record<string, () => Promise<{ Component: React.ComponentType
 /* Layar turunan per peran (di luar tab navigasi) */
 const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
   tutor: [
+    /* T5 · Jadwal */
+    {
+      path: "jadwal/:sessionId",
+      handle: { title: "Detail Jadwal", hideBottomNav: true },
+      lazy: () => import("@/pages/jadwal/detail-jadwal-tutor").then(toRoute),
+    },
     /* T2 · Presensi & Dokumentasi */
     /* T3 · Status Presensi (?bulan=YYYY-MM) */
     {
