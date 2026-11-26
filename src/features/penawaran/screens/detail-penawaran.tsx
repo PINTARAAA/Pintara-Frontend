@@ -23,8 +23,8 @@ import {
   OfferError,
   offerQuery,
   recordAccepted,
-  type Offer,
 } from "@/features/penawaran/api"
+import type { Offer } from "@/types/penawaran"
 import {
   OfferSummaryCard,
   ResultOfferCard,

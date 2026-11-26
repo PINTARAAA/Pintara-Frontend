@@ -19,8 +19,8 @@ import {
   NotFoundError,
   sessionQuery,
   submitObjection,
-  type AttendanceSession,
 } from "@/features/absensi/api"
+import type { AttendanceSession } from "@/types/absensi"
 import { formatSessionTitle } from "@/features/absensi/lib"
 import { formatTimeRange } from "@/lib/format/date"
 

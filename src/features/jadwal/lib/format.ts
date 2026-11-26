@@ -1,11 +1,8 @@
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import {
-  WEEKDAYS,
-  type ChangeRequest,
-  type ChangeRequestStatus,
-} from "@/features/jadwal/api"
+import { WEEKDAYS } from "@/lib/data/jadwal"
+import type { ChangeRequest, ChangeRequestStatus } from "@/types/jadwal"
 
 /* Format tampilan pengajuan perubahan jadwal (W4) */
 

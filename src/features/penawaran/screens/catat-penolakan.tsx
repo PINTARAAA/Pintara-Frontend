@@ -21,13 +21,12 @@ import {
   toast,
 } from "@/components"
 import {
-  DECLINE_REASONS,
   OfferError,
   offerQuery,
   recordDeclined,
-  type DeclineReason,
-  type Offer,
 } from "@/features/penawaran/api"
+import { DECLINE_REASONS } from "@/lib/data/penawaran"
+import type { DeclineReason, Offer } from "@/types/penawaran"
 import { ResultOfferCard } from "@/features/penawaran/components"
 import { firstName } from "@/features/penawaran/lib"
 import { NotFoundError } from "@/features/verifikasi/api"

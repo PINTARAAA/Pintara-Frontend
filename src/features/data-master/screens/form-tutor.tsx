@@ -23,16 +23,13 @@ import {
   toast,
 } from "@/components"
 import {
-  DAYS,
   DuplicateEmailError,
-  LEVELS,
   NotFoundError,
   saveTutor,
-  TUTOR_SUBJECTS,
   tutorQuery,
-  type Level,
-  type Tutor,
 } from "@/features/data-master/api"
+import { DAYS, LEVELS, TUTOR_SUBJECTS } from "@/lib/data/data-master"
+import type { Level, Tutor } from "@/types/data-master"
 import {
   EMPTY_TUTOR,
   tutorSchema,

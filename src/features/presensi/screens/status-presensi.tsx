@@ -16,11 +16,8 @@ import {
   DashboardList,
   DashboardSection,
 } from "@/features/dashboard/components"
-import {
-  attendanceStatusQuery,
-  type AttendanceStatusOverview,
-  type TutorSession,
-} from "@/features/presensi/api"
+import { attendanceStatusQuery } from "@/features/presensi/api"
+import type { AttendanceStatusOverview, TutorSession } from "@/types/presensi"
 import { formatWeekdayShort, sessionTitle } from "@/features/presensi/lib"
 import { formatDayMonth } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"

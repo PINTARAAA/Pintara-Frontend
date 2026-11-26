@@ -33,8 +33,8 @@ import {
   BUDI,
   finalizeAttendance,
   finalOverviewQuery,
-  type FinalOverview,
 } from "@/features/presensi/api"
+import type { FinalOverview } from "@/types/presensi"
 import { firstName, formatWeekdayShort } from "@/features/presensi/lib"
 import { cn } from "@/lib/styles/cn"
 

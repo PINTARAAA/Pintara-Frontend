@@ -11,10 +11,8 @@ import {
 } from "@/features/dashboard/components"
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
-import {
-  tutorScheduleQuery,
-  type TutorScheduleDay,
-} from "@/features/jadwal/api"
+import { tutorScheduleQuery } from "@/features/jadwal/api"
+import type { TutorScheduleDay } from "@/types/jadwal"
 import { formatWeekRange, joinDays } from "@/features/jadwal/lib"
 import { formatTimeRange, formatWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"

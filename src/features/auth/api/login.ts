@@ -1,5 +1,7 @@
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "@/lib/data/auth"
+import type { AuthUser, LoginErrorCode } from "@/types/auth"
+
 import type { LoginInput } from "@/features/auth/schemas"
-import type { AuthUser } from "@/features/auth/types"
 
 /*
  * Masuk ke akun.
@@ -12,7 +14,6 @@ import type { AuthUser } from "@/features/auth/types"
  * Selama backend belum ada, mode development memakai akun demo di bawah
  * (password semuanya "pintara123"). Akun demo tidak aktif di build produksi.
  */
-export type LoginErrorCode = "invalid_credentials" | "account_inactive"
 
 export class LoginError extends Error {
   code: LoginErrorCode
@@ -22,17 +23,6 @@ export class LoginError extends Error {
     this.name = "LoginError"
     this.code = code
   }
-}
-
-type DemoAccount = AuthUser & { active: boolean }
-
-const DEMO_PASSWORD = "pintara123"
-
-const DEMO_ACCOUNTS: Record<string, DemoAccount> = {
-  wali: { name: "Sari Wulandari", role: "wali", active: true },
-  tutor: { name: "Budi Santoso", role: "tutor", active: true },
-  pengelola: { name: "Pengelola LBB", role: "pengelola", active: true },
-  nonaktif: { name: "Akun Nonaktif", role: "wali", active: false },
 }
 
 export async function login(input: LoginInput): Promise<AuthUser> {

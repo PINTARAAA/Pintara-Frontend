@@ -13,7 +13,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components"
-import { attendanceQuery, type AttendanceSession } from "@/features/absensi/api"
+import { attendanceQuery } from "@/features/absensi/api"
+import type { AttendanceSession } from "@/types/absensi"
 import { firstName } from "@/features/absensi/lib"
 import {
   DashboardList,

@@ -13,11 +13,8 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import {
-  NotFoundError,
-  tutorScheduleSessionQuery,
-  type TutorScheduleDetail,
-} from "@/features/jadwal/api"
+import { NotFoundError, tutorScheduleSessionQuery } from "@/features/jadwal/api"
+import type { TutorScheduleDetail } from "@/types/jadwal"
 
 import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatTimeRange, formatWeekdayDate } from "@/lib/format/date"

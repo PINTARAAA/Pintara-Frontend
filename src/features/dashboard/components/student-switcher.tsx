@@ -9,7 +9,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components"
-import type { WaliStudent } from "@/features/dashboard/api"
+import type { WaliStudent } from "@/types/dashboard"
 import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
 
 /*

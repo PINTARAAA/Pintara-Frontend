@@ -1,10 +1,17 @@
 import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import { addNotification } from "@/features/notifikasi/api"
-import type { StatusOf } from "@/lib/constants/status"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { bills, payments } from "@/lib/data/tagihan"
 import { formatRupiah } from "@/lib/format/currency"
+import type {
+  Bill,
+  BillsOverview,
+  BillStatus,
+  Payment,
+  PaymentResult,
+} from "@/types/tagihan"
 
 /*
  * Tagihan & Pembayaran · Figma PINTARA → UI Screen → Wali Murid → W6
@@ -22,34 +29,6 @@ import { formatRupiah } from "@/lib/format/currency"
  * payment gateway disimulasikan (memproses ±2 detik, lalu berhasil).
  * Tambahkan ?hasil=gagal pada halaman bayar untuk menguji "Pembayaran gagal".
  */
-export type BillStatus = StatusOf<"pembayaran">
-
-export type BillItem = { subject: string; sessions: number; unitPrice: number }
-
-export type Bill = {
-  id: string
-  number: string
-  studentName: string
-  /* Hari pertama periode tagihan (bulan) */
-  period: Date
-  dueDate: Date
-  items: BillItem[]
-  total: number
-  paid: number
-}
-
-export type PaymentMethod = "QRIS" | "Virtual Account BCA" | "GoPay"
-export type PaymentStatus = "berhasil" | "kedaluwarsa" | "gagal"
-
-export type Payment = {
-  id: string
-  billId: string
-  billPeriod: Date
-  amount: number
-  method: PaymentMethod
-  status: PaymentStatus
-  createdAt: Date
-}
 
 /* ---------- Turunan ---------- */
 
@@ -65,94 +44,7 @@ export function statusOf(bill: Pick<Bill, "total" | "paid">): BillStatus {
 export const daysUntilDue = (bill: Pick<Bill, "dueDate">, now = new Date()) =>
   differenceInCalendarDays(startOfDay(bill.dueDate), startOfDay(now))
 
-/* ---------- Data contoh ---------- */
-
-const ITEMS: BillItem[] = [
-  { subject: "Matematika", sessions: 4, unitPrice: 60_000 },
-  { subject: "IPA", sessions: 4, unitPrice: 52_500 },
-]
-const total = (items: BillItem[]) =>
-  items.reduce((sum, i) => sum + i.sessions * i.unitPrice, 0)
-
-function monthOf(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1)
-}
-
-const octDue = at(-45, 0)
-const novDue = at(-14, 0)
-const decDue = at(16, 0)
-
-const bills: Bill[] = [
-  {
-    id: "inv-okt",
-    number: `INV-${octDue.getFullYear()}-${String(octDue.getMonth() + 1).padStart(2, "0")}-0098`,
-    studentName: "Aisyah Putri",
-    period: monthOf(octDue),
-    dueDate: octDue,
-    items: ITEMS,
-    total: total(ITEMS),
-    paid: total(ITEMS),
-  },
-  {
-    id: "inv-nov",
-    number: `INV-${novDue.getFullYear()}-${String(novDue.getMonth() + 1).padStart(2, "0")}-0105`,
-    studentName: "Aisyah Putri",
-    period: monthOf(novDue),
-    dueDate: novDue,
-    items: ITEMS,
-    total: total(ITEMS),
-    paid: 300_000,
-  },
-  {
-    id: "inv-des",
-    number: `INV-${decDue.getFullYear()}-${String(decDue.getMonth() + 1).padStart(2, "0")}-0112`,
-    studentName: "Aisyah Putri",
-    period: monthOf(decDue),
-    dueDate: decDue,
-    items: ITEMS,
-    total: total(ITEMS),
-    paid: 0,
-  },
-]
-
-const payments: Payment[] = [
-  {
-    id: "TRX-OKT-0001",
-    billId: "inv-okt",
-    billPeriod: monthOf(octDue),
-    amount: 450_000,
-    method: "QRIS",
-    status: "berhasil",
-    createdAt: at(-47, 20, 11),
-  },
-  {
-    id: "TRX-NOV-0001",
-    billId: "inv-nov",
-    billPeriod: monthOf(novDue),
-    amount: 300_000,
-    method: "Virtual Account BCA",
-    status: "kedaluwarsa",
-    createdAt: at(-13, 8, 2),
-  },
-  {
-    id: "TRX-NOV-0002",
-    billId: "inv-nov",
-    billPeriod: monthOf(novDue),
-    amount: 300_000,
-    method: "QRIS",
-    status: "berhasil",
-    createdAt: at(-12, 19, 20),
-  },
-]
-
 /* ---------- Daftar ---------- */
-
-export type BillsOverview = {
-  /* Tagihan belum lunas yang paling mendesak (lewat jatuh tempo dulu) */
-  priority: Bill | null
-  others: Bill[]
-  unreadNotifications: number
-}
 
 export async function getBills(): Promise<BillsOverview> {
   assertMockAllowed()
@@ -208,11 +100,6 @@ export const billQuery = (id: string) =>
   queryOptions({ queryKey: ["tagihan", "detail", id], queryFn: () => getBill(id) })
 
 /* ---------- Pembayaran (payment gateway disimulasikan) ---------- */
-
-export type PaymentResult = {
-  payment: Payment
-  bill: Bill
-}
 
 let trxCounter = 8841
 

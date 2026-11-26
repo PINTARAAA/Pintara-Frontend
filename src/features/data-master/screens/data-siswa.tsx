@@ -12,11 +12,9 @@ import {
   TopAppBarButton,
 } from "@/components"
 import { DashboardList } from "@/features/dashboard/components"
-import {
-  STUDENT_SUBJECTS,
-  studentsQuery,
-  type StudentRow,
-} from "@/features/data-master/api"
+import { studentsQuery } from "@/features/data-master/api"
+import { STUDENT_SUBJECTS } from "@/lib/data/data-master"
+import type { StudentRow } from "@/types/data-master"
 import { MasterFilters } from "@/features/data-master/components"
 import { useMasterFilter } from "@/features/data-master/hooks"
 import { cn } from "@/lib/styles/cn"

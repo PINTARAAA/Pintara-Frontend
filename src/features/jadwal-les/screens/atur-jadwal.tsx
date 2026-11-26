@@ -33,7 +33,7 @@ import {
   TimePicker,
   toast,
 } from "@/components"
-import { addMinutesToTime } from "@/features/jadwal/api"
+import { addMinutesToTime } from "@/lib/data/jadwal"
 import {
   DAYS,
   formatRange,
@@ -44,11 +44,13 @@ import {
   ScheduleConflictError,
   SESSION_MINUTES,
   suggestFreeSlot,
-  type Conflict,
-  type Pair,
-  type ScheduleDraft,
-  type ScheduleSession,
 } from "@/features/jadwal-les/api"
+import type {
+  Conflict,
+  Pair,
+  ScheduleDraft,
+  ScheduleSession,
+} from "@/types/jadwal-les"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import { firstName } from "@/features/penawaran/lib"
 import { NotFoundError } from "@/features/verifikasi/api"

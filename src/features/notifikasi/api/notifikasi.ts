@@ -3,7 +3,9 @@ import { format, subHours } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
 import { getAttendance } from "@/features/absensi/api"
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { notificationsStore } from "@/lib/data/notifikasi"
+import type { AppNotification, NotificationList } from "@/types/notifikasi"
 
 /*
  * Notifikasi Wali Murid · Figma PINTARA → UI Screen → Wali Murid → W9
@@ -18,60 +20,6 @@ import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
  * fitur lain menambah notifikasi lewat addNotification() (mis. pengajuan
  * perubahan jadwal terkirim, pembayaran berhasil).
  */
-export type NotificationKind =
-  | "validasi"
-  | "tagihan"
-  | "jadwal"
-  | "pembayaran"
-  | "les"
-
-export type AppNotification<Kind extends string = NotificationKind> = {
-  id: string
-  kind: Kind
-  title: string
-  body: string
-  createdAt: Date
-  read: boolean
-  /* Tujuan saat notifikasi diketuk */
-  to: string
-  /* Keterangan pengganti waktu, mis. "sedang ditinjau Pengelola" */
-  status?: string
-}
-
-/* ---------- Data contoh ---------- */
-
-const now = new Date()
-const eightAm = at(0, 8)
-
-const store: AppNotification[] = [
-  {
-    id: "ntf-tagihan-nov",
-    kind: "tagihan",
-    title: `Tagihan ${format(at(-14, 0), "MMMM", { locale: localeId })} lewat jatuh tempo`,
-    body: "Sisa Rp150.000",
-    createdAt: eightAm < now ? eightAm : subHours(now, 1),
-    read: false,
-    to: "/wali/tagihan/inv-nov",
-  },
-  {
-    id: "ntf-bayar-okt",
-    kind: "pembayaran",
-    title: "Pembayaran berhasil",
-    body: `Tagihan ${format(at(-45, 0), "MMMM", { locale: localeId })} Rp450.000`,
-    createdAt: at(-47, 20, 11),
-    read: true,
-    to: "/wali/tagihan?tab=riwayat",
-  },
-  {
-    id: "ntf-les-mulai",
-    kind: "les",
-    title: "Les dimulai",
-    body: "Matematika & IPA bersama Kak Budi",
-    createdAt: at(-19, 16),
-    read: true,
-    to: "/wali/jadwal",
-  },
-]
 
 /* Status baca notifikasi turunan (validasi) disimpan terpisah */
 const readDerived = new Set<string>()
@@ -82,7 +30,7 @@ let counter = 1
 export function addNotification(
   notification: Omit<AppNotification, "id" | "createdAt" | "read">
 ) {
-  store.push({
+  notificationsStore.push({
     ...notification,
     id: `ntf-${Date.now()}-${counter++}`,
     createdAt: new Date(),
@@ -114,17 +62,12 @@ async function validationNotification(): Promise<AppNotification | null> {
 
 async function allNotifications() {
   const validation = await validationNotification()
-  return [...store, ...(validation ? [validation] : [])].sort(
+  return [...notificationsStore, ...(validation ? [validation] : [])].sort(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
   )
 }
 
 /* ---------- Query ---------- */
-
-export type NotificationList<Kind extends string = NotificationKind> = {
-  unread: AppNotification<Kind>[]
-  read: AppNotification<Kind>[]
-}
 
 export async function getNotifications(): Promise<NotificationList> {
   assertMockAllowed()
@@ -152,7 +95,7 @@ export function useUnreadNotifications() {
 /* ---------- Aksi ---------- */
 
 function markOne(id: string) {
-  const item = store.find((n) => n.id === id)
+  const item = notificationsStore.find((n) => n.id === id)
   if (item) item.read = true
   else readDerived.add(id)
 }

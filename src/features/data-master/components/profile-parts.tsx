@@ -19,10 +19,8 @@ import {
   toast,
   TopAppBarButton,
 } from "@/components"
-import {
-  ActiveScheduleError,
-  type AccountStatus,
-} from "@/features/data-master/api"
+import { ActiveScheduleError } from "@/features/data-master/api"
+import type { AccountStatus } from "@/types/data-master"
 import { InitialsAvatar } from "@/features/dashboard/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
 

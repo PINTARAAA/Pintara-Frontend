@@ -32,11 +32,8 @@ import {
 } from "@/features/dashboard/components"
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
-import {
-  tutorHistoryQuery,
-  type TutorHistory,
-  type TutorSession,
-} from "@/features/presensi/api"
+import { tutorHistoryQuery } from "@/features/presensi/api"
+import type { TutorHistory, TutorSession } from "@/types/presensi"
 import { firstName } from "@/features/presensi/lib"
 import { formatShortWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"

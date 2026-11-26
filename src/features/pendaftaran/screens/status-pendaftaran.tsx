@@ -17,12 +17,12 @@ import {
   Timeline,
   TimelineItem,
 } from "@/components"
-import {
-  registrationStatusQuery,
-  type LbbContact,
-  type Registration,
-  type RegistrationStage,
-} from "@/features/pendaftaran/api"
+import { registrationStatusQuery } from "@/features/pendaftaran/api"
+import type {
+  LbbContact,
+  Registration,
+  RegistrationStage,
+} from "@/types/pendaftaran"
 
 import { SummaryRow } from "@/features/pendaftaran/components"
 import type { StatusOf } from "@/lib/constants/status"

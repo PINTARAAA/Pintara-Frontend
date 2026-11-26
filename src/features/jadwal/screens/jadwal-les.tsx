@@ -14,11 +14,8 @@ import {
 
 import { useUnreadNotifications } from "@/features/notifikasi/api"
 
-import {
-  formatTimeSlot,
-  waliScheduleQuery,
-  WEEKDAYS,
-} from "@/features/jadwal/api"
+import { waliScheduleQuery } from "@/features/jadwal/api"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import { CHANGE_STATUS_LABEL, formatChangeTitle } from "@/features/jadwal/lib"
 import {
   formatDateRange,

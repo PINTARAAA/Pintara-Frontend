@@ -17,11 +17,8 @@ import {
   TimelineItem,
 } from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import {
-  NotFoundError,
-  tutorSessionQuery,
-  type TutorSession,
-} from "@/features/presensi/api"
+import { NotFoundError, tutorSessionQuery } from "@/features/presensi/api"
+import type { TutorSession } from "@/types/presensi"
 import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
 import { formatTimeRange } from "@/lib/format/date"
 

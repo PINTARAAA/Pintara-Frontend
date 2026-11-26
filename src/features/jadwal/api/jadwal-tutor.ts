@@ -1,13 +1,17 @@
 import { queryOptions } from "@tanstack/react-query"
 import { addDays, format, getDay, isValid, parse, startOfDay } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api"
-import {
-  NotFoundError,
-  parseTime,
-  WEEKDAYS,
-} from "@/features/jadwal/api/jadwal"
+import { NotFoundError } from "@/features/jadwal/api/jadwal"
 import { findLastHeldSession } from "@/features/presensi/api"
+import { parseTime, WEEKDAYS } from "@/lib/data/jadwal"
+import { routines, WEEK_COUNT } from "@/lib/data/jadwal-tutor"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import type {
+  TutorRoutine,
+  TutorSchedule,
+  TutorScheduleDetail,
+  TutorScheduleSession,
+} from "@/types/jadwal"
 
 /*
  * Jadwal tutor · Figma PINTARA → UI Screen → Tutor → T5 · Jadwal
@@ -19,119 +23,6 @@ import { findLastHeldSession } from "@/features/presensi/api"
  * Selama backend belum ada (mode development) sesi dibentuk dari jadwal
  * rutin mingguan tutor di bawah.
  */
-
-/* Banyak minggu yang bisa dipilih: minggu ini + 3 minggu ke depan */
-export const WEEK_COUNT = 4
-
-type TutorRoutine = {
-  id: string
-  subject: string
-  weekday: number
-  /* "HH.mm" */
-  startTime: string
-  durationMinutes: number
-  student: { name: string; grade: string }
-  /* Alamat lengkap; bagian sebelum koma tampil di daftar */
-  address: string
-  parent: { name: string; phone: string }
-}
-
-export type TutorScheduleSession = {
-  id: string
-  routineId: string
-  subject: string
-  start: Date
-  end: Date
-  student: TutorRoutine["student"]
-  address: string
-  shortAddress: string
-}
-
-export type TutorScheduleDay = {
-  date: Date
-  sessions: TutorScheduleSession[]
-}
-
-export type TutorSchedule = {
-  /* 0 = minggu ini (7 hari mulai hari ini) */
-  week: number
-  weeks: { from: Date; to: Date }[]
-  days: TutorScheduleDay[]
-  /* Nama hari tanpa les dalam rentang minggu, mis. ["Kamis", "Minggu"] */
-  freeDays: string[]
-}
-
-export type TutorScheduleDetail = TutorScheduleSession & {
-  parent: TutorRoutine["parent"] & { whatsapp: string }
-  previous: { date: Date; subject: string; topic?: string; notes?: string } | null
-}
-
-/* ---------- Data contoh ---------- */
-
-const RIZKY = { name: "Rizky Ananda", grade: "Kelas 10 SMA" }
-const AISYAH = { name: "Aisyah Putri", grade: "Kelas 8 SMP" }
-const DIMAS = { name: "Dimas Pratama", grade: "Kelas 9 SMP" }
-
-const RIZKY_HOME = "Jl. Soekarno-Hatta No. 45, Bangkalan"
-const AISYAH_HOME = "Jl. Trunojoyo No. 12, Bangkalan"
-const DIMAS_HOME = "Perum Kraton Indah B-3, Bangkalan"
-
-const RIZKY_PARENT = { name: "Dewi Ananda", phone: "0813-5566-7788" }
-const AISYAH_PARENT = { name: "Sari Wulandari", phone: "0812-3456-7890" }
-const DIMAS_PARENT = { name: "Arif Pratama", phone: "0857-1122-3344" }
-
-const routines: TutorRoutine[] = [
-  {
-    id: "tr-ipa-rizky",
-    subject: "IPA",
-    weekday: 2,
-    startTime: "18.30",
-    durationMinutes: 90,
-    student: RIZKY,
-    address: RIZKY_HOME,
-    parent: RIZKY_PARENT,
-  },
-  {
-    id: "tr-mtk-aisyah",
-    subject: "Matematika",
-    weekday: 3,
-    startTime: "16.00",
-    durationMinutes: 90,
-    student: AISYAH,
-    address: AISYAH_HOME,
-    parent: AISYAH_PARENT,
-  },
-  {
-    id: "tr-ipa-aisyah",
-    subject: "IPA",
-    weekday: 5,
-    startTime: "16.00",
-    durationMinutes: 90,
-    student: AISYAH,
-    address: AISYAH_HOME,
-    parent: AISYAH_PARENT,
-  },
-  {
-    id: "tr-mtk-rizky",
-    subject: "Matematika",
-    weekday: 6,
-    startTime: "18.30",
-    durationMinutes: 90,
-    student: RIZKY,
-    address: RIZKY_HOME,
-    parent: RIZKY_PARENT,
-  },
-  {
-    id: "tr-ipa-dimas",
-    subject: "IPA",
-    weekday: 1,
-    startTime: "16.00",
-    durationMinutes: 90,
-    student: DIMAS,
-    address: DIMAS_HOME,
-    parent: DIMAS_PARENT,
-  },
-]
 
 /* ---------- Utilitas ---------- */
 

@@ -17,12 +17,12 @@ import {
   TopAppBarButton,
 } from "@/components"
 import { DashboardList } from "@/features/dashboard/components"
-import {
-  accountsQuery,
-  type AccountList,
-  type AccountRole,
-  type AccountRow,
-} from "@/features/manajemen-akun/api"
+import { accountsQuery } from "@/features/manajemen-akun/api"
+import type {
+  AccountList,
+  AccountRole,
+  AccountRow,
+} from "@/types/manajemen-akun"
 import { cn } from "@/lib/styles/cn"
 
 /*

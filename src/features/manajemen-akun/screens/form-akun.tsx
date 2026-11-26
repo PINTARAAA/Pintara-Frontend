@@ -32,9 +32,8 @@ import {
   ROLE_LABEL,
   saveAccount,
   usernameOf,
-  type AccountDetail,
-  type AccountRole,
 } from "@/features/manajemen-akun/api"
+import type { AccountDetail, AccountRole } from "@/types/manajemen-akun"
 import {
   akunSchema,
   type AkunFormInput,

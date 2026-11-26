@@ -9,10 +9,10 @@ import {
   formatLevelsLong,
   initialsOf,
   NotFoundError,
-  SERVICE_RADIUS_KM,
   setTutorStatus,
   tutorQuery,
 } from "@/features/data-master/api"
+import { SERVICE_RADIUS_KM } from "@/lib/data/data-master"
 import {
   InfoCard,
   ProfileHeader,

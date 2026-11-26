@@ -15,8 +15,8 @@ import {
   PendaftaranError,
   pendaftaranDefaultsQuery,
   submitPendaftaran,
-  type PendaftaranResult,
 } from "@/features/pendaftaran/api"
+import type { PendaftaranResult } from "@/types/pendaftaran"
 import {
   PendaftaranBerhasil,
   StepDataSiswa,

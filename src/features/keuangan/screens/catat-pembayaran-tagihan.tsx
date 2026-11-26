@@ -31,9 +31,8 @@ import {
   ReportNotFoundError,
   recordManualPayment,
   studentBillQuery,
-  type ManualMethod,
-  type StudentBill,
 } from "@/features/keuangan/api"
+import type { ManualMethod, StudentBill } from "@/types/keuangan"
 import {
   DOC_ACCEPT,
   uploadDocumentation,

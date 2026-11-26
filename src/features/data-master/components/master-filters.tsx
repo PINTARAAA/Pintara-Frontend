@@ -2,7 +2,8 @@ import * as React from "react"
 import { SearchIcon } from "lucide-react"
 
 import { FilterPill, Input } from "@/components"
-import { DISTRICTS, type MasterFilter } from "@/features/data-master/api"
+import { DISTRICTS } from "@/lib/data/data-master"
+import type { MasterFilter } from "@/types/data-master"
 import { ALL } from "@/features/data-master/hooks"
 
 /*

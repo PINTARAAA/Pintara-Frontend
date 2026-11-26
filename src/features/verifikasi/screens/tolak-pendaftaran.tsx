@@ -22,12 +22,11 @@ import {
   canReject,
   gradeLabel,
   NotFoundError,
-  REJECT_REASONS,
   registrationQuery,
   rejectRegistration,
-  type PengelolaRegistration,
-  type RejectReason,
 } from "@/features/verifikasi/api"
+import { REJECT_REASONS } from "@/lib/data/verifikasi"
+import type { PengelolaRegistration, RejectReason } from "@/types/verifikasi"
 import { rejectionTemplate } from "@/features/verifikasi/lib"
 
 /*

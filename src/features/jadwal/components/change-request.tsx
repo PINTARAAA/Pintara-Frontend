@@ -6,11 +6,8 @@ import {
   Timeline,
   TimelineItem,
 } from "@/components"
-import {
-  formatTimeSlot,
-  WEEKDAYS,
-  type ChangeRequest,
-} from "@/features/jadwal/api"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
+import type { ChangeRequest } from "@/types/jadwal"
 import { formatScope } from "@/features/jadwal/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatDateTime } from "@/lib/format/date"

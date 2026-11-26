@@ -10,11 +10,8 @@ import {
   TopAppBarButton,
 } from "@/components"
 import { DashboardList } from "@/features/dashboard/components"
-import {
-  formatLevels,
-  TUTOR_SUBJECTS,
-  tutorsQuery,
-} from "@/features/data-master/api"
+import { formatLevels, tutorsQuery } from "@/features/data-master/api"
+import { TUTOR_SUBJECTS } from "@/lib/data/data-master"
 import { MasterFilters } from "@/features/data-master/components"
 import { useMasterFilter } from "@/features/data-master/hooks"
 import { cn } from "@/lib/styles/cn"

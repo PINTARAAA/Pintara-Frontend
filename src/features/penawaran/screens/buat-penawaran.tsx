@@ -19,8 +19,8 @@ import {
   OfferError,
   offerQuery,
   sendOffer,
-  type OfferDraft,
 } from "@/features/penawaran/api"
+import type { OfferDraft } from "@/types/penawaran"
 import { OfferSummaryCard } from "@/features/penawaran/components"
 import { firstName } from "@/features/penawaran/lib"
 import { NotFoundError } from "@/features/verifikasi/api"

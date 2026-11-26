@@ -19,8 +19,8 @@ import {
   recipientLabel,
   resendNotification,
   ResendFailedError,
-  type NotificationLog,
 } from "@/features/riwayat-notifikasi/api"
+import type { NotificationLog } from "@/types/riwayat-notifikasi"
 
 /*
  * P13 · Detail Notifikasi · Figma "Riwayat Notifikasi / Detail gagal".

@@ -35,10 +35,9 @@ import {
   honorRecapQuery,
   METHOD_LABEL,
   monthKey,
-  type HonorRecap,
-  type TutorHonor,
   availableMonths,
 } from "@/features/keuangan/api"
+import type { HonorRecap, TutorHonor } from "@/types/keuangan"
 
 import {
   StudentBillsPanel,

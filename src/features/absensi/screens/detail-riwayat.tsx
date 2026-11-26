@@ -14,12 +14,8 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import {
-  NotFoundError,
-  sessionQuery,
-  type Attendance,
-  type AttendanceSession,
-} from "@/features/absensi/api"
+import { NotFoundError, sessionQuery } from "@/features/absensi/api"
+import type { Attendance, AttendanceSession } from "@/types/absensi"
 import { NotesCard, ReviewCard } from "@/features/absensi/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatTimeRange } from "@/lib/format/date"

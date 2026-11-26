@@ -1,6 +1,16 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api"
+import {
+  PENGELOLA_MENU,
+  TUTOR_ACCOUNT,
+  WALI_ACCOUNT,
+} from "@/lib/data/akun"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import type {
+  PengelolaMenu,
+  TutorAccount,
+  WaliAccount,
+} from "@/types/akun"
 
 /*
  * Akun · Figma PINTARA → UI Screen → Wali Murid → W8 dan Tutor → T6
@@ -13,46 +23,11 @@ import { assertMockAllowed, delay } from "@/features/dashboard/api"
  *
  * Data akun hanya bisa diubah oleh Pengelola LBB, jadi layar ini hanya baca.
  */
-export type LbbContact = { name: string; whatsapp: string; display: string }
-
-const LBB_CONTACT: LbbContact = {
-  name: "Kak Ila",
-  whatsapp: "6281200001122",
-  display: "0812-0000-1122",
-}
-
-const APP_VERSION = "1.0.0"
-
-export type WaliAccount = {
-  name: string
-  initials: string
-  role: string
-  email: string
-  whatsapp: string
-  username: string
-  students: { id: string; name: string; grade: string; subjects: string[] }[]
-  lbbContact: LbbContact
-  appVersion: string
-}
 
 export async function getWaliAccount(): Promise<WaliAccount> {
   assertMockAllowed()
   await delay()
-
-  return {
-    name: "Sari Wulandari",
-    initials: "SW",
-    role: "Wali Murid",
-    email: "sari.wulandari@gmail.com",
-    whatsapp: "0812-3456-7890",
-    username: "sari.wulandari",
-    students: [
-      { id: "s1", name: "Aisyah Putri", grade: "Kelas 8 SMP", subjects: ["Matematika", "IPA"] },
-      { id: "s2", name: "Fikri Ramadhan", grade: "Kelas 5 SD", subjects: ["Bahasa Inggris"] },
-    ],
-    lbbContact: LBB_CONTACT,
-    appVersion: APP_VERSION,
-  }
+  return WALI_ACCOUNT
 }
 
 export const waliAccountQuery = () =>
@@ -62,40 +37,10 @@ export const waliAccountQuery = () =>
     staleTime: 5 * 60_000,
   })
 
-export type TutorAccount = {
-  name: string
-  initials: string
-  role: string
-  email: string
-  teaching: {
-    subjects: string[]
-    levels: string
-    availability: string
-    /* Rupiah per sesi */
-    rate: number
-  }
-  lbbContact: LbbContact
-  appVersion: string
-}
-
 export async function getTutorAccount(): Promise<TutorAccount> {
   assertMockAllowed()
   await delay()
-
-  return {
-    name: "Kak Budi Santoso",
-    initials: "BS",
-    role: "Tutor",
-    email: "budi.santoso@gmail.com",
-    teaching: {
-      subjects: ["Matematika", "IPA"],
-      levels: "SMP–SMA",
-      availability: "Senin–Sabtu, 15.00–21.00",
-      rate: 60_000,
-    },
-    lbbContact: LBB_CONTACT,
-    appVersion: APP_VERSION,
-  }
+  return TUTOR_ACCOUNT
 }
 
 export const tutorAccountQuery = () =>
@@ -105,30 +50,10 @@ export const tutorAccountQuery = () =>
     staleTime: 5 * 60_000,
   })
 
-/* P1 · Menu Lainnya: profil pengelola + ringkasan untuk keterangan menu */
-export type PengelolaMenu = {
-  name: string
-  initials: string
-  role: string
-  email: string
-  tutors: { total: number; active: number }
-  students: { total: number; active: number }
-  failedNotifications: number
-}
-
 export async function getPengelolaMenu(): Promise<PengelolaMenu> {
   assertMockAllowed()
   await delay()
-
-  return {
-    name: "Nurul Laila (Kak Ila)",
-    initials: "NL",
-    role: "Pengelola LBB",
-    email: "ila@jelajahilmu.id",
-    tutors: { total: 70, active: 64 },
-    students: { total: 100, active: 92 },
-    failedNotifications: 2,
-  }
+  return PENGELOLA_MENU
 }
 
 export const pengelolaMenuQuery = () =>

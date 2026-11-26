@@ -11,8 +11,8 @@ import {
   billTotal,
   ReportNotFoundError,
   studentBillQuery,
-  type BillPayment,
 } from "@/features/keuangan/api"
+import type { BillPayment } from "@/types/keuangan"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDayMonth } from "@/lib/format/date"
 

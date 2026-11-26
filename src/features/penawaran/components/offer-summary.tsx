@@ -6,11 +6,8 @@ import {
   CardTitle,
 } from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import {
-  declineLabel,
-  type Offer,
-  type OfferSummary,
-} from "@/features/penawaran/api"
+import { declineLabel } from "@/features/penawaran/api"
+import type { Offer, OfferSummary } from "@/types/penawaran"
 import { formatKm } from "@/features/penawaran/lib"
 import { formatRupiah } from "@/lib/format/currency"
 

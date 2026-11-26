@@ -1,17 +1,22 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import { getOfferTutorInfo } from "@/features/pencocokan/api"
 import {
   NotFoundError,
   releaseMatch,
   snapshotRegistrations,
-  type PengelolaRegistration,
 } from "@/features/verifikasi/api"
-import {
-  formatRequestedSchedule,
-  formatShortAddress,
-} from "@/features/verifikasi/lib"
+import { formatRequestedSchedule, formatShortAddress } from "@/features/verifikasi/lib"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { DECLINE_REASONS, offers } from "@/lib/data/penawaran"
+import type {
+  DeclineInput,
+  DeclineReason,
+  Offer,
+  OfferDraft,
+  OfferList,
+} from "@/types/penawaran"
+import type { PengelolaRegistration } from "@/types/verifikasi"
 
 /*
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -30,95 +35,6 @@ import {
  * → tutor menjawab di luar aplikasi → pengelola mencatat jawabannya di sini.
  * Ditolak: tutor dilepas dan siswa kembali ke antrean pencocokan P3.
  */
-export type OfferStatus = "menunggu_konfirmasi" | "diterima" | "ditolak"
-
-export type DeclineReason =
-  "jadwal_bentrok" | "lokasi_jauh" | "tidak_menguasai" | "lainnya"
-
-export const DECLINE_REASONS: { value: DeclineReason; label: string }[] = [
-  { value: "jadwal_bentrok", label: "Jadwal bentrok" },
-  { value: "lokasi_jauh", label: "Lokasi terlalu jauh" },
-  { value: "tidak_menguasai", label: "Tidak menguasai materi atau jenjang" },
-  { value: "lainnya", label: "Lainnya" },
-]
-
-/* Ringkasan yang ikut tersimpan pada penawaran (tidak berubah setelah dikirim) */
-export type OfferSummary = {
-  registrationId: string
-  student: { name: string; grade: string; level: string }
-  tutor: { id: string; name: string; shortName: string }
-  subjects: string[]
-  /* "Senin & Kamis, 19.00" */
-  schedule: string
-  /* "Perum Griya Utama" */
-  location: string
-  distanceKm: number
-  rate: number
-}
-
-export type Offer = OfferSummary & {
-  id: string
-  message?: string
-  sentAt: Date
-  status: OfferStatus
-  answeredAt?: Date
-  decline?: { reason: DeclineReason; note?: string }
-}
-
-/* ---------- Data contoh ---------- */
-
-const offers: Offer[] = [
-  {
-    id: "pw-0007",
-    registrationId: "reg-0112",
-    student: { name: "Salma Azzahra", grade: "7", level: "SMP" },
-    tutor: {
-      id: "tt-nadia",
-      name: "Kak Nadia Safitri",
-      shortName: "Kak Nadia",
-    },
-    subjects: ["Bahasa Inggris"],
-    schedule: "Selasa & Jumat, 15.00",
-    location: "Jl. Raya Tanjung Bumi",
-    distanceKm: 1.8,
-    rate: 50_000,
-    sentAt: at(-4, 10, 0),
-    status: "ditolak",
-    answeredAt: at(-4, 16, 30),
-    decline: {
-      reason: "jadwal_bentrok",
-      note: "Kak Nadia hanya bisa mengajar hari Jumat.",
-    },
-  },
-  {
-    id: "pw-0004",
-    registrationId: "reg-0109",
-    student: { name: "Dimas Pratama", grade: "9", level: "SMP" },
-    tutor: { id: "tt-budi", name: "Kak Budi Santoso", shortName: "Kak Budi" },
-    subjects: ["IPA", "Matematika"],
-    schedule: "Senin & Kamis, 16.00",
-    location: "Perum Kraton Indah",
-    distanceKm: 2.6,
-    rate: 60_000,
-    sentAt: at(-22, 14, 0),
-    status: "diterima",
-    answeredAt: at(-22, 19, 10),
-  },
-  {
-    id: "pw-0002",
-    registrationId: "reg-0098",
-    student: { name: "Rizky Ananda", grade: "10", level: "SMA" },
-    tutor: { id: "tt-budi", name: "Kak Budi Santoso", shortName: "Kak Budi" },
-    subjects: ["Matematika", "IPA"],
-    schedule: "Selasa & Sabtu, 18.30",
-    location: "Jl. Soekarno-Hatta",
-    distanceKm: 3.2,
-    rate: 60_000,
-    sentAt: at(-24, 9, 0),
-    status: "diterima",
-    answeredAt: at(-23, 11, 20),
-  },
-]
 
 export class OfferError extends Error {
   code: "tutor_unavailable" | "already_answered" | "no_match" | "already_sent"
@@ -141,13 +57,6 @@ function ensureOnline() {
 }
 
 /* ---------- Daftar (tab Penawaran) ---------- */
-
-export type OfferList = {
-  /* Tutor sudah dipilih di P3 tetapi penawaran belum dikirim */
-  unsent: { registration: PengelolaRegistration; tutorName: string }[]
-  waiting: Offer[]
-  history: Offer[]
-}
 
 export async function getOffers(): Promise<OfferList> {
   assertMockAllowed()
@@ -185,12 +94,6 @@ export const offersQuery = () =>
   queryOptions({ queryKey: ["penawaran", "daftar"], queryFn: getOffers })
 
 /* ---------- Buat penawaran ---------- */
-
-export type OfferDraft = OfferSummary & {
-  registration: PengelolaRegistration
-  /* Isi bila slot tutor sudah terisi, mis. "Senin 19.00" */
-  takenSlot: string | null
-}
 
 function buildDraft(registration: PengelolaRegistration): OfferDraft {
   if (registration.status !== "terverifikasi" || !registration.match) {
@@ -329,8 +232,6 @@ export async function recordAccepted(id: string): Promise<Offer> {
   offer.answeredAt = new Date()
   return structuredClone(offer)
 }
-
-export type DeclineInput = { reason: DeclineReason; note: string }
 
 export async function recordDeclined(
   id: string,

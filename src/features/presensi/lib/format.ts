@@ -1,7 +1,7 @@
 import { differenceInCalendarDays, format, isToday } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import type { TutorSession } from "@/features/presensi/api"
+import type { TutorSession } from "@/types/presensi"
 import { formatTimeRange } from "@/lib/format/date"
 
 /* "IPA · Dimas Pratama" */

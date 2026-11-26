@@ -36,9 +36,8 @@ import {
   tutorSessionQuery,
   uploadDocumentation,
   validateDocumentation,
-  type AttendanceInput,
-  type TutorSession,
 } from "@/features/presensi/api"
+import type { AttendanceInput, TutorSession } from "@/types/presensi"
 import {
   firstName,
   formatLongDate,

@@ -7,8 +7,8 @@ import {
   describeSetting,
   notificationSettingsQuery,
   saveNotificationSetting,
-  type NotificationSetting,
 } from "@/features/pengaturan-notifikasi/api"
+import type { NotificationSetting } from "@/types/pengaturan-notifikasi"
 
 /*
  * P12 · Pengaturan Notifikasi · Figma "Pengaturan Notifikasi / Daftar" dan

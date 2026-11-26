@@ -24,12 +24,14 @@ import {
   notificationLogsQuery,
   PERIODS,
   resendAllFailed,
-  type LogFilter,
-  type LogStatus,
-  type NotificationKind,
-  type NotificationLog,
-  type Period,
 } from "@/features/riwayat-notifikasi/api"
+import type {
+  LogFilter,
+  LogStatus,
+  NotificationKind,
+  NotificationLog,
+  Period,
+} from "@/types/riwayat-notifikasi"
 import { formatDayMonth } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

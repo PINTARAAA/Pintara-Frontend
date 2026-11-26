@@ -10,14 +10,20 @@ import {
   subMonths,
 } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api"
 import {
   DAYS,
   lessonDirectory,
   studentDirectory,
   tutorDirectory,
-} from "@/features/data-master/api"
-import type { StatusOf } from "@/lib/constants/status"
+} from "@/lib/data/data-master"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { TOPICS } from "@/lib/data/rekap-les"
+import type {
+  LessonRecap,
+  RecapFilter,
+  RecapSession,
+  SessionStatus,
+} from "@/types/rekap-les"
 
 /*
  * Rekap & Riwayat Les · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -31,26 +37,6 @@ import type { StatusOf } from "@/lib/constants/status"
  * hari ini. Status mengikuti alur presensi: belum dikumpulkan → belum
  * divalidasi wali → sudah divalidasi / keberatan; atau tidak terlaksana.
  */
-export type SessionStatus = StatusOf<"presensi"> | "tidak_terlaksana"
-
-export type RecapSession = {
-  id: string
-  date: Date
-  subject: string
-  topic: string | null
-  tutorId: string
-  tutorName: string
-  studentId: string
-  studentName: string
-  status: SessionStatus
-}
-
-const TOPICS: Record<string, string[]> = {
-  Matematika: ["Persamaan linear", "Fungsi kuadrat", "Pecahan", "Statistika", "Bangun ruang"],
-  IPA: ["Sistem pencernaan", "Gaya dan gerak", "Klasifikasi makhluk hidup", "Tekanan zat"],
-  Fisika: ["Gerak lurus", "Hukum Newton", "Usaha dan energi", "Optika"],
-  "Bahasa Inggris": ["Simple past tense", "Descriptive text", "Conversation practice", "Reading comprehension"],
-}
 
 /* Angka semu deterministik dari teks agar data contoh stabil tiap muat ulang */
 const hash = (text: string) =>
@@ -100,42 +86,6 @@ function buildMonth(month: Date): RecapSession[] {
 }
 
 /* ---------- Rekap ---------- */
-
-export type RecapFilter = {
-  month?: Date
-  tutorId?: string
-  studentId?: string
-}
-
-export type TutorSummary = {
-  id: string
-  name: string
-  sessions: number
-  missed: number
-  students: number
-}
-
-export type StudentSummary = {
-  id: string
-  name: string
-  sessions: number
-  missed: number
-  tutors: string[]
-}
-
-export type LessonRecap = {
-  months: Date[]
-  month: Date
-  tutorOptions: { id: string; name: string }[]
-  studentOptions: { id: string; name: string }[]
-  held: number
-  missed: number
-  pairs: number
-  byTutor: TutorSummary[]
-  byStudent: StudentSummary[]
-  /* Riwayat sesi sesuai filter, terbaru dulu */
-  sessions: RecapSession[]
-}
 
 const held = (s: RecapSession) => s.status !== "tidak_terlaksana"
 

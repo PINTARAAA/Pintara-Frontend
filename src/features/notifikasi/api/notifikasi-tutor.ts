@@ -9,15 +9,17 @@ import {
 } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import { tutorSessionsOn } from "@/features/jadwal/api"
-import type {
-  AppNotification,
-  NotificationList,
-} from "@/features/notifikasi/api/notifikasi"
 import { snapshotTutorSessions } from "@/features/presensi/api"
 import { firstName } from "@/features/presensi/lib"
+import { assertMockAllowed, at, delay } from "@/lib/data/mock"
+import { tutorReadIds } from "@/lib/data/notifikasi"
 import { formatRupiah } from "@/lib/format/currency"
+import type {
+  NotificationList,
+  TutorNotification,
+  TutorNotificationKind,
+} from "@/types/notifikasi"
 
 /*
  * Notifikasi Tutor · Figma PINTARA → UI Screen → Tutor → T7
@@ -33,15 +35,8 @@ import { formatRupiah } from "@/lib/format/currency"
  *   - "Pengingat jadwal" muncul 2 jam sebelum sesi hari ini (T5);
  *   - rekap & honor adalah contoh yang sudah dibaca.
  */
-export type TutorNotificationKind =
-  "presensi" | "keberatan" | "pengingat" | "rekap" | "honor"
-
-export type TutorNotification = AppNotification<TutorNotificationKind>
 
 const REMINDER_HOURS = 2
-
-/* ID notifikasi yang sudah dibaca (contoh statis & turunan) */
-const readIds = new Set<string>(["tn-rekap", "tn-honor"])
 
 const longDay = (d: Date) => format(d, "EEEE d MMM", { locale: localeId })
 const dayMonth = (d: Date) => format(d, "d MMM", { locale: localeId })
@@ -111,7 +106,7 @@ function buildNotifications(now = new Date()): TutorNotification[] {
   ]
 
   return [...missed, ...disputed, ...reminders, ...examples]
-    .map((n) => ({ ...n, read: readIds.has(n.id) }))
+    .map((n) => ({ ...n, read: tutorReadIds.has(n.id) }))
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 }
 
@@ -149,11 +144,11 @@ export function useTutorUnreadNotifications() {
 
 export async function markTutorRead(id: string) {
   assertMockAllowed()
-  readIds.add(id)
+  tutorReadIds.add(id)
 }
 
 export async function markAllTutorRead() {
   assertMockAllowed()
   await delay(300)
-  buildNotifications().forEach((n) => readIds.add(n.id))
+  buildNotifications().forEach((n) => tutorReadIds.add(n.id))
 }

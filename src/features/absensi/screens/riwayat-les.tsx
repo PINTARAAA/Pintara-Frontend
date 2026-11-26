@@ -10,7 +10,8 @@ import {
   ListItem,
   FilterPill,
 } from "@/components"
-import { lessonHistoryQuery, type LessonHistory } from "@/features/absensi/api"
+import { lessonHistoryQuery } from "@/features/absensi/api"
+import type { LessonHistory } from "@/types/absensi"
 import {
   DashboardList,
   DashboardSection,

@@ -13,12 +13,8 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import {
-  formatTimeSlot,
-  NotFoundError,
-  routineQuery,
-  WEEKDAYS,
-} from "@/features/jadwal/api"
+import { NotFoundError, routineQuery } from "@/features/jadwal/api"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import { formatChangeTitle } from "@/features/jadwal/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatDate } from "@/lib/format/date"

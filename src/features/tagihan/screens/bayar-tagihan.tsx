@@ -29,12 +29,11 @@ import {
   NotFoundError,
   remainingOf,
   statusOf,
-  type Bill,
-  type PaymentResult,
 } from "@/features/tagihan/api"
 import { formatPeriod } from "@/features/tagihan/lib"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDate, formatDateTime } from "@/lib/format/date"
+import type { Bill, PaymentResult } from "@/types/tagihan"
 
 /*
  * W6 · Pembayaran · frame "Pilih nominal" → "Memproses" → "Berhasil -

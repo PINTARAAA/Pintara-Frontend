@@ -8,3 +8,5 @@ export type AuthUser = {
 
 /* Alasan pengguna diarahkan ke halaman masuk (?alasan=… pada URL) */
 export type LoginNotice = "sesi-berakhir" | "keluar"
+
+export type LoginErrorCode = "invalid_credentials" | "account_inactive"

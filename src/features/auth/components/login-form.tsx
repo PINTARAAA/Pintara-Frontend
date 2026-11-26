@@ -11,9 +11,9 @@ import {
   Input,
   PasswordInput,
 } from "@/components"
-import { login, LoginError, type LoginErrorCode } from "@/features/auth/api"
+import { login, LoginError } from "@/features/auth/api"
 import { loginSchema, type LoginInput } from "@/features/auth/schemas"
-import type { AuthUser, LoginNotice } from "@/features/auth/types"
+import type { AuthUser, LoginErrorCode, LoginNotice } from "@/types/auth"
 
 /*
  * Form masuk · Figma PINTARA → UI Screen → Umum → 00 · Autentikasi

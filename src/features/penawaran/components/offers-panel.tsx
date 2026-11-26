@@ -9,11 +9,8 @@ import {
   DashboardList,
   DashboardSection,
 } from "@/features/dashboard/components"
-import {
-  declineLabel,
-  type Offer,
-  type OfferList,
-} from "@/features/penawaran/api"
+import { declineLabel } from "@/features/penawaran/api"
+import type { Offer, OfferList } from "@/types/penawaran"
 import { firstName } from "@/features/penawaran/lib"
 import { formatDayMonth } from "@/lib/format/date"
 

@@ -24,7 +24,7 @@ import {
 import type {
   AppNotification,
   NotificationList,
-} from "@/features/notifikasi/api"
+} from "@/types/notifikasi"
 
 /*
  * Kerangka layar Notifikasi (W9 · T7)

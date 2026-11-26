@@ -1,8 +1,3 @@
-/*
- * Tahap pendaftaran siswa · Figma PINTARA → UI Screen → Wali Murid →
- * W3 · Status Pendaftaran (frame Menunggu Verifikasi · Pencocokan Tutor ·
- * Selesai · Ditolak).
- */
 export type RegistrationStage =
   | "menunggu_verifikasi"
   | "pencocokan_tutor"
@@ -29,3 +24,18 @@ export type Registration = {
 
 /* Kontak Pengelola LBB untuk tautan "Hubungi Pengelola LBB" */
 export type LbbContact = { name: string; whatsapp: string }
+
+export type PendaftaranErrorCode = "already_registered"
+
+export type PendaftaranResult = {
+  id: string
+  registrationNumber: string
+  submittedAt: Date
+  studentName: string
+}
+
+export type RegistrationStatus = {
+  /* null = wali belum pernah mendaftarkan siswa */
+  registration: Registration | null
+  contact: LbbContact
+}

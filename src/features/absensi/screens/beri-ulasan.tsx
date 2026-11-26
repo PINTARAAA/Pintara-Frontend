@@ -21,8 +21,8 @@ import {
   NotFoundError,
   sessionQuery,
   submitReview,
-  type AttendanceSession,
 } from "@/features/absensi/api"
+import type { AttendanceSession } from "@/types/absensi"
 import { formatSessionTitle, RATING_LABELS } from "@/features/absensi/lib"
 import { InitialsAvatar } from "@/features/dashboard/components"
 

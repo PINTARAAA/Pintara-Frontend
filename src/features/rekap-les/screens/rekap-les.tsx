@@ -21,11 +21,8 @@ import {
 import { DashboardList } from "@/features/dashboard/components"
 import { parseMonth } from "@/features/keuangan/lib"
 import { firstName } from "@/features/presensi/lib"
-import {
-  lessonRecapQuery,
-  type LessonRecap,
-  type RecapSession,
-} from "@/features/rekap-les/api"
+import { lessonRecapQuery } from "@/features/rekap-les/api"
+import type { LessonRecap, RecapSession } from "@/types/rekap-les"
 import { formatShortWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

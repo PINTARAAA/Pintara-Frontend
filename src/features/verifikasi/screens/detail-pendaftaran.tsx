@@ -27,11 +27,11 @@ import {
   AlreadyProcessedError,
   needsTutor,
   NotFoundError,
-  REJECT_REASONS,
   registrationQuery,
   verifyRegistration,
-  type PengelolaRegistration,
 } from "@/features/verifikasi/api"
+import { REJECT_REASONS } from "@/lib/data/verifikasi"
+import type { PengelolaRegistration } from "@/types/verifikasi"
 import {
   formatRequestedSchedule,
   formatSubmitted,

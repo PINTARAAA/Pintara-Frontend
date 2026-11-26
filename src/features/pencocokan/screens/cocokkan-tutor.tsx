@@ -25,16 +25,15 @@ import {
   matchingCandidatesQuery,
   MAX_DISTANCE_KM,
   selectTutor,
-  type Candidate,
-  type MatchingCandidates,
 } from "@/features/pencocokan/api"
+import type { Candidate, MatchingCandidates } from "@/types/pencocokan"
 import {
   AlreadyProcessedError,
   gradeLabel,
   needsTutor,
   NotFoundError,
-  type PengelolaRegistration,
 } from "@/features/verifikasi/api"
+import type { PengelolaRegistration } from "@/types/verifikasi"
 import {
   formatRequestedSchedule,
   formatShortAddress,

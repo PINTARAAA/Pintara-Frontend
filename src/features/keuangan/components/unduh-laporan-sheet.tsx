@@ -21,15 +21,13 @@ import {
   SheetTitle,
   toast,
 } from "@/components"
-import {
-  monthKey,
-  generateReport,
-  REPORT_TYPES,
-  type ReportFile,
-  type ReportFormat,
-  type ReportInput,
-  type ReportType,
-} from "@/features/keuangan/api"
+import { monthKey, generateReport, REPORT_TYPES } from "@/features/keuangan/api"
+import type {
+  ReportFile,
+  ReportFormat,
+  ReportInput,
+  ReportType,
+} from "@/types/keuangan"
 
 /*
  * P8 · Unduh laporan · Figma "Laporan Keuangan / Unduh laporan",

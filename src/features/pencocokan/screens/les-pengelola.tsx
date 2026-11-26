@@ -22,10 +22,8 @@ import { SchedulePanel } from "@/features/jadwal-les/components"
 import { offersQuery } from "@/features/penawaran/api"
 import { OffersPanel } from "@/features/penawaran/components"
 import { matchingQueueQuery } from "@/features/pencocokan/api"
-import {
-  gradeLabel,
-  type PengelolaRegistration,
-} from "@/features/verifikasi/api"
+import { gradeLabel } from "@/features/verifikasi/api"
+import type { PengelolaRegistration } from "@/types/verifikasi"
 import { formatDaysAgo } from "@/features/verifikasi/lib"
 import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 

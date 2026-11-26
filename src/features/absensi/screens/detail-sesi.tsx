@@ -18,8 +18,8 @@ import {
   approveSession,
   NotFoundError,
   sessionQuery,
-  type AttendanceSession,
 } from "@/features/absensi/api"
+import type { AttendanceSession } from "@/types/absensi"
 import { NotesCard, ReviewCard } from "@/features/absensi/components"
 import { formatSessionTitle } from "@/features/absensi/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"

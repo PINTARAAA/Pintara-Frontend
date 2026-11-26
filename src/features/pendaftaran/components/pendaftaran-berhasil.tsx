@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components"
-import type { PendaftaranResult } from "@/features/pendaftaran/api"
+import type { PendaftaranResult } from "@/types/pendaftaran"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import { formatDate } from "@/lib/format/date"
 

@@ -25,11 +25,11 @@ import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   AttendanceError,
   NotFoundError,
-  type TutorSession,
   BUDI,
   objectionQuery,
   reviewObjection,
 } from "@/features/presensi/api"
+import type { TutorSession } from "@/types/presensi"
 
 import { formatLongDate } from "@/features/presensi/lib"
 import { formatTimeRange } from "@/lib/format/date"

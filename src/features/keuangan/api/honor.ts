@@ -1,12 +1,17 @@
 import { queryOptions } from "@tanstack/react-query"
 import { format, startOfMonth, subMonths } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
-import {
-  finalByTutor,
-  finalProgress,
-  type TutorSession,
-} from "@/features/presensi/api"
+import { finalByTutor, finalProgress } from "@/features/presensi/api"
+import { buildHonor, recaps, tutorProfiles } from "@/lib/data/keuangan"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import type {
+  HonorDetail,
+  HonorPaymentInput,
+  HonorRecap,
+  PaymentMethod,
+  TutorHonor,
+} from "@/types/keuangan"
+import type { TutorSession } from "@/types/presensi"
 
 /*
  * Rekap & Pembayaran Honor · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -22,185 +27,15 @@ import {
  * diambil dari P6; tutor tanpa tarif ditandai dan tidak ikut dihitung.
  * PINTARA hanya mencatat pembayaran — dana dibayar di luar aplikasi.
  */
-export type PaymentMethod = "tunai" | "transfer"
 
 export const METHOD_LABEL: Record<PaymentMethod, string> = {
   tunai: "Tunai di LBB",
   transfer: "Transfer",
 }
 
-type TutorProfile = {
-  id: string
-  name: string
-  shortName: string
-  /* Tarif honor per sesi (Rupiah); null = belum diatur */
-  rate: number | null
-  method: PaymentMethod
-  methodNote?: string
-}
-
-const tutorProfiles: TutorProfile[] = [
-  {
-    id: "tt-budi",
-    name: "Kak Budi Santoso",
-    shortName: "Kak Budi",
-    rate: 60_000,
-    method: "tunai",
-    methodNote: "Diambil langsung tiap awal bulan",
-  },
-  {
-    id: "tt-laila",
-    name: "Kak Laila Fitri",
-    shortName: "Kak Laila",
-    rate: 60_000,
-    method: "transfer",
-  },
-  {
-    id: "tt-dimas",
-    name: "Kak Dimas Arya",
-    shortName: "Kak Dimas",
-    rate: 60_000,
-    method: "transfer",
-  },
-  {
-    id: "tt-nadia",
-    name: "Kak Nadia Safitri",
-    shortName: "Kak Nadia",
-    rate: 50_000,
-    method: "transfer",
-  },
-  {
-    id: "tt-yoga",
-    name: "Kak Yoga Pratama",
-    shortName: "Kak Yoga",
-    rate: null,
-    method: "transfer",
-  },
-]
-
-export type HonorPayment = {
-  amount: number
-  method: PaymentMethod
-  paidAt: Date
-  proof: { name: string; size: number }
-  recordedAt: Date
-}
-
-export type HonorLine = {
-  subject: string
-  sessions: number
-  rate: number
-  amount: number
-}
-
-export type TutorHonor = {
-  tutorId: string
-  name: string
-  shortName: string
-  lines: HonorLine[]
-  sessions: number
-  total: number
-  method: PaymentMethod
-  methodNote?: string
-  payment?: HonorPayment
-}
-
-type Recap = {
-  month: Date
-  calculatedAt: Date
-  honors: TutorHonor[]
-  /* Tutor yang dilewati karena tarif belum diatur */
-  skipped: string[]
-  /* Rincian sesi per tutor (bila tersedia) */
-  sessionsByTutor: Record<string, TutorSession[]>
-}
-
 const monthKey = (d: Date) => format(startOfMonth(d), "yyyy-MM")
 
-/* ---------- Data contoh: rekap bulan lalu sudah dibayar semua ---------- */
-
-const recaps = new Map<string, Recap>()
-
-;(() => {
-  const october = subMonths(startOfMonth(new Date()), 1)
-  const seed: [string, Record<string, number>, PaymentMethod, Date][] = [
-    ["tt-budi", { Matematika: 7, IPA: 6 }, "tunai", at(-24, 10)],
-    ["tt-laila", { Matematika: 54 }, "transfer", at(-23, 9)],
-    ["tt-dimas", { Fisika: 26, Matematika: 25 }, "transfer", at(-23, 9)],
-    ["tt-nadia", { "Bahasa Inggris": 40 }, "transfer", at(-23, 9)],
-  ]
-  recaps.set(monthKey(october), {
-    month: october,
-    calculatedAt: at(-25, 8, 30),
-    skipped: [],
-    sessionsByTutor: {},
-    honors: seed.map(([id, bySubject, method, paidAt]) => {
-      const profile = tutorProfiles.find((t) => t.id === id)!
-      const honor = buildHonor(profile, bySubject)
-      honor.payment = {
-        amount: honor.total,
-        method,
-        paidAt,
-        proof: {
-          name: `bukti_honor_${profile.shortName.split(" ")[1].toLowerCase()}_okt.jpg`,
-          size: 640_000,
-        },
-        recordedAt: paidAt,
-      }
-      return honor
-    }),
-  })
-})()
-
-function buildHonor(
-  profile: TutorProfile,
-  bySubject: Record<string, number>
-): TutorHonor {
-  const rate = profile.rate ?? 0
-  const lines = Object.entries(bySubject)
-    .filter(([, n]) => n > 0)
-    .map(([subject, sessions]) => ({
-      subject,
-      sessions,
-      rate,
-      amount: sessions * rate,
-    }))
-  return {
-    tutorId: profile.id,
-    name: profile.name,
-    shortName: profile.shortName,
-    lines,
-    sessions: lines.reduce((acc, l) => acc + l.sessions, 0),
-    total: lines.reduce((acc, l) => acc + l.amount, 0),
-    method: profile.method,
-    methodNote: profile.methodNote,
-  }
-}
-
 /* ---------- Rekap per bulan (tab Honor Tutor) ---------- */
-
-export type HonorRecap =
-  | {
-      state: "belum_dihitung"
-      months: Date[]
-      month: Date
-      final: number
-      total: number
-      tutorsWithoutRate: string[]
-    }
-  | {
-      state: "dihitung"
-      months: Date[]
-      month: Date
-      calculatedAt: Date
-      total: number
-      sessions: number
-      paid: { amount: number; tutors: number }
-      unpaid: { amount: number; tutors: number }
-      unpaidHonors: TutorHonor[]
-      paidHonors: TutorHonor[]
-      skipped: string[]
-    }
 
 const isPaid = (h: TutorHonor) => !!h.payment && h.payment.amount >= h.total
 
@@ -313,12 +148,6 @@ export class HonorNotFoundError extends Error {
   }
 }
 
-export type HonorDetail = TutorHonor & {
-  month: Date
-  status: "lunas" | "sebagian" | "belum_bayar"
-  sessionList?: TutorSession[]
-}
-
 function findHonor(monthParam: string, tutorId: string) {
   const recap = recaps.get(monthParam)
   const honor = recap?.honors.find((h) => h.tutorId === tutorId)
@@ -353,13 +182,6 @@ export const honorDetailQuery = (monthParam: string, tutorId: string) =>
     queryKey: ["honor", "rincian", monthParam, tutorId],
     queryFn: () => getHonorDetail(monthParam, tutorId),
   })
-
-export type HonorPaymentInput = {
-  method: PaymentMethod
-  paidAt: Date
-  amount: number
-  proof: { name: string; size: number }
-}
 
 export async function recordHonorPayment(
   monthParam: string,

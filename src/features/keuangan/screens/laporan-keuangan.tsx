@@ -20,11 +20,8 @@ import {
   TopAppBarButton,
 } from "@/components"
 import { DashboardList } from "@/features/dashboard/components"
-import {
-  monthKey,
-  financeSummaryQuery,
-  type FinanceSummary,
-} from "@/features/keuangan/api"
+import { monthKey, financeSummaryQuery } from "@/features/keuangan/api"
+import type { FinanceSummary } from "@/types/keuangan"
 
 import { UnduhLaporanSheet } from "@/features/keuangan/components"
 import { parseMonth } from "@/features/keuangan/lib"

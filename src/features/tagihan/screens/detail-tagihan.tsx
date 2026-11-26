@@ -17,11 +17,11 @@ import {
   NotFoundError,
   remainingOf,
   statusOf,
-  type Bill,
 } from "@/features/tagihan/api"
 import { formatDue, formatPeriod } from "@/features/tagihan/lib"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDate } from "@/lib/format/date"
+import type { Bill } from "@/types/tagihan"
 
 /*
  * W6 · Tagihan / Detail · kartu tagihan (periode, no. invoice · siswa,

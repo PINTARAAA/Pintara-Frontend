@@ -32,9 +32,8 @@ import {
   METHOD_LABEL,
   HonorNotFoundError,
   recordHonorPayment,
-  type HonorDetail,
-  type PaymentMethod,
 } from "@/features/keuangan/api"
+import type { HonorDetail, PaymentMethod } from "@/types/keuangan"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   DOC_ACCEPT,

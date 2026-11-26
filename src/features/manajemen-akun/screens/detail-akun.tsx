@@ -34,8 +34,8 @@ import {
   resetPassword,
   ROLE_LABEL,
   setAccountStatus,
-  type AccountDetail,
 } from "@/features/manajemen-akun/api"
+import type { AccountDetail } from "@/types/manajemen-akun"
 import { formatRelativeDay } from "@/lib/format/date"
 
 /*

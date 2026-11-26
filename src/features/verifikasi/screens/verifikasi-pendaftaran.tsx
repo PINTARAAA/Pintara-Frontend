@@ -25,13 +25,12 @@ import {
   NotificationButton,
 } from "@/features/dashboard/components"
 
-import {
-  gradeLabel,
-  registrationsQuery,
-  type Level,
-  type PengelolaRegistration,
-  type RegistrationStatus,
-} from "@/features/verifikasi/api"
+import { gradeLabel, registrationsQuery } from "@/features/verifikasi/api"
+import type {
+  Level,
+  PengelolaRegistration,
+  RegistrationStatus,
+} from "@/types/verifikasi"
 import { formatDaysAgo } from "@/features/verifikasi/lib"
 import { cn } from "@/lib/styles/cn"
 import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"

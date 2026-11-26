@@ -29,14 +29,12 @@ import {
   toast,
 } from "@/components"
 import {
-  formatTimeSlot,
   NotFoundError,
   routineQuery,
   submitScheduleChange,
-  WEEKDAYS,
-  type ChangeRequest,
-  type RoutineDetail,
 } from "@/features/jadwal/api"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
+import type { ChangeRequest, RoutineDetail } from "@/types/jadwal"
 import {
   ChangeProgressCard,
   ChangeSummaryCard,

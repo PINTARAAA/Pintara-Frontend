@@ -8,7 +8,8 @@ import {
   DashboardSection,
 } from "@/features/dashboard/components"
 import { formatChangeTitle } from "@/features/jadwal/lib"
-import { formatSessions, type ScheduleBoard } from "@/features/jadwal-les/api"
+import { formatSessions } from "@/features/jadwal-les/api"
+import type { ScheduleBoard } from "@/types/jadwal-les"
 import { formatDaysAgo } from "@/features/verifikasi/lib"
 import { formatDayMonth } from "@/lib/format/date"
 

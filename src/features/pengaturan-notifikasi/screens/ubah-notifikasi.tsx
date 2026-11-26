@@ -31,10 +31,12 @@ import {
   saveNotificationSetting,
   TEMPLATE_MAX,
   unknownVariables,
-  type Channel,
-  type NotificationSetting,
-  type Timing,
 } from "@/features/pengaturan-notifikasi/api"
+import type {
+  Channel,
+  NotificationSetting,
+  Timing,
+} from "@/types/pengaturan-notifikasi"
 
 /*
  * P12 · Ubah Pengaturan Notifikasi · Figma "Pengaturan Notifikasi / Ubah

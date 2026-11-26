@@ -1,10 +1,7 @@
 import { differenceInCalendarDays, format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import type {
-  PengelolaRegistration,
-  RejectReason,
-} from "@/features/verifikasi/api"
+import type { PengelolaRegistration, RejectReason } from "@/types/verifikasi"
 
 /* Format tampilan Verifikasi Pendaftaran (P2) */
 

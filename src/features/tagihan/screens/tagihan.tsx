@@ -33,14 +33,16 @@ import {
   paymentsQuery,
   remainingOf,
   statusOf,
-  type Bill,
-  type BillsOverview,
-  type Payment,
-  type PaymentStatus,
 } from "@/features/tagihan/api"
 import { formatDue, formatMonth, formatPeriod } from "@/features/tagihan/lib"
 import { formatRupiah } from "@/lib/format/currency"
 import { cn } from "@/lib/styles/cn"
+import type {
+  Bill,
+  BillsOverview,
+  Payment,
+  PaymentStatus,
+} from "@/types/tagihan"
 
 /*
  * W6 · Tagihan (tab) · Figma "Tagihan / Daftar", "Tagihan / Kosong" dan
