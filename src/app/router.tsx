@@ -1,8 +1,8 @@
 import type * as React from "react"
 import { createBrowserRouter, Navigate, Outlet, type RouteObject } from "react-router"
 
-import { ROLE_NAV, type Role } from "@/app/navigation"
-import { PageLoader } from "@/app/page-loader"
+import { ROLE_NAV, type Role } from "./navigation"
+import { PageLoader } from "./page-loader"
 import RouteError from "@/pages/error/error"
 import { AppFrame } from "@/components/layouts/app-frame"
 import { AppShell } from "@/components/layouts/app-shell"
