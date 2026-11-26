@@ -35,6 +35,7 @@ export function pengelolaDashboardData(): PengelolaDashboardData {
         description: "Terlama menunggu 2 hari",
         count: 3,
         to: "/pengelola/pendaftaran",
+        actionLabel: "Verifikasi",
       },
       {
         id: "cocokkan",
@@ -43,6 +44,7 @@ export function pengelolaDashboardData(): PengelolaDashboardData {
         description: "Siswa terverifikasi belum punya tutor",
         count: 2,
         to: "/pengelola/les",
+        actionLabel: "Cocokkan",
       },
       {
         id: "keberatan",
@@ -51,6 +53,7 @@ export function pengelolaDashboardData(): PengelolaDashboardData {
         description: "Dari wali murid",
         count: 1,
         to: "/pengelola/presensi",
+        actionLabel: "Tinjau",
       },
       {
         id: "final",
@@ -59,6 +62,7 @@ export function pengelolaDashboardData(): PengelolaDashboardData {
         description: "Siap dihitung ke rekap honor",
         count: 18,
         to: "/pengelola/presensi",
+        actionLabel: "Verifikasi",
       },
     ],
     billing: {

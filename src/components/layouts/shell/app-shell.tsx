@@ -1,3 +1,4 @@
+import type * as React from "react"
 import type { LucideIcon } from "lucide-react"
 import { NavLink, Outlet, useMatch, useMatches } from "react-router"
 
@@ -34,6 +35,9 @@ type NavItem = {
   end?: boolean
 }
 
+/* Grup menu sidebar desktop; label opsional tampil sebagai judul kecil */
+type SidebarGroup = { label?: string; items: NavItem[] }
+
 type RouteHandle = { hideBottomNav?: boolean }
 
 function useIsActive(item: NavItem) {
@@ -67,11 +71,23 @@ function SideItem({ item }: { item: NavItem }) {
 function AppShell({
   items,
   utilityItems = [],
+  sidebarGroups,
+  sidebarUtilityItems,
+  sidebarFooter,
 }: {
   /* Menu utama (Beranda, Jadwal, …) */
   items: NavItem[]
   /* Menu utilitas (Akun, Lainnya): grup bawah Sidebar, akhir BottomNavigation */
   utilityItems?: NavItem[]
+  /*
+   * Opsional, khusus desktop: menu sidebar berkelompok (Figma → Sidebar /
+   * Pengelola) menggantikan `items` + `utilityItems` di sidebar. Tanpa
+   * tombol ciutkan. BottomNavigation mobile tetap memakai `items`.
+   */
+  sidebarGroups?: SidebarGroup[]
+  sidebarUtilityItems?: NavItem[]
+  /* Elemen tambahan di grup bawah sidebar berkelompok, mis. tombol Keluar */
+  sidebarFooter?: React.ReactNode
 }) {
   const hideBottomNav = useMatches().some(
     (match) => (match.handle as RouteHandle | undefined)?.hideBottomNav
@@ -79,22 +95,58 @@ function AppShell({
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
-      <Sidebar className="hidden lg:sticky lg:top-0 lg:flex lg:h-dvh">
-        <SidebarBrand />
-        <SidebarNav aria-label="Menu utama" className="flex-1">
-          {items.map((item) => (
-            <SideItem key={item.to} item={item} />
-          ))}
-        </SidebarNav>
-        {utilityItems.length > 0 && (
-          <SidebarNav aria-label="Menu lainnya">
-            {utilityItems.map((item) => (
+      {sidebarGroups ? (
+        <Sidebar className="hidden gap-ns-m lg:sticky lg:top-0 lg:flex lg:h-dvh">
+          <SidebarBrand />
+          <SidebarNav aria-label="Menu utama" className="flex-1 gap-ns-m">
+            {sidebarGroups.map((group, index) => (
+              <div
+                key={group.label ?? index}
+                role="group"
+                aria-label={group.label}
+                className="flex flex-col gap-ns-3xs"
+              >
+                {group.label && (
+                  <p className="px-ns-m py-ns-2xs text-caption font-bold text-grayscale-text-caption uppercase">
+                    {group.label}
+                  </p>
+                )}
+                {group.items.map((item) => (
+                  <SideItem key={item.to} item={item} />
+                ))}
+              </div>
+            ))}
+          </SidebarNav>
+          {(sidebarUtilityItems?.length || sidebarFooter) && (
+            <SidebarNav
+              aria-label="Menu lainnya"
+              className="gap-ns-3xs border-t border-grayscale-surface-disabled pt-ns-m"
+            >
+              {sidebarUtilityItems?.map((item) => (
+                <SideItem key={item.to} item={item} />
+              ))}
+              {sidebarFooter}
+            </SidebarNav>
+          )}
+        </Sidebar>
+      ) : (
+        <Sidebar className="hidden lg:sticky lg:top-0 lg:flex lg:h-dvh">
+          <SidebarBrand />
+          <SidebarNav aria-label="Menu utama" className="flex-1">
+            {items.map((item) => (
               <SideItem key={item.to} item={item} />
             ))}
           </SidebarNav>
-        )}
-        <SidebarToggle />
-      </Sidebar>
+          {utilityItems.length > 0 && (
+            <SidebarNav aria-label="Menu lainnya">
+              {utilityItems.map((item) => (
+                <SideItem key={item.to} item={item} />
+              ))}
+            </SidebarNav>
+          )}
+          <SidebarToggle />
+        </Sidebar>
+      )}
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Outlet />
@@ -111,4 +163,4 @@ function AppShell({
   )
 }
 
-export { AppShell, type NavItem }
+export { AppShell, type NavItem, type SidebarGroup }

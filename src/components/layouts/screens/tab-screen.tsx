@@ -8,8 +8,9 @@ import { cn } from "@/lib/styles"
  *
  * Mobile (sesuai Figma): Top app bar "Main" menempel di atas, konten berlatar
  *   Grayscale/Surface/subtitle, padding 16 (bawah 24), jarak antar bagian 24.
- * Desktop (≥ lg): padding samping 32 dan lebar konten maks. 1152px (72rem).
- *   Top app bar dan konten memakai `--gutter` yang sama agar rata kiri.
+ * Desktop (≥ lg, Figma "… (Desktop)"): konten rata kiri setelah sidebar
+ *   dengan padding 40 (`--gutter`), lebar maks. 1440px (90rem); sisa ruang
+ *   masuk ke padding kanan (`--gutter-end`). Top app bar memakai nilai sama.
  *   Susun bagian konten dalam grid (mis. `lg:grid-cols-2`) bila perlu.
  *
  * <TabScreen subtitle="Selamat pagi," title="Ibu Sari Wulandari"
@@ -34,23 +35,23 @@ function TabScreen({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-1 flex-col [--gutter:var(--spacing-ns-l)] lg:[--gutter:max(var(--spacing-ns-3xl),calc((100%-72rem)/2))]">
+    <div className="flex flex-1 flex-col [--gutter:var(--spacing-ns-l)] [--gutter-end:var(--spacing-ns-l)] lg:[--gutter:var(--spacing-ns-4xl)] lg:[--gutter-end:max(var(--spacing-ns-4xl),calc(100%-90rem-var(--spacing-ns-4xl)))]">
       <div className="sticky top-0 z-10">
         <TopAppBar
           title={title}
           subtitle={subtitle}
           action={action}
-          className="px-(--gutter) lg:py-ns-l"
+          className="pl-(--gutter) pr-(--gutter-end) lg:py-ns-l"
         />
         {subheader != null && (
-          <div className="bg-grayscale-surface-default px-(--gutter) pt-ns-s">
+          <div className="bg-grayscale-surface-default pl-(--gutter) pr-(--gutter-end) pt-ns-s">
             {subheader}
           </div>
         )}
       </div>
       <main
         className={cn(
-          "flex flex-1 flex-col gap-ns-2xl px-(--gutter) pt-ns-l pb-ns-2xl lg:pt-ns-2xl lg:pb-ns-3xl",
+          "flex flex-1 flex-col gap-ns-2xl pl-(--gutter) pr-(--gutter-end) pt-ns-l pb-ns-2xl lg:pt-ns-2xl lg:pb-ns-3xl",
           className
         )}
       >

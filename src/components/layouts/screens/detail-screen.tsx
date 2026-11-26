@@ -12,8 +12,9 @@ import { cn } from "@/lib/styles"
  *   menempel di atas; konten padding 16 (bawah 24), gap 16; bilah aksi
  *   menempel di bawah (latar putih, garis atas Grayscale/Border/disabled,
  *   padding 12/16/16, gap 12, tombol mengisi lebar).
- * Desktop (≥ lg): konten maks. 768px (48rem) agar baris teks & formulir
- *   tetap nyaman dibaca; bilah aksi tidak lagi menempel, tombolnya rata kanan
+ * Desktop (≥ lg): konten rata kiri dengan padding 40 (`--gutter`), lebar
+ *   maks. 768px (48rem) agar baris teks & formulir tetap nyaman dibaca;
+ *   sisa ruang masuk ke padding kanan (`--gutter-end`); bilah aksi tidak lagi menempel, tombolnya rata kanan
  *   di akhir konten dengan lebar sesuai label.
  *
  * <DetailScreen title="Detail Jadwal"
@@ -49,7 +50,7 @@ function DetailScreen({
   return (
     <div
       className={cn(
-        "flex flex-1 flex-col [--gutter:var(--spacing-ns-l)] lg:[--gutter:max(var(--spacing-ns-3xl),calc((100%-48rem)/2))]",
+        "flex flex-1 flex-col [--gutter:var(--spacing-ns-l)] [--gutter-end:var(--spacing-ns-l)] lg:[--gutter:var(--spacing-ns-4xl)] lg:[--gutter-end:max(var(--spacing-ns-4xl),calc(100%-48rem-var(--spacing-ns-4xl)))]",
         surface === "default"
           ? "bg-grayscale-surface-default"
           : "bg-grayscale-surface-subtitle"
@@ -61,10 +62,10 @@ function DetailScreen({
           title={title}
           onBack={onBack ?? (() => navigate(-1))}
           action={action}
-          className="px-(--gutter) lg:py-ns-l"
+          className="pl-(--gutter) pr-(--gutter-end) lg:py-ns-l"
         />
         {subheader != null && (
-          <div className="border-b border-grayscale-border-disabled bg-grayscale-surface-default px-(--gutter) py-ns-m">
+          <div className="border-b border-grayscale-border-disabled bg-grayscale-surface-default pl-(--gutter) pr-(--gutter-end) py-ns-m">
             {subheader}
           </div>
         )}
@@ -72,7 +73,7 @@ function DetailScreen({
 
       <main
         className={cn(
-          "flex flex-1 flex-col gap-ns-l px-(--gutter) pt-ns-l pb-ns-2xl lg:flex-none lg:pt-ns-2xl",
+          "flex flex-1 flex-col gap-ns-l pl-(--gutter) pr-(--gutter-end) pt-ns-l pb-ns-2xl lg:flex-none lg:pt-ns-2xl",
           className
         )}
       >
@@ -83,7 +84,7 @@ function DetailScreen({
         <div
           data-slot="action-bar"
           className={cn(
-            "sticky bottom-0 z-10 flex gap-ns-m border-t border-grayscale-border-disabled bg-grayscale-surface-default px-(--gutter) pt-ns-m pb-[max(var(--spacing-ns-l),env(safe-area-inset-bottom))] *:flex-1",
+            "sticky bottom-0 z-10 flex gap-ns-m border-t border-grayscale-border-disabled bg-grayscale-surface-default pl-(--gutter) pr-(--gutter-end) pt-ns-m pb-[max(var(--spacing-ns-l),env(safe-area-inset-bottom))] *:flex-1",
             "lg:static lg:justify-end lg:border-t-0 lg:bg-transparent lg:pt-0 lg:pb-ns-3xl lg:*:flex-none"
           )}
         >

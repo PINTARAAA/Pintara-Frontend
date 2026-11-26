@@ -11,6 +11,8 @@ export type DashboardTask = {
   amount?: number
   count?: number
   to: string
+  /* Label tombol aksi di daftar "Perlu tindakan" versi desktop, mis. "Verifikasi" */
+  actionLabel?: string
 }
 
 export type Person = {

@@ -1,31 +1,13 @@
-import {
-  BookOpenIcon,
-  CalendarIcon,
-  CircleCheckIcon,
-  ClipboardCheckIcon,
-  TriangleAlertIcon,
-  UserPlusIcon,
-  UsersIcon,
-  WalletIcon,
-  type LucideIcon,
-} from "lucide-react"
+import { CircleCheckIcon } from "lucide-react"
 import { Link } from "react-router"
 
 import { ListItem } from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import type { DashboardTask, TaskIcon } from "@/types/dashboard"
+import { TASK_ICONS } from "@/features/dashboard/components/task-icons"
+import type { DashboardTask } from "@/types/dashboard"
 import { formatRupiah } from "@/lib/format"
 import { cn } from "@/lib/styles"
 
-const ICONS: Record<TaskIcon, LucideIcon> = {
-  clipboard: ClipboardCheckIcon,
-  alert: TriangleAlertIcon,
-  wallet: WalletIcon,
-  "user-plus": UserPlusIcon,
-  users: UsersIcon,
-  calendar: CalendarIcon,
-  book: BookOpenIcon,
-}
 
 /*
  * TaskList · daftar "Perlu tindakan". Tiap baris adalah tautan ke halaman
@@ -67,7 +49,7 @@ function TaskList({
       )}
     >
       {tasks.map((task) => {
-        const Icon = ICONS[task.icon]
+        const Icon = TASK_ICONS[task.icon]
         return (
           <ListItem
             key={task.id}

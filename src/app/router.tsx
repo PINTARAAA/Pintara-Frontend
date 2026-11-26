@@ -1,7 +1,8 @@
 import type * as React from "react"
 import { createBrowserRouter, Navigate, Outlet, type RouteObject } from "react-router"
 
-import { ROLE_NAV, type Role } from "./navigation"
+import { ROLE_NAV, ROLE_SIDEBAR, type Role } from "./navigation"
+import { SidebarLogoutItem } from "@/features/akun/components/account-help"
 import { PageLoader } from "./page-loader"
 import RouteError from "@/pages/error/error"
 import { AppFrame, AppShell } from "@/components"
@@ -378,11 +379,24 @@ const PLACEHOLDER_DETAILS: RouteObject[] = [
 /* Route satu peran: semua layarnya di dalam AppShell */
 function roleRoutes(role: Role): RouteObject {
   const { main, utility } = ROLE_NAV[role]
+  const sidebar = ROLE_SIDEBAR[role]
   const [home, ...tabs] = [...main, ...utility]
   const extras = EXTRA_ROUTES[role] ?? []
   return {
     path: role,
-    element: <AppShell items={main} utilityItems={utility} />,
+    element: (
+      <AppShell
+        items={main}
+        utilityItems={utility}
+        sidebarGroups={sidebar?.groups}
+        sidebarUtilityItems={sidebar?.utility}
+        sidebarFooter={
+          sidebar && (
+            <SidebarLogoutItem description={sidebar.logoutDescription} />
+          )
+        }
+      />
+    ),
     children: [
       { index: true, handle: { title: home.label }, lazy: beranda[role] },
       ...tabs.map((tab) => ({
