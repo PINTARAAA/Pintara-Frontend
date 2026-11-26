@@ -1,27 +1,26 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
+  DetailScreen,
+  StatusBadge,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
+  DataState,
+} from "@/components"
 import {
   billQuery,
   NotFoundError,
   remainingOf,
   statusOf,
-  type Bill,
-} from "@/features/tagihan/api/tagihan"
-import { formatDue, formatPeriod } from "@/features/tagihan/lib/format"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDate } from "@/lib/format/date"
+} from "@/features/tagihan/api"
+import { formatDue, formatPeriod } from "@/features/tagihan/lib"
+import { formatRupiah, formatDate } from "@/lib/format"
+import type { Bill } from "@/types/tagihan"
 
 /*
  * W6 · Tagihan / Detail · kartu tagihan (periode, no. invoice · siswa,

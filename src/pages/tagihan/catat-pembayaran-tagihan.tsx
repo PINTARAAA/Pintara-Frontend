@@ -1,4 +1,4 @@
-import { CatatPembayaranTagihan } from "@/features/keuangan/screens/catat-pembayaran-tagihan"
+import { CatatPembayaranTagihan } from "@/features/keuangan"
 
 export default function CatatPembayaranTagihanRoute() {
   return <CatatPembayaranTagihan />

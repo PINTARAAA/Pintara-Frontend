@@ -1,4 +1,4 @@
-import { BayarTagihan } from "@/features/tagihan/screens/bayar-tagihan"
+import { BayarTagihan } from "@/features/tagihan"
 
 export default function BayarTagihanRoute() {
   return <BayarTagihan />

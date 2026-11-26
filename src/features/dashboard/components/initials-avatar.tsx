@@ -1,4 +1,4 @@
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Avatar inisial (Figma: Avatar di Student switcher, Next session, Tutor

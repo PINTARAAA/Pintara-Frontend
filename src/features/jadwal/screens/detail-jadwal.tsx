@@ -3,20 +3,21 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
 import {
-  formatTimeSlot,
-  NotFoundError,
-  routineQuery,
-  WEEKDAYS,
-} from "@/features/jadwal/api/jadwal"
-import { formatChangeTitle } from "@/features/jadwal/lib/format"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatDate } from "@/lib/format/date"
+  DetailScreen,
+  AlertBanner,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+} from "@/components"
+import { NotFoundError, routineQuery } from "@/features/jadwal/api"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
+import { formatChangeTitle } from "@/features/jadwal/lib"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { formatDate } from "@/lib/format"
 
 /*
  * W4 · Jadwal Les / Detail · kartu judul (mapel · hari, jam · sejak),

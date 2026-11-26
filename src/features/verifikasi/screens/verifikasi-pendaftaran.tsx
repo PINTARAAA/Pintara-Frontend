@@ -3,9 +3,9 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { FilterIcon, SearchIcon, UserIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
 import {
+  TabScreen,
+  DataState,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -13,22 +13,27 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { ListItem } from "@/components/ui/list-item"
-import { Tabs, TabsCount, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
+  Input,
+  ListItem,
+  Tabs,
+  TabsCount,
+  TabsList,
+  TabsTrigger,
+} from "@/components"
 import {
-  gradeLabel,
-  registrationsQuery,
-  type Level,
-  type PengelolaRegistration,
-  type RegistrationStatus,
-} from "@/features/verifikasi/api/verifikasi"
-import { formatDaysAgo } from "@/features/verifikasi/lib/format"
-import { cn } from "@/lib/styles/cn"
-import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
+  DashboardList,
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { gradeLabel, registrationsQuery } from "@/features/verifikasi/api"
+import type {
+  Level,
+  PengelolaRegistration,
+  RegistrationStatus,
+} from "@/types/verifikasi"
+import { formatDaysAgo } from "@/lib/format"
+import { cn } from "@/lib/styles"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 /*
  * P2 · Verifikasi Pendaftaran (tab pengelola) · Figma "Verifikasi

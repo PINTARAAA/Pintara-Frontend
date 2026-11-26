@@ -2,19 +2,15 @@ import type { UseQueryResult } from "@tanstack/react-query"
 import { CalendarIcon, RotateCwIcon, UsersIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import { DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { formatChangeTitle } from "@/features/jadwal/lib/format"
-import {
-  formatSessions,
-  type ScheduleBoard,
-} from "@/features/jadwal-les/api/jadwal-les"
-import { formatDaysAgo } from "@/features/verifikasi/lib/format"
-import { formatDayMonth } from "@/lib/format/date"
+} from "@/features/dashboard/components"
+import { formatChangeTitle } from "@/features/jadwal/lib"
+import { formatSessions } from "@/features/jadwal-les/api"
+import type { ScheduleBoard } from "@/types/jadwal-les"
+import { formatDaysAgo, formatDayMonth } from "@/lib/format"
 
 /*
  * P5 · Jadwal (tab Les) · Figma "Atur Jadwal / Daftar"

@@ -4,20 +4,28 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
+import {
+  DetailScreen,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+} from "@/components"
 import {
   honorDetailQuery,
   METHOD_LABEL,
-  NotFoundError,
-} from "@/features/keuangan/api/honor"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { firstName, formatWeekdayShort } from "@/features/presensi/lib/format"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDate } from "@/lib/format/date"
+  HonorNotFoundError,
+} from "@/features/keuangan/api"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import {
+  firstName,
+  formatWeekdayDate,
+  formatRupiah,
+  formatDate,
+} from "@/lib/format"
 
 /*
  * P7 · Rincian Honor · Figma "Honor / Rincian tutor"
@@ -58,7 +66,7 @@ function RincianHonor() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat rincian honor…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        query.error instanceof HonorNotFoundError ? (
           <DataState
             state="empty"
             title="Rincian honor tidak ditemukan"
@@ -149,7 +157,7 @@ function RincianHonor() {
                             className="gap-ns-m flex justify-between"
                           >
                             <span>
-                              {formatWeekdayShort(s.start)} · {s.subject} ·{" "}
+                              {formatWeekdayDate(s.start)} · {s.subject} ·{" "}
                               {firstName(s.student.name)}
                             </span>
                             <span className="text-grayscale-text-caption shrink-0">

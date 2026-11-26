@@ -1,13 +1,15 @@
-import { StatusBadge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import {
-  declineLabel,
-  type Offer,
-  type OfferSummary,
-} from "@/features/penawaran/api/penawaran"
-import { formatKm } from "@/features/penawaran/lib/format"
-import { formatRupiah } from "@/lib/format/currency"
+  StatusBadge,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { declineLabel } from "@/features/penawaran/api"
+import type { Offer, OfferSummary } from "@/types/penawaran"
+import { formatKm } from "@/features/penawaran/lib"
+import { formatRupiah } from "@/lib/format"
 
 /* Kartu "Ringkasan penawaran" (P4 · Buat penawaran & Detail), label 104px */
 function OfferSummaryCard({ offer }: { offer: OfferSummary }) {

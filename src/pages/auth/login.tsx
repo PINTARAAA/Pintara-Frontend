@@ -1,8 +1,8 @@
 import { useNavigate, useSearchParams } from "react-router"
 
-import { AuthLayout } from "@/components/layouts/auth-layout"
-import { LoginForm } from "@/features/auth/components/login-form"
-import type { LoginNotice } from "@/features/auth/types"
+import { AuthLayout } from "@/components"
+import { LoginForm } from "@/features/auth"
+import type { LoginNotice } from "@/types/auth"
 
 /*
  * /masuk · Figma PINTARA → UI Screen → Umum → 00 · Autentikasi
@@ -20,6 +20,7 @@ export default function LoginRoute() {
     <AuthLayout
       title="Masuk ke akun Anda"
       description="Gunakan email atau username dan password yang terdaftar."
+      note="Belum punya akun? Akun dibuat oleh Pengelola LBB setelah pendaftaran diverifikasi."
     >
       <LoginForm
         notice={notice}

@@ -2,28 +2,26 @@ import * as React from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
 import {
+  DetailScreen,
+  AlertBanner,
+  Button,
+  DataState,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
-import { TimePicker } from "@/components/ui/time-picker"
-import { toast } from "@/components/ui/toast-api"
+  Switch,
+  Textarea,
+  TimePicker,
+  toast,
+} from "@/components"
 import {
   CHANNEL_LABEL,
   fillTemplate,
@@ -33,10 +31,12 @@ import {
   saveNotificationSetting,
   TEMPLATE_MAX,
   unknownVariables,
-  type Channel,
-  type NotificationSetting,
-  type Timing,
-} from "@/features/pengaturan-notifikasi/api/pengaturan-notifikasi"
+} from "@/features/pengaturan-notifikasi/api"
+import type {
+  Channel,
+  NotificationSetting,
+  Timing,
+} from "@/types/pengaturan-notifikasi"
 
 /*
  * P12 · Ubah Pengaturan Notifikasi · Figma "Pengaturan Notifikasi / Ubah

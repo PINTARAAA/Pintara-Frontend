@@ -3,27 +3,27 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { PlusIcon, SearchIcon, UserIcon } from "lucide-react"
 import { Link, useNavigate, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { Input } from "@/components/ui/input"
-import { ListItem } from "@/components/ui/list-item"
 import {
+  DetailScreen,
+  StatusBadge,
+  DataState,
+  Input,
+  ListItem,
   Tabs,
   TabsContent,
   TabsCount,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import {
-  accountsQuery,
-  type AccountList,
-  type AccountRole,
-  type AccountRow,
-} from "@/features/manajemen-akun/api/akun"
-import { cn } from "@/lib/styles/cn"
+  TopAppBarButton,
+} from "@/components"
+import { DashboardList } from "@/features/dashboard/components"
+import { accountsQuery } from "@/features/manajemen-akun/api"
+import type {
+  AccountList,
+  AccountRole,
+  AccountRow,
+} from "@/types/manajemen-akun"
+import { cn } from "@/lib/styles"
 
 /*
  * P10 · Manajemen Akun · Figma "Manajemen Akun / Daftar".

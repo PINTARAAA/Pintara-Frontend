@@ -4,40 +4,43 @@ import { format, isAfter, startOfDay } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { DatePicker } from "@/components/ui/date-picker"
 import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  DatePicker,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { FileUpload, type UploadStatus } from "@/components/ui/file-upload"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { toast } from "@/components/ui/toast-api"
+  FileUpload,
+  type UploadStatus,
+  Input,
+  RadioGroup,
+  RadioGroupItem,
+  toast,
+} from "@/components"
 import {
   honorDetailQuery,
   METHOD_LABEL,
-  NotFoundError,
+  HonorNotFoundError,
   recordHonorPayment,
-  type HonorDetail,
-  type PaymentMethod,
-} from "@/features/keuangan/api/honor"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+} from "@/features/keuangan/api"
+import type { HonorDetail, HonorPaymentMethod } from "@/types/keuangan"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   DOC_ACCEPT,
   uploadDocumentation,
   validateDocumentation,
-} from "@/features/presensi/api/presensi"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDate } from "@/lib/format/date"
+} from "@/features/presensi/api"
+import { formatRupiah, formatDate } from "@/lib/format"
 
 /*
  * P7 · Catat Pembayaran Honor · Figma "Honor / Catat pembayaran" dan
@@ -79,7 +82,7 @@ function CatatPembayaranHonor() {
     <DetailScreen title="Catat Pembayaran">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat honor…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !(query.error instanceof HonorNotFoundError) ? (
         <DataState
           state="error"
           title="Honor gagal dimuat"
@@ -114,7 +117,7 @@ function PaymentForm({
   const queryClient = useQueryClient()
   const remaining = honor.total - (honor.payment?.amount ?? 0)
 
-  const [method, setMethod] = React.useState<PaymentMethod>(honor.method)
+  const [method, setMethod] = React.useState<HonorPaymentMethod>(honor.method)
   const [paidAt, setPaidAt] = React.useState<Date | null>(new Date())
   const [amount, setAmount] = React.useState(remaining)
   const [doc, setDoc] = React.useState<DocState>(EMPTY_DOC)
@@ -218,7 +221,7 @@ function PaymentForm({
           </legend>
           <RadioGroup
             value={method}
-            onValueChange={(v) => setMethod(v as PaymentMethod)}
+            onValueChange={(v) => setMethod(v as HonorPaymentMethod)}
             className="gap-0 *:min-h-12"
           >
             <RadioGroupItem

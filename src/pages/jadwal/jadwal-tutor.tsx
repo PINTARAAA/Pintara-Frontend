@@ -1,4 +1,4 @@
-import { JadwalTutor } from "@/features/jadwal/screens/jadwal-tutor"
+import { JadwalTutor } from "@/features/jadwal"
 
 export default function JadwalTutorRoute() {
   return <JadwalTutor />

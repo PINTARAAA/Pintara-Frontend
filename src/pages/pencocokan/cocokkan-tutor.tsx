@@ -1,4 +1,4 @@
-import { CocokkanTutor } from "@/features/pencocokan/screens/cocokkan-tutor"
+import { CocokkanTutor } from "@/features/pencocokan"
 
 export default function CocokkanTutorRoute() {
   return <CocokkanTutor />

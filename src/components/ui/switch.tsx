@@ -2,13 +2,12 @@
 
 import * as React from "react"
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
-import { cn } from "@/lib/styles/cn"
-
 import {
+  cn,
   choiceFocusRing,
   choiceLabelVariants,
   type FieldSize,
-} from "@/lib/styles/field-variants"
+} from "@/lib/styles"
 
 /*
  * Switch · Figma PINTARA → Components → 02 · Form Controls → Toggle

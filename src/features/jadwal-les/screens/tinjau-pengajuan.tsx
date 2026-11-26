@@ -4,25 +4,30 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DataState } from "@/components/ui/data-state"
-import { toast } from "@/components/ui/toast-api"
-import { NotFoundError } from "@/features/jadwal/api/jadwal"
+import {
+  DetailScreen,
+  AlertBanner,
+  ConfirmDialog,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  DataState,
+  toast,
+} from "@/components"
+import { NotFoundError } from "@/features/jadwal/api"
 import {
   changeReviewQuery,
   formatRange,
   reviewChangeRequest,
   ScheduleConflictError,
   suggestFreeSlot,
-  type ChangeReview,
-} from "@/features/jadwal-les/api/jadwal-les"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { firstName } from "@/features/penawaran/lib/format"
+} from "@/features/jadwal-les/api"
+import type { ChangeReview } from "@/types/jadwal-les"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { firstName } from "@/lib/format"
 
 /*
  * P5 · Tinjau Pengajuan Perubahan · Figma "Atur Jadwal / Tinjau

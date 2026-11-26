@@ -3,7 +3,7 @@ import { CheckIcon, FileTextIcon, UploadIcon, XIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * File upload · Figma PINTARA → Components → 02 · Form Controls → File upload

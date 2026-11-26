@@ -3,21 +3,21 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
 import {
-  lessonHistoryQuery,
-  type LessonHistory,
-} from "@/features/absensi/api/absensi"
-import { FilterPill } from "@/components/ui/filter-pill"
+  DetailScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
+  FilterPill,
+} from "@/components"
+import { lessonHistoryQuery } from "@/features/absensi/api"
+import type { LessonHistory } from "@/types/absensi"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { formatShortWeekdayDate } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+} from "@/features/dashboard/components"
+import { formatShortWeekdayDate, parseMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * W7 · Riwayat Les (wali) · Figma "Riwayat Les / Wali"
@@ -29,12 +29,6 @@ import { cn } from "@/lib/styles/cn"
  */
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
-
-function parseMonth(value: string | null) {
-  if (!value || !/^\d{4}-\d{2}$/.test(value)) return undefined
-  const [y, m] = value.split("-").map(Number)
-  return new Date(y, m - 1, 1)
-}
 
 function RiwayatLes() {
   const [params, setParams] = useSearchParams()

@@ -1,4 +1,4 @@
-import { NotifikasiWali } from "@/features/notifikasi/screens/notifikasi-wali"
+import { NotifikasiWali } from "@/features/notifikasi"
 
 export default function NotifikasiWaliRoute() {
   return <NotifikasiWali />

@@ -1,4 +1,4 @@
-import { StatusPendaftaran } from "@/features/pendaftaran/screens/status-pendaftaran"
+import { StatusPendaftaran } from "@/features/pendaftaran"
 
 export default function StatusPendaftaranRoute() {
   return <StatusPendaftaran />

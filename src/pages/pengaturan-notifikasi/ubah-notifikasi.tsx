@@ -1,4 +1,4 @@
-import { UbahNotifikasi } from "@/features/pengaturan-notifikasi/screens/ubah-notifikasi"
+import { UbahNotifikasi } from "@/features/pengaturan-notifikasi"
 
 export default function UbahNotifikasiRoute() {
   return <UbahNotifikasi />

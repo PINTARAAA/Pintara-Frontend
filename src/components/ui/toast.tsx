@@ -3,7 +3,7 @@ import { XIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { StatusIcon, type FeedbackStatus } from "@/components/ui/status-icon"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Toast / Snackbar · Figma PINTARA → Components → 06 · Feedback & Overlay

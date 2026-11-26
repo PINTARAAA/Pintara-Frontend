@@ -1,13 +1,10 @@
 import * as React from "react"
 import { SearchIcon } from "lucide-react"
 
-import { FilterPill } from "@/components/ui/filter-pill"
-import { Input } from "@/components/ui/input"
-import {
-  DISTRICTS,
-  type MasterFilter,
-} from "@/features/data-master/api/data-master"
-import { ALL } from "@/features/data-master/hooks/use-master-filter"
+import { FilterPill, Input } from "@/components"
+import { DISTRICTS } from "@/lib/data/data-master"
+import type { MasterFilter } from "@/types/data-master"
+import { ALL } from "@/features/data-master/hooks"
 
 /*
  * P9 · "Search & filters" pada Data Tutor / Data Siswa: kolom cari lalu

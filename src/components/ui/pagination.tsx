@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Pagination · Figma PINTARA → Components → 04 · Navigation → Pagination

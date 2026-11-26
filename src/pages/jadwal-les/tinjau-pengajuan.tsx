@@ -1,4 +1,4 @@
-import { TinjauPengajuan } from "@/features/jadwal-les/screens/tinjau-pengajuan"
+import { TinjauPengajuan } from "@/features/jadwal-les"
 
 export default function TinjauPengajuanRoute() {
   return <TinjauPengajuan />

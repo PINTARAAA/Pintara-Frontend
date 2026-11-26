@@ -1,9 +1,9 @@
 import { useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { monthKey } from "@/features/keuangan/api/honor"
-import { StudentBillsPanel } from "@/features/keuangan/components/student-bills-panel"
-import { parseMonth } from "@/features/keuangan/lib/month"
+import { DetailScreen } from "@/components"
+import { monthKey } from "@/features/keuangan/api"
+import { StudentBillsPanel } from "@/features/keuangan/components"
+import { parseMonth } from "@/lib/format"
 
 /*
  * P8 · Tagihan Siswa · Figma "Laporan Keuangan / Tagihan siswa".

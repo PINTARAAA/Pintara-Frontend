@@ -1,15 +1,19 @@
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { TimePicker } from "@/components/ui/time-picker"
+import {
+  AlertBanner,
+  Checkbox,
+  Field,
+  FieldError,
+  FieldLabel,
+  TimePicker,
+} from "@/components"
 import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
   DAY_OPTIONS,
   SESSION_MINUTES,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas/pendaftaran-schema"
+} from "@/features/pendaftaran/schemas"
 
 /* Langkah 3 · Jadwal Belajar */
 function StepJadwalBelajar() {

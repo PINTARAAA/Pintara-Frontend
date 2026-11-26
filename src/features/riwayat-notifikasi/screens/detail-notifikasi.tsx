@@ -3,12 +3,14 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { toast } from "@/components/ui/toast-api"
-import { InfoCard } from "@/features/data-master/components/profile-parts"
+import {
+  DetailScreen,
+  StatusBadge,
+  Button,
+  DataState,
+  toast,
+} from "@/components"
+import { InfoCard } from "@/features/data-master/components"
 import {
   channelContact,
   KIND_LABEL,
@@ -17,8 +19,8 @@ import {
   recipientLabel,
   resendNotification,
   ResendFailedError,
-  type NotificationLog,
-} from "@/features/riwayat-notifikasi/api/riwayat-notifikasi"
+} from "@/features/riwayat-notifikasi/api"
+import type { NotificationLog } from "@/types/riwayat-notifikasi"
 
 /*
  * P13 · Detail Notifikasi · Figma "Riwayat Notifikasi / Detail gagal".

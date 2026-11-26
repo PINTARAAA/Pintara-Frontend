@@ -1,4 +1,4 @@
-import { DataSiswa } from "@/features/data-master/screens/data-siswa"
+import { DataSiswa } from "@/features/data-master"
 
 export default function DataSiswaRoute() {
   return <DataSiswa />

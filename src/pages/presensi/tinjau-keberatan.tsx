@@ -1,4 +1,4 @@
-import { TinjauKeberatan } from "@/features/presensi/screens/tinjau-keberatan"
+import { TinjauKeberatan } from "@/features/presensi"
 
 export default function TinjauKeberatanRoute() {
   return <TinjauKeberatan />

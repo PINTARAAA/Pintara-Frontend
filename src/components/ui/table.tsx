@@ -3,7 +3,7 @@
 import * as React from "react"
 import { ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon } from "lucide-react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Table · Figma PINTARA → Components → 05 · Data Display → Data table

@@ -1,4 +1,4 @@
-import { ProfilTutor } from "@/features/data-master/screens/profil-tutor"
+import { ProfilTutor } from "@/features/data-master"
 
 export default function ProfilTutorRoute() {
   return <ProfilTutor />

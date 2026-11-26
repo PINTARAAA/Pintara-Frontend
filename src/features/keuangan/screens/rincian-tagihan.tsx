@@ -4,20 +4,16 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
+import { DetailScreen, StatusBadge, Button, DataState } from "@/components"
 import {
   billRemaining,
   billStatus,
   billTotal,
-  NotFoundError,
+  ReportNotFoundError,
   studentBillQuery,
-  type BillPayment,
-} from "@/features/keuangan/api/laporan"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDayMonth } from "@/lib/format/date"
+} from "@/features/keuangan/api"
+import type { BillPayment } from "@/types/keuangan"
+import { formatRupiah, formatDayMonth } from "@/lib/format"
 
 /*
  * P8 · Rincian Tagihan · Figma "Laporan Keuangan / Rincian tagihan".
@@ -99,7 +95,7 @@ function RincianTagihan() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat rincian tagihan…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        query.error instanceof ReportNotFoundError ? (
           <DataState
             state="empty"
             title="Tagihan tidak ditemukan"

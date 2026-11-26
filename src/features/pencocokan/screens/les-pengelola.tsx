@@ -2,29 +2,30 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query"
 import { UserIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
 import {
+  TabScreen,
+  DataState,
+  ListItem,
   Tabs,
   TabsContent,
   TabsCount,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { scheduleBoardQuery } from "@/features/jadwal-les/api/jadwal-les"
-import { SchedulePanel } from "@/features/jadwal-les/components/schedule-panel"
-import { offersQuery } from "@/features/penawaran/api/penawaran"
-import { OffersPanel } from "@/features/penawaran/components/offers-panel"
-import { matchingQueueQuery } from "@/features/pencocokan/api/pencocokan"
+} from "@/components"
 import {
-  gradeLabel,
-  type PengelolaRegistration,
-} from "@/features/verifikasi/api/verifikasi"
-import { formatDaysAgo } from "@/features/verifikasi/lib/format"
-import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
+  DashboardList,
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { scheduleBoardQuery } from "@/features/jadwal-les/api"
+import { SchedulePanel } from "@/features/jadwal-les/components"
+import { offersQuery } from "@/features/penawaran/api"
+import { OffersPanel } from "@/features/penawaran/components"
+import { matchingQueueQuery } from "@/features/pencocokan/api"
+import { gradeLabel } from "@/features/verifikasi/api"
+import type { PengelolaRegistration } from "@/types/verifikasi"
+import { formatDaysAgo } from "@/lib/format"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 /*
  * Les (tab pengelola) · tab Pencocokan · Penawaran · Jadwal.

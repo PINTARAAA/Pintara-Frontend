@@ -1,12 +1,17 @@
 import { Link } from "react-router"
 
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { PendaftaranResult } from "@/features/pendaftaran/api/pendaftaran"
+import {
+  ResultScreen,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components"
+import type { PendaftaranResult } from "@/types/pendaftaran"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatDate } from "@/lib/format/date"
+import { formatDate } from "@/lib/format"
 
 /*
  * Pendaftaran / Berhasil · kartu Ringkasan, aksi Primary Large "Pantau

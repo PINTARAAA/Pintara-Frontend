@@ -1,14 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { changeRequestQuery, NotFoundError } from "@/features/jadwal/api/jadwal"
+import {
+  DetailScreen,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+} from "@/components"
+import { changeRequestQuery, NotFoundError } from "@/features/jadwal/api"
 import {
   ChangeProgressCard,
   ChangeSummaryCard,
-} from "@/features/jadwal/components/change-request"
+} from "@/features/jadwal/components"
 
 /*
  * W4 · Detail pengajuan perubahan (dibuka dari "Pengajuan perubahan" di

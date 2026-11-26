@@ -4,43 +4,41 @@ import { format, isAfter, startOfDay } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { DatePicker } from "@/components/ui/date-picker"
 import {
+  DetailScreen,
+  Button,
+  DataState,
+  DatePicker,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { FileUpload, type UploadStatus } from "@/components/ui/file-upload"
-import { Input } from "@/components/ui/input"
-import {
+  FileUpload,
+  type UploadStatus,
+  Input,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { toast } from "@/components/ui/toast-api"
+  toast,
+} from "@/components"
 import {
   billRemaining,
   billStatus,
   MANUAL_METHODS,
-  NotFoundError,
+  ReportNotFoundError,
   recordManualPayment,
   studentBillQuery,
-  type ManualMethod,
-  type StudentBill,
-} from "@/features/keuangan/api/laporan"
+} from "@/features/keuangan/api"
+import type { ManualMethod, StudentBill } from "@/types/keuangan"
 import {
   DOC_ACCEPT,
   uploadDocumentation,
   validateDocumentation,
-} from "@/features/presensi/api/presensi"
-import { formatRupiah } from "@/lib/format/currency"
+} from "@/features/presensi/api"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * P8 · Catat Pembayaran Manual · Figma "Laporan Keuangan / Catat pembayaran
@@ -81,7 +79,7 @@ function CatatPembayaranTagihan() {
     <DetailScreen title="Catat Pembayaran">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat tagihan…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !(query.error instanceof ReportNotFoundError) ? (
         <DataState
           state="error"
           title="Tagihan gagal dimuat"

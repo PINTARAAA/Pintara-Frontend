@@ -4,25 +4,27 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { Rating } from "@/components/ui/rating"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  AlertBanner,
+  Button,
+  DataState,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  Rating,
+  Textarea,
+  toast,
+} from "@/components"
 import {
   NotFoundError,
   sessionQuery,
   submitReview,
-  type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import {
-  formatSessionTitle,
-  RATING_LABELS,
-} from "@/features/absensi/lib/format"
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
+} from "@/features/absensi/api"
+import type { AttendanceSession } from "@/types/absensi"
+import { formatSessionTitle, RATING_LABELS } from "@/features/absensi/lib"
+import { InitialsAvatar } from "@/features/dashboard/components"
 
 /*
  * W5 · Validasi Absensi / Rating & ulasan ("Beri Ulasan")

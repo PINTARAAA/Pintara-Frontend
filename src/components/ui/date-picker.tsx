@@ -13,9 +13,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useControllableState } from "@/hooks/state/use-controllable-state"
-import { fieldControlVariants, fieldHeight } from "@/lib/styles/field-variants"
-import { formatDate, formatDateLong, formatDateRange } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { fieldControlVariants, fieldHeight, cn } from "@/lib/styles"
+import { formatDate, formatDateLong, formatDateRange } from "@/lib/format"
 
 /*
  * Date picker & Date range · Figma PINTARA → Components → 03 · Date & Time

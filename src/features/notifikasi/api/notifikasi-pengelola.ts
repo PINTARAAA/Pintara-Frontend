@@ -1,13 +1,15 @@
 import { queryOptions, useQuery } from "@tanstack/react-query"
 import { format, setDate, startOfMonth } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
-import { listRequestsForReview } from "@/features/jadwal/api/jadwal"
+import { listRequestsForReview } from "@/features/jadwal/api"
+import { snapshotTutorSessions } from "@/features/presensi/api"
+import { assertMockAllowed, at, delay } from "@/lib/data/mock"
+import { pengelolaReadIds } from "@/lib/data/notifikasi"
 import type {
-  AppNotification,
   NotificationList,
-} from "@/features/notifikasi/api/notifikasi"
-import { snapshotTutorSessions } from "@/features/presensi/api/presensi"
+  PengelolaNotification,
+  PengelolaNotificationKind,
+} from "@/types/notifikasi"
 
 /*
  * Notifikasi Pengelola · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -23,17 +25,6 @@ import { snapshotTutorSessions } from "@/features/presensi/api/presensi"
  * (P6), penawaran (P4), dan rincian tagihan (P8). Tautan pengajuan &
  * keberatan diambil dari data contoh fitur tersebut.
  */
-export type PengelolaNotificationKind =
-  | "pendaftaran"
-  | "perubahan-jadwal"
-  | "notifikasi-gagal"
-  | "keberatan"
-  | "penawaran"
-  | "pembayaran"
-
-export type PengelolaNotification = AppNotification<PengelolaNotificationKind>
-
-const readIds = new Set<string>(["pn-penawaran", "pn-pembayaran"])
 
 /* Jam contoh hari ini tidak boleh melewati waktu sekarang (mis. dibuka pagi) */
 const earlier = (date: Date, minutesBefore: number) => {
@@ -104,7 +95,7 @@ function buildNotifications(): PengelolaNotification[] {
     },
   ]
 
-  return items.map((n) => ({ ...n, read: readIds.has(n.id) }))
+  return items.map((n) => ({ ...n, read: pengelolaReadIds.has(n.id) }))
 }
 
 /* ---------- Query ---------- */
@@ -143,11 +134,11 @@ export function usePengelolaUnreadNotifications() {
 
 export async function markPengelolaRead(id: string) {
   assertMockAllowed()
-  readIds.add(id)
+  pengelolaReadIds.add(id)
 }
 
 export async function markAllPengelolaRead() {
   assertMockAllowed()
   await delay(300)
-  buildNotifications().forEach((n) => readIds.add(n.id))
+  buildNotifications().forEach((n) => pengelolaReadIds.add(n.id))
 }

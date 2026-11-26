@@ -1,7 +1,7 @@
 import * as React from "react"
 import { ArrowLeftIcon } from "lucide-react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Top app bar · Figma PINTARA → Components → 04 · Navigation → Top app bar

@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Skeleton · placeholder statis sesuai ".Skeleton row" Figma PINTARA:

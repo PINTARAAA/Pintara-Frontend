@@ -1,4 +1,4 @@
-import { DetailPresensi } from "@/features/presensi/screens/detail-presensi"
+import { DetailPresensi } from "@/features/presensi"
 
 export default function DetailPresensiRoute() {
   return <DetailPresensi />

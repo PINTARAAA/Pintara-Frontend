@@ -1,4 +1,4 @@
-import { RekapLes } from "@/features/rekap-les/screens/rekap-les"
+import { RekapLes } from "@/features/rekap-les"
 
 export default function RekapLesRoute() {
   return <RekapLes />

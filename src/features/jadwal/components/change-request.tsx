@@ -1,13 +1,16 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Timeline, TimelineItem } from "@/components/ui/timeline"
 import {
-  formatTimeSlot,
-  WEEKDAYS,
-  type ChangeRequest,
-} from "@/features/jadwal/api/jadwal"
-import { formatScope } from "@/features/jadwal/lib/format"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatDateTime } from "@/lib/format/date"
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Timeline,
+  TimelineItem,
+} from "@/components"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
+import type { ChangeRequest } from "@/types/jadwal"
+import { formatScope } from "@/features/jadwal/lib"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { formatDateTime } from "@/lib/format"
 
 /* Kartu "Ringkasan pengajuan": Dari · Menjadi · Berlaku (label 104px) */
 function ChangeSummaryCard({ request }: { request: ChangeRequest }) {

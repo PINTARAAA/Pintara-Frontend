@@ -3,24 +3,29 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { CalendarIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
-import { Skeleton } from "@/components/ui/skeleton"
-import { waliDashboardQuery } from "@/features/dashboard/api/wali-dashboard"
-import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton"
-import { EmptyNote } from "@/features/dashboard/components/empty-note"
 import {
+  TabScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
+  Skeleton,
+} from "@/components"
+import { waliDashboardQuery } from "@/features/dashboard/api"
+import {
+  DashboardSkeleton,
+  EmptyNote,
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { HeroCard, HeroCardRow } from "@/features/dashboard/components/hero-card"
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
-import { StudentSwitcher } from "@/features/dashboard/components/student-switcher"
-import { TaskList } from "@/features/dashboard/components/task-list"
+  HeroCard,
+  HeroCardRow,
+  InitialsAvatar,
+  NotificationButton,
+  StudentSwitcher,
+  TaskList,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
+
 import {
   formatGreeting,
   formatSessionTime,
@@ -28,8 +33,8 @@ import {
   formatTimeRange,
   formatTimeUntil,
   formatWeekdayDate,
-} from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+} from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 function WaliDashboard() {
   const unreadNotifications = useUnreadNotifications()

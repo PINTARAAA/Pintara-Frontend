@@ -2,30 +2,37 @@ import * as React from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { toast } from "@/components/ui/toast-api"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  Input,
+  RadioGroup,
+  RadioGroupItem,
+  toast,
+} from "@/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   billQuery,
   createPayment,
   NotFoundError,
   remainingOf,
   statusOf,
-  type Bill,
-  type PaymentResult,
-} from "@/features/tagihan/api/tagihan"
-import { formatPeriod } from "@/features/tagihan/lib/format"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDate, formatDateTime } from "@/lib/format/date"
+} from "@/features/tagihan/api"
+import { formatPeriod } from "@/features/tagihan/lib"
+import { formatRupiah, formatDate, formatDateTime } from "@/lib/format"
+import type { Bill, PaymentResult } from "@/types/tagihan"
 
 /*
  * W6 · Pembayaran · frame "Pilih nominal" → "Memproses" → "Berhasil -

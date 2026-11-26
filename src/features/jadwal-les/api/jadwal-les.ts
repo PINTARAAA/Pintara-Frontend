@@ -1,21 +1,26 @@
 import { queryOptions } from "@tanstack/react-query"
 import { addDays, getDay, isBefore, startOfDay } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
 import {
-  addMinutesToTime,
   decideChangeRequest,
   findRequestForReview,
   listRequestsForReview,
-  parseTime,
-  WEEKDAYS,
-  type ChangeRequestForReview,
-} from "@/features/jadwal/api/jadwal"
-import { snapshotOffers, type Offer } from "@/features/penawaran/api/penawaran"
-import {
-  NotFoundError,
-  snapshotRegistrations,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/jadwal/api"
+import { snapshotOffers } from "@/features/penawaran/api"
+import { NotFoundError, snapshotRegistrations } from "@/features/verifikasi/api"
+import { addMinutesToTime, parseTime, WEEKDAYS } from "@/lib/data/jadwal"
+import { pairs } from "@/lib/data/jadwal-les"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import type { ChangeRequestForReview } from "@/types/jadwal"
+import type {
+  ChangeReview,
+  Conflict,
+  Pair,
+  SaveScheduleInput,
+  ScheduleBoard,
+  ScheduleDraft,
+  ScheduleSession,
+} from "@/types/jadwal-les"
 
 /*
  * Atur Jadwal Les (pengelola) · Figma PINTARA → UI Screen → Pengelola LBB
@@ -36,93 +41,6 @@ export const SESSION_MINUTES = 90
 /* Jeda minimal antar sesi seorang tutor/siswa (perjalanan) */
 export const BUFFER_MINUTES = 15
 export const DAYS = WEEKDAYS.slice(1).concat(WEEKDAYS[0]) as string[]
-
-export type ScheduleSession = {
-  subject: string
-  /* "Senin" … "Minggu" */
-  day: string
-  /* "HH.mm" */
-  start: string
-  end: string
-}
-
-export type Pair = {
-  id: string
-  student: { name: string; grade: string; level: string }
-  parentName: string
-  tutor: { id: string; name: string; shortName: string }
-  subjects: string[]
-  sessions: ScheduleSession[]
-  effectiveFrom: Date
-  /* Penawaran asal (P4), bila ada */
-  offerId?: string
-}
-
-/* ---------- Data contoh ---------- */
-
-const pairs: Pair[] = [
-  {
-    id: "pr-aisyah",
-    student: { name: "Aisyah Putri", grade: "8", level: "SMP" },
-    parentName: "Sari Wulandari",
-    tutor: { id: "tt-budi", name: "Kak Budi Santoso", shortName: "Kak Budi" },
-    subjects: ["Matematika", "IPA"],
-    sessions: [
-      { subject: "Matematika", day: "Rabu", start: "16.00", end: "17.30" },
-      { subject: "IPA", day: "Jumat", start: "16.00", end: "17.30" },
-    ],
-    effectiveFrom: at(-19, 0),
-  },
-  {
-    id: "pr-bima",
-    student: { name: "Bima Saputra", grade: "12", level: "SMA" },
-    parentName: "Lina Marlina",
-    tutor: { id: "tt-dimas", name: "Kak Dimas Arya", shortName: "Kak Dimas" },
-    subjects: ["Fisika"],
-    sessions: [
-      { subject: "Fisika", day: "Kamis", start: "18.30", end: "20.00" },
-    ],
-    effectiveFrom: at(-40, 0),
-  },
-  {
-    id: "pr-rizky",
-    student: { name: "Rizky Ananda", grade: "10", level: "SMA" },
-    parentName: "Dewi Ananda",
-    tutor: { id: "tt-budi", name: "Kak Budi Santoso", shortName: "Kak Budi" },
-    subjects: ["Matematika", "IPA"],
-    sessions: [
-      { subject: "IPA", day: "Selasa", start: "18.30", end: "20.00" },
-      { subject: "Matematika", day: "Sabtu", start: "18.30", end: "20.00" },
-    ],
-    effectiveFrom: at(-21, 0),
-    offerId: "pw-0002",
-  },
-  {
-    id: "pr-dimas",
-    student: { name: "Dimas Pratama", grade: "9", level: "SMP" },
-    parentName: "Arif Pratama",
-    tutor: { id: "tt-budi", name: "Kak Budi Santoso", shortName: "Kak Budi" },
-    subjects: ["IPA", "Matematika"],
-    sessions: [{ subject: "IPA", day: "Senin", start: "16.00", end: "17.30" }],
-    effectiveFrom: at(-20, 0),
-    offerId: "pw-0004",
-  },
-  {
-    id: "pr-fikri",
-    student: { name: "Fikri Ramadhan", grade: "5", level: "SD" },
-    parentName: "Sari Wulandari",
-    tutor: {
-      id: "tt-nadia",
-      name: "Kak Nadia Safitri",
-      shortName: "Kak Nadia",
-    },
-    subjects: ["Bahasa Inggris"],
-    sessions: [
-      { subject: "Bahasa Inggris", day: "Kamis", start: "15.00", end: "16.30" },
-    ],
-    effectiveFrom: at(-30, 0),
-  },
-]
 
 /* ---------- Utilitas waktu ---------- */
 
@@ -160,12 +78,6 @@ export function nextDate(day: string, from = new Date()) {
 
 /* ---------- Papan jadwal (tab Jadwal) ---------- */
 
-export type ScheduleBoard = {
-  toSchedule: Offer[]
-  requests: ChangeRequestForReview[]
-  active: Pair[]
-}
-
 export async function getScheduleBoard(): Promise<ScheduleBoard> {
   assertMockAllowed()
   await delay()
@@ -188,20 +100,6 @@ export const scheduleBoardQuery = () =>
   queryOptions({ queryKey: ["jadwal-les", "papan"], queryFn: getScheduleBoard })
 
 /* ---------- Form atur jadwal ---------- */
-
-export type ScheduleDraft = {
-  /* Ada bila mengubah jadwal aktif */
-  pairId?: string
-  offerId?: string
-  student: Pair["student"]
-  parentName: string
-  tutor: Pair["tutor"]
-  subjects: string[]
-  /* "Senin & Kamis, 19.00 · 2× per minggu" (permintaan wali) */
-  requested?: string
-  sessions: ScheduleSession[]
-  effectiveFrom: Date
-}
 
 /* Jadwal baru dari penawaran yang diterima */
 export async function getScheduleDraft(
@@ -278,14 +176,6 @@ export const pairDraftQuery = (pairId: string) =>
 
 /* ---------- Cek bentrok & simpan ---------- */
 
-export type Conflict = {
-  /* Indeks sesi di form (0 = Sesi 1) */
-  index: number
-  /* Siapa yang bentrok: tutor sudah mengajar, siswa sudah les, atau antar sesi */
-  with: "tutor" | "siswa" | "sesi"
-  other: ScheduleSession & { studentName?: string; tutorName?: string }
-}
-
 export class ScheduleConflictError extends Error {
   conflict: Conflict
   constructor(conflict: Conflict) {
@@ -336,12 +226,6 @@ export function suggestFreeSlot(other: ScheduleSession) {
   return `selesai paling lambat ${fmt(latestEnd)} atau mulai ${fmt(earliestStart)}`
 }
 
-export type SaveScheduleInput = {
-  draft: ScheduleDraft
-  sessions: ScheduleSession[]
-  effectiveFrom: Date
-}
-
 export async function saveSchedule(input: SaveScheduleInput): Promise<Pair> {
   assertMockAllowed()
   await delay(800)
@@ -372,14 +256,6 @@ export async function saveSchedule(input: SaveScheduleInput): Promise<Pair> {
 }
 
 /* ---------- Tinjau pengajuan perubahan (W4 → P5) ---------- */
-
-export type ChangeReview = {
-  request: ChangeRequestForReview
-  pair?: Pair
-  fromSession: ScheduleSession
-  toSession: ScheduleSession
-  conflict: Conflict | null
-}
 
 function buildReview(request: ChangeRequestForReview): ChangeReview {
   const pair = pairs.find(

@@ -11,22 +11,21 @@ import {
 } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { monthKey } from "@/features/keuangan/api/honor"
 import {
-  financeSummaryQuery,
-  type FinanceSummary,
-} from "@/features/keuangan/api/laporan"
-import { UnduhLaporanSheet } from "@/features/keuangan/components/unduh-laporan-sheet"
-import { parseMonth } from "@/features/keuangan/lib/month"
-import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
-import { cn } from "@/lib/styles/cn"
+  DetailScreen,
+  Button,
+  DataState,
+  FilterPill,
+  ListItem,
+  TopAppBarButton,
+} from "@/components"
+import { DashboardList } from "@/features/dashboard/components"
+import { monthKey, financeSummaryQuery } from "@/features/keuangan/api"
+import type { FinanceSummary } from "@/types/keuangan"
+
+import { UnduhLaporanSheet } from "@/features/keuangan/components"
+import { parseMonth, formatRupiah, formatRupiahCompact } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * P8 · Laporan Keuangan · Figma "Laporan Keuangan / Ringkasan" dan "Kosong".

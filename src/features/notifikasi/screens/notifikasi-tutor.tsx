@@ -12,9 +12,9 @@ import {
   markAllTutorRead,
   markTutorRead,
   tutorNotificationsQuery,
-  type TutorNotificationKind,
-} from "@/features/notifikasi/api/notifikasi-tutor"
-import { NotificationScreen } from "@/features/notifikasi/components/notification-screen"
+} from "@/features/notifikasi/api"
+import { NotificationScreen } from "@/features/notifikasi/components"
+import type { TutorNotificationKind } from "@/types/notifikasi"
 
 /*
  * T7 · Notifikasi (tutor) · Figma "Notifikasi / Tutor"

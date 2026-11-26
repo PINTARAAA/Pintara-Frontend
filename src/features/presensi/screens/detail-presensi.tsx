@@ -3,26 +3,24 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
+  DetailScreen,
+  StatusBadge,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { Timeline, TimelineItem } from "@/components/ui/timeline"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import {
-  NotFoundError,
-  tutorSessionQuery,
-  type TutorSession,
-} from "@/features/presensi/api/presensi"
-import { formatLongDate, sessionTitle } from "@/features/presensi/lib/format"
-import { formatTimeRange } from "@/lib/format/date"
+  DataState,
+  Timeline,
+  TimelineItem,
+} from "@/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { NotFoundError, tutorSessionQuery } from "@/features/presensi/api"
+import type { TutorSession } from "@/types/presensi"
+import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * T3 · Detail Presensi · Figma "Status Presensi / Detail - Keberatan" dan

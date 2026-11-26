@@ -4,20 +4,20 @@ import { id as localeId } from "date-fns/locale"
 import { PlusIcon, UserIcon } from "lucide-react"
 import { Link, useNavigate } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import {
-  STUDENT_SUBJECTS,
-  studentsQuery,
-  type StudentRow,
-} from "@/features/data-master/api/data-master"
-import { MasterFilters } from "@/features/data-master/components/master-filters"
-import { useMasterFilter } from "@/features/data-master/hooks/use-master-filter"
-import { cn } from "@/lib/styles/cn"
+  DetailScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
+  TopAppBarButton,
+} from "@/components"
+import { DashboardList } from "@/features/dashboard/components"
+import { studentsQuery } from "@/features/data-master/api"
+import { STUDENT_SUBJECTS } from "@/lib/data/data-master"
+import type { StudentRow } from "@/types/data-master"
+import { MasterFilters } from "@/features/data-master/components"
+import { useMasterFilter } from "@/features/data-master/hooks"
+import { cn } from "@/lib/styles"
 
 /*
  * P9 · Data Siswa · Figma "Data Siswa / Daftar".

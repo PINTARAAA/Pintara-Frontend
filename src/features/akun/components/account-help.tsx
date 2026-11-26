@@ -3,13 +3,14 @@ import { useQueryClient } from "@tanstack/react-query"
 import { InfoIcon, LogOutIcon, PhoneIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { ListItem } from "@/components/ui/list-item"
-import { logout, type LbbContact } from "@/features/akun/api/akun"
+import { ConfirmDialog, ListItem } from "@/components"
+import { SidebarNavItem } from "@/components/ui/sidebar"
+import { logout } from "@/features/akun/api"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
+} from "@/features/dashboard/components"
+import type { LbbContact } from "@/types/akun"
 
 /*
  * Bagian bawah layar Akun (W8 · T6): Bantuan (Hubungi Pengelola LBB via
@@ -72,7 +73,7 @@ function AccountHelp({
  * Grup "Keluar" (W8 · T6 · P1): Confirmation modal, lalu ke
  * /masuk?alasan=keluar setelah cache data dibuang.
  */
-function LogoutItem({ description }: { description: string }) {
+function useLogoutDialog(description: string) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [open, setOpen] = React.useState(false)
@@ -84,28 +85,54 @@ function LogoutItem({ description }: { description: string }) {
     navigate("/masuk?alasan=keluar", { replace: true })
   }
 
+  const dialog = (
+    <ConfirmDialog
+      open={open}
+      onOpenChange={setOpen}
+      showIcon={false}
+      showDismiss={false}
+      title="Keluar dari PINTARA?"
+      description={description}
+      confirmLabel="Keluar"
+      onConfirm={handleLogout}
+    />
+  )
+
+  return { openDialog: () => setOpen(true), dialog }
+}
+
+function LogoutItem({ description }: { description: string }) {
+  const { openDialog, dialog } = useLogoutDialog(description)
+
   return (
     <>
       <DashboardList>
         <ListItem
           icon={<LogOutIcon />}
           title="Keluar"
-          render={<button type="button" onClick={() => setOpen(true)} />}
+          render={<button type="button" onClick={openDialog} />}
         />
       </DashboardList>
-
-      <ConfirmDialog
-        open={open}
-        onOpenChange={setOpen}
-        showIcon={false}
-        showDismiss={false}
-        title="Keluar dari PINTARA?"
-        description={description}
-        confirmLabel="Keluar"
-        onConfirm={handleLogout}
-      />
+      {dialog}
     </>
   )
 }
 
-export { AccountHelp, LogoutItem }
+/* Item "Keluar" di sidebar desktop (Figma → Sidebar / Pengelola) */
+function SidebarLogoutItem({ description }: { description: string }) {
+  const { openDialog, dialog } = useLogoutDialog(description)
+
+  return (
+    <>
+      <SidebarNavItem
+        icon={<LogOutIcon />}
+        label="Keluar"
+        className="text-left"
+        render={<button type="button" onClick={openDialog} />}
+      />
+      {dialog}
+    </>
+  )
+}
+
+export { AccountHelp, LogoutItem, SidebarLogoutItem }

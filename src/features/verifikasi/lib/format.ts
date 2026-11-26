@@ -1,20 +1,10 @@
-import { differenceInCalendarDays, format } from "date-fns"
+import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import type {
-  PengelolaRegistration,
-  RejectReason,
-} from "@/features/verifikasi/api/verifikasi"
+import type { PengelolaRegistration, RejectReason } from "@/types/verifikasi"
+import { formatDaysAgo } from "@/lib/format"
 
 /* Format tampilan Verifikasi Pendaftaran (P2) */
-
-/* "hari ini" · "kemarin" · "2 hari lalu" */
-export function formatDaysAgo(date: Date, now = new Date()) {
-  const days = differenceInCalendarDays(now, date)
-  if (days <= 0) return "hari ini"
-  if (days === 1) return "kemarin"
-  return `${days} hari lalu`
-}
 
 /* "REG-2026-0115 · Dikirim 22 Nov, 19.40 (2 hari lalu)" */
 export function formatSubmitted(r: PengelolaRegistration) {

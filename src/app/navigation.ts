@@ -1,16 +1,23 @@
 import {
+  BellIcon,
   BookOpenIcon,
   CalendarIcon,
   ClipboardCheckIcon,
+  FileTextIcon,
+  GraduationCapIcon,
   HouseIcon,
+  LockIcon,
   MenuIcon,
+  MessageCircleIcon,
+  SettingsIcon,
   UserIcon,
   UserPlusIcon,
+  UsersIcon,
   WalletIcon,
 } from "lucide-react"
 
-import type { NavItem } from "@/components/layouts/app-shell"
-import type { Role } from "@/features/auth/types"
+import type { NavItem, SidebarGroup } from "@/components"
+import type { Role } from "@/types/auth"
 export type { Role }
 
 export const ROLE_NAV: Record<Role, { main: NavItem[]; utility: NavItem[] }> = {
@@ -40,5 +47,69 @@ export const ROLE_NAV: Record<Role, { main: NavItem[]; utility: NavItem[] }> = {
       { label: "Keuangan", to: "/pengelola/keuangan", icon: WalletIcon },
     ],
     utility: [{ label: "Lainnya", to: "/pengelola/lainnya", icon: MenuIcon }],
+  },
+}
+
+/*
+ * Sidebar desktop berkelompok · Figma PINTARA → Components → 04 · Navigation
+ * → Sidebar / Pengelola. Menggabungkan bottom nav dan menu "Lainnya" versi
+ * mobile ke dalam satu sidebar. Peran tanpa entri memakai ROLE_NAV apa adanya.
+ * Bottom navigation mobile tetap memakai ROLE_NAV.
+ */
+export const ROLE_SIDEBAR: Partial<
+  Record<
+    Role,
+    { groups: SidebarGroup[]; utility: NavItem[]; logoutDescription: string }
+  >
+> = {
+  pengelola: {
+    logoutDescription:
+      "Anda perlu masuk lagi dengan email/username dan password untuk mengelola data LBB.",
+    groups: [
+      {
+        items: [{ label: "Beranda", to: "/pengelola", icon: HouseIcon, end: true }],
+      },
+      {
+        label: "Operasional",
+        items: [
+          { label: "Pendaftaran", to: "/pengelola/pendaftaran", icon: UserPlusIcon },
+          { label: "Les", to: "/pengelola/les", icon: CalendarIcon },
+          { label: "Presensi", to: "/pengelola/presensi", icon: ClipboardCheckIcon },
+          { label: "Keuangan", to: "/pengelola/keuangan", icon: WalletIcon },
+        ],
+      },
+      {
+        label: "Data master",
+        items: [
+          { label: "Data tutor", to: "/pengelola/tutor", icon: GraduationCapIcon },
+          { label: "Data siswa", to: "/pengelola/siswa", icon: UsersIcon },
+          { label: "Manajemen akun", to: "/pengelola/akun", icon: LockIcon },
+        ],
+      },
+      {
+        label: "Laporan",
+        items: [
+          { label: "Rekap & riwayat les", to: "/pengelola/riwayat", icon: BookOpenIcon },
+          {
+            label: "Laporan keuangan",
+            to: "/pengelola/laporan-keuangan",
+            icon: FileTextIcon,
+          },
+          {
+            label: "Riwayat notifikasi",
+            to: "/pengelola/riwayat-notifikasi",
+            icon: MessageCircleIcon,
+          },
+        ],
+      },
+    ],
+    utility: [
+      { label: "Notifikasi", to: "/pengelola/notifikasi", icon: BellIcon },
+      {
+        label: "Pengaturan notifikasi",
+        to: "/pengelola/pengaturan-notifikasi",
+        icon: SettingsIcon,
+      },
+    ],
   },
 }

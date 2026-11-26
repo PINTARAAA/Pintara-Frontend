@@ -3,25 +3,23 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
+import { DetailScreen, Button, DataState } from "@/components"
 import {
   formatDays,
   formatLevelsLong,
   initialsOf,
   NotFoundError,
-  SERVICE_RADIUS_KM,
   setTutorStatus,
   tutorQuery,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
+import { SERVICE_RADIUS_KM } from "@/lib/data/data-master"
 import {
   InfoCard,
   ProfileHeader,
   ProfileMenu,
   StatusToggle,
-} from "@/features/data-master/components/profile-parts"
-import { formatRupiah } from "@/lib/format/currency"
+} from "@/features/data-master/components"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * P9 · Profil Tutor · Figma "Data Tutor / Profil" dan "Tidak bisa

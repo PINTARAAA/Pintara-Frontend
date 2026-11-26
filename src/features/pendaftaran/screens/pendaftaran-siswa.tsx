@@ -4,28 +4,33 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FormProvider, useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { ProgressStepper } from "@/components/ui/progress-stepper"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  AlertBanner,
+  Button,
+  ProgressStepper,
+  toast,
+} from "@/components"
 import {
   PendaftaranError,
   pendaftaranDefaultsQuery,
   submitPendaftaran,
-  type PendaftaranResult,
-} from "@/features/pendaftaran/api/pendaftaran"
-import { PendaftaranBerhasil } from "@/features/pendaftaran/components/pendaftaran-berhasil"
-import { StepDataSiswa } from "@/features/pendaftaran/components/step-data-siswa"
-import { StepJadwalBelajar } from "@/features/pendaftaran/components/step-jadwal-belajar"
-import { StepKebutuhanBelajar } from "@/features/pendaftaran/components/step-kebutuhan-belajar"
-import { StepRingkasan } from "@/features/pendaftaran/components/step-ringkasan"
+} from "@/features/pendaftaran/api"
+import type { PendaftaranResult } from "@/types/pendaftaran"
+import {
+  PendaftaranBerhasil,
+  StepDataSiswa,
+  StepJadwalBelajar,
+  StepKebutuhanBelajar,
+  StepRingkasan,
+} from "@/features/pendaftaran/components"
+
 import {
   EMPTY_PENDAFTARAN,
   pendaftaranSchema,
   STEP_FIELDS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas/pendaftaran-schema"
+} from "@/features/pendaftaran/schemas"
 
 /*
  * W2 · Pendaftaran Siswa · Figma PINTARA → UI Screen → Wali Murid

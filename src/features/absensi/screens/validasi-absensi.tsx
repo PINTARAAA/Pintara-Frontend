@@ -2,26 +2,30 @@ import { useQuery } from "@tanstack/react-query"
 import { ClipboardCheckIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
 import {
+  TabScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
   Tabs,
   TabsContent,
   TabsCount,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
+} from "@/components"
+import { attendanceQuery } from "@/features/absensi/api"
+import type { AttendanceSession } from "@/types/absensi"
 import {
-  attendanceQuery,
-  type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import { firstName } from "@/features/absensi/lib/format"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
-import { formatShortWeekdayDate, formatWeekdayDate } from "@/lib/format/date"
+  firstName,
+  formatShortWeekdayDate,
+  formatWeekdayDate,
+} from "@/lib/format"
+import {
+  DashboardList,
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
 
 /*
  * W5 · Validasi Absensi (tab) · Figma "Validasi Absensi / Daftar sesi" dan

@@ -1,7 +1,7 @@
 import { BellIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
+import { TopAppBarButton } from "@/components"
 
 /* Lonceng notifikasi di Top app bar beranda; titik merah bila ada yang belum dibaca */
 function NotificationButton({ to, unread = 0 }: { to: string; unread?: number }) {

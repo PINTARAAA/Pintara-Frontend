@@ -1,4 +1,4 @@
-import { ValidasiAbsensi } from "@/features/absensi/screens/validasi-absensi"
+import { ValidasiAbsensi } from "@/features/absensi"
 
 export default function ValidasiAbsensiRoute() {
   return <ValidasiAbsensi />

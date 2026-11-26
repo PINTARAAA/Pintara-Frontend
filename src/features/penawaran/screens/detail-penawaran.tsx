@@ -4,27 +4,33 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { Timeline, TimelineItem } from "@/components/ui/timeline"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  ResultScreen,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  Timeline,
+  TimelineItem,
+  toast,
+} from "@/components"
 import {
   declineLabel,
   OfferError,
   offerQuery,
   recordAccepted,
-  type Offer,
-} from "@/features/penawaran/api/penawaran"
+} from "@/features/penawaran/api"
+import type { Offer } from "@/types/penawaran"
 import {
   OfferSummaryCard,
   ResultOfferCard,
-} from "@/features/penawaran/components/offer-summary"
-import { firstName } from "@/features/penawaran/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api/verifikasi"
+} from "@/features/penawaran/components"
+import { firstName } from "@/lib/format"
+import { NotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Detail Penawaran · Figma "Penawaran / Detail - Menunggu" dan

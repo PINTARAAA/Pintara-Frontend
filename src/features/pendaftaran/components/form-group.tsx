@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * FormGroup · "Group / …" pada frame W2 Pendaftaran Siswa.

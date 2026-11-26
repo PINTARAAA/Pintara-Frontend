@@ -13,9 +13,9 @@ import {
   markAllPengelolaRead,
   markPengelolaRead,
   pengelolaNotificationsQuery,
-  type PengelolaNotificationKind,
-} from "@/features/notifikasi/api/notifikasi-pengelola"
-import { NotificationScreen } from "@/features/notifikasi/components/notification-screen"
+} from "@/features/notifikasi/api"
+import { NotificationScreen } from "@/features/notifikasi/components"
+import type { PengelolaNotificationKind } from "@/types/notifikasi"
 
 /*
  * P14 · Notifikasi (pengelola) · Figma "Notifikasi / Pengelola"

@@ -1,4 +1,4 @@
-import { IsiPresensi } from "@/features/presensi/screens/isi-presensi"
+import { IsiPresensi } from "@/features/presensi"
 
 export default function IsiPresensiRoute() {
   return <IsiPresensi />

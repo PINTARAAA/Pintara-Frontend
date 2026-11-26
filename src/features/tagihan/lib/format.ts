@@ -1,8 +1,9 @@
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import { daysUntilDue, type Bill } from "@/features/tagihan/api/tagihan"
-import { formatDate, formatDayMonth } from "@/lib/format/date"
+import { daysUntilDue } from "@/features/tagihan/api"
+import { formatDate, formatDayMonth } from "@/lib/format"
+import type { Bill } from "@/types/tagihan"
 
 /* "November 2026" */
 export const formatPeriod = (date: Date) =>

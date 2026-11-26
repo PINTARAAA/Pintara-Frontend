@@ -3,26 +3,22 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { StatusBadge } from "@/components/ui/badge"
 import {
+  DetailScreen,
+  AlertBanner,
+  StatusBadge,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import {
-  NotFoundError,
-  sessionQuery,
-  type Attendance,
-  type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import { NotesCard, ReviewCard } from "@/features/absensi/components/session-cards"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatTimeRange } from "@/lib/format/date"
+  DataState,
+} from "@/components"
+import { NotFoundError, sessionQuery } from "@/features/absensi/api"
+import type { Attendance, AttendanceSession } from "@/types/absensi"
+import { NotesCard, ReviewCard } from "@/features/absensi/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * W7 · Riwayat Les / Wali - Detail sesi (hanya baca)

@@ -1,4 +1,4 @@
-import { DetailPenawaran } from "@/features/penawaran/screens/detail-penawaran"
+import { DetailPenawaran } from "@/features/penawaran"
 
 export default function DetailPenawaranRoute() {
   return <DetailPenawaran />

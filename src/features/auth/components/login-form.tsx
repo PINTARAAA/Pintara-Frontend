@@ -2,17 +2,18 @@ import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { PasswordInput } from "@/components/ui/password-input"
-import { login, LoginError, type LoginErrorCode } from "@/features/auth/api/login"
 import {
-  loginSchema,
-  type LoginInput,
-} from "@/features/auth/schemas/login-schema"
-import type { AuthUser, LoginNotice } from "@/features/auth/types"
+  AlertBanner,
+  Button,
+  Field,
+  FieldError,
+  FieldLabel,
+  Input,
+  PasswordInput,
+} from "@/components"
+import { login, LoginError } from "@/features/auth/api"
+import { loginSchema, type LoginInput } from "@/features/auth/schemas"
+import type { AuthUser, LoginErrorCode, LoginNotice } from "@/types/auth"
 
 /*
  * Form masuk · Figma PINTARA → UI Screen → Umum → 00 · Autentikasi

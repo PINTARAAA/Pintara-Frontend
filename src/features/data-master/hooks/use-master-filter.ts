@@ -1,9 +1,6 @@
 import { useSearchParams } from "react-router"
 
-import type {
-  AccountStatus,
-  MasterFilter,
-} from "@/features/data-master/api/data-master"
+import type { AccountStatus, MasterFilter } from "@/types/data-master"
 
 /* Filter daftar Data Tutor / Data Siswa di ?q=…&mapel=…&lokasi=…&status=… */
 export const ALL = "semua"

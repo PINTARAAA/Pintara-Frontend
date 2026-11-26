@@ -2,21 +2,19 @@ import { useQuery } from "@tanstack/react-query"
 import { CalendarIcon } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
+import { DetailScreen, Button, DataState } from "@/components"
 import {
   initialsOf,
   NotFoundError,
   setStudentStatus,
   studentQuery,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
 import {
   InfoCard,
   ProfileHeader,
   ProfileMenu,
   StatusToggle,
-} from "@/features/data-master/components/profile-parts"
+} from "@/features/data-master/components"
 
 /*
  * P9 · Profil Siswa · Figma "Data Siswa / Profil".

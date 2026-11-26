@@ -3,33 +3,27 @@ import { isToday, isTomorrow } from "date-fns"
 import { CalendarIcon, ClockIcon, RotateCwIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import { TabScreen, DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { EmptyNote } from "@/features/dashboard/components/empty-note"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
-import { StudentSwitcher } from "@/features/dashboard/components/student-switcher"
-import {
-  formatTimeSlot,
-  waliScheduleQuery,
-  WEEKDAYS,
-} from "@/features/jadwal/api/jadwal"
-import {
-  CHANGE_STATUS_LABEL,
-  formatChangeTitle,
-} from "@/features/jadwal/lib/format"
+  EmptyNote,
+  NotificationButton,
+  StudentSwitcher,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
+
+import { waliScheduleQuery } from "@/features/jadwal/api"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
+import { CHANGE_STATUS_LABEL, formatChangeTitle } from "@/features/jadwal/lib"
 import {
   formatDateRange,
   formatDayMonth,
   formatTimeRange,
   formatWeekdayDate,
-} from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+} from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * W4 · Jadwal Les (tab) · Figma "Jadwal Les / Daftar" dan

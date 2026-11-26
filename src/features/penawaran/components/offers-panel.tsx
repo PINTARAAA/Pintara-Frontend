@@ -4,20 +4,14 @@ import { id as localeId } from "date-fns/locale"
 import { SendIcon, UsersIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import { StatusBadge, DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import {
-  declineLabel,
-  type Offer,
-  type OfferList,
-} from "@/features/penawaran/api/penawaran"
-import { firstName } from "@/features/penawaran/lib/format"
-import { formatDayMonth } from "@/lib/format/date"
+} from "@/features/dashboard/components"
+import { declineLabel } from "@/features/penawaran/api"
+import type { Offer, OfferList } from "@/types/penawaran"
+import { firstName, formatDayMonth } from "@/lib/format"
 
 /*
  * P4 · Penawaran (tab Les) · Figma "Penawaran / Daftar"

@@ -2,24 +2,23 @@ import { useQuery } from "@tanstack/react-query"
 import { ClipboardCheckIcon, ClockIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import {
+  TabScreen,
+  StatusBadge,
+  Button,
+  DataState,
+  ListItem,
+} from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
-import { tutorSessionsQuery } from "@/features/presensi/api/presensi"
-import {
-  formatToFill,
-  formatWeekdayShort,
-  sessionTitle,
-} from "@/features/presensi/lib/format"
-import { formatTimeRange } from "@/lib/format/date"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
+import { tutorSessionsQuery } from "@/features/presensi/api"
+import { formatToFill, sessionTitle } from "@/features/presensi/lib"
+import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
 
 /*
  * T2 · Presensi (tab tutor) · Figma "Presensi / Daftar" dan "Presensi / Kosong"
@@ -111,7 +110,7 @@ function Presensi() {
                     key={s.id}
                     icon={<ClipboardCheckIcon />}
                     title={sessionTitle(s)}
-                    description={formatWeekdayShort(s.start)}
+                    description={formatWeekdayDate(s.start)}
                     badge={
                       s.record && (
                         <StatusBadge category="presensi" status={s.record.validation} />

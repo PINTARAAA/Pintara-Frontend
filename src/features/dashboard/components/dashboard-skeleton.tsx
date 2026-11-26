@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components"
 
 /*
  * Kerangka saat beranda dimuat. Bentuknya mengikuti tata letak asli

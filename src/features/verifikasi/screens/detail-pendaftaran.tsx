@@ -5,34 +5,38 @@ import { id as localeId } from "date-fns/locale"
 import { EllipsisIcon, MessageCircleIcon, PencilIcon } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
 import {
+  DetailScreen,
+  ConfirmDialog,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { toast } from "@/components/ui/toast-api"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+  toast,
+  TopAppBarButton,
+} from "@/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   AlreadyProcessedError,
   needsTutor,
   NotFoundError,
-  REJECT_REASONS,
   registrationQuery,
   verifyRegistration,
-  type PengelolaRegistration,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/verifikasi/api"
+import { REJECT_REASONS } from "@/lib/data/verifikasi"
+import type { PengelolaRegistration } from "@/types/verifikasi"
+import { firstName } from "@/lib/format"
 import {
   formatRequestedSchedule,
   formatSubmitted,
-} from "@/features/verifikasi/lib/format"
+} from "@/features/verifikasi/lib"
 
 /*
  * P2 · Detail Pendaftaran · Figma "Verifikasi Pendaftaran / Detail",
@@ -50,7 +54,6 @@ const LIST = "/pengelola/pendaftaran"
 /* "0813-2233-4455" → "6281322334455" (format wa.me) */
 const toWhatsapp = (phone: string) =>
   phone.replace(/\D/g, "").replace(/^0/, "62")
-const firstName = (name: string) => name.trim().split(/\s+/)[0]
 const stamp = (date: Date) =>
   format(date, "d MMM yyyy, HH.mm", { locale: localeId })
 

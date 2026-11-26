@@ -3,28 +3,30 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
+  DetailScreen,
+  AlertBanner,
+  StatusBadge,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { Timeline, TimelineItem } from "@/components/ui/timeline"
-import { registrationStatusQuery } from "@/features/pendaftaran/api/pendaftaran"
+  DataState,
+  Timeline,
+  TimelineItem,
+} from "@/components"
+import { registrationStatusQuery } from "@/features/pendaftaran/api"
 import type {
-  LbbContact,
+  RegistrationLbbContact,
   Registration,
   RegistrationStage,
-} from "@/features/pendaftaran/api/types"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import type { StatusOf } from "@/lib/constants/status"
-import { formatDate, formatDateTime } from "@/lib/format/date"
+} from "@/types/pendaftaran"
+
+import { SummaryRow } from "@/features/pendaftaran/components"
+import type { StatusOf } from "@/lib/constants"
+import { formatDate, formatDateTime, firstName } from "@/lib/format"
 
 /*
  * W3 · Status Pendaftaran · Figma PINTARA → UI Screen → Wali Murid
@@ -56,9 +58,7 @@ function formatRequestedSchedule(days: string[], startTime: string) {
 const formatLongWeekdayDate = (date: Date) =>
   format(date, "EEEE, d MMM yyyy", { locale: localeId })
 
-const firstName = (name: string) => name.trim().split(/\s+/)[0]
-
-const whatsappUrl = (contact: LbbContact) =>
+const whatsappUrl = (contact: RegistrationLbbContact) =>
   `https://wa.me/${contact.whatsapp}`
 
 function StatusPendaftaran() {
@@ -128,7 +128,7 @@ function ResultBanner({
   onOpenSchedule,
 }: {
   registration: Registration
-  contact: LbbContact
+  contact: RegistrationLbbContact
   onOpenSchedule: () => void
 }) {
   const { stage, match, firstSession, rejection } = registration

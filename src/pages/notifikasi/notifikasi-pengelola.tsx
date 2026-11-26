@@ -1,4 +1,4 @@
-import { NotifikasiPengelola } from "@/features/notifikasi/screens/notifikasi-pengelola"
+import { NotifikasiPengelola } from "@/features/notifikasi"
 
 export default function NotifikasiPengelolaRoute() {
   return <NotifikasiPengelola />

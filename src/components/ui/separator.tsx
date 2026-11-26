@@ -1,7 +1,7 @@
 "use client"
 
 import { Separator as SeparatorPrimitive } from "@base-ui/react/separator"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 function Separator({
   className,

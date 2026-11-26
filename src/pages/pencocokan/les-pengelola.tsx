@@ -1,4 +1,4 @@
-import { LesPengelola } from "@/features/pencocokan/screens/les-pengelola"
+import { LesPengelola } from "@/features/pencocokan"
 
 export default function LesPengelolaRoute() {
   return <LesPengelola />

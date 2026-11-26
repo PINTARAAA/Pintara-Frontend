@@ -1,4 +1,4 @@
-import { DetailTagihan } from "@/features/tagihan/screens/detail-tagihan"
+import { DetailTagihan } from "@/features/tagihan"
 
 export default function DetailTagihanRoute() {
   return <DetailTagihan />

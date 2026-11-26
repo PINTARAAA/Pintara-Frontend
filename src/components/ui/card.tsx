@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Card · Figma PINTARA → Components → 05 · Data Display → Card

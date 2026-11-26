@@ -2,7 +2,7 @@ import * as React from "react"
 import { EyeIcon, EyeOffIcon } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * PasswordInput · Input password dengan tombol tampil/sembunyikan

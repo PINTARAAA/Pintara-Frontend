@@ -8,7 +8,7 @@ import {
 import { id as localeId } from "react-day-picker/locale"
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Calendar · Figma PINTARA → Components → 03 · Date & Time → panel kalender

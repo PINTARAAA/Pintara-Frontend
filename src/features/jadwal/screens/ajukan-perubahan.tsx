@@ -6,44 +6,46 @@ import { id as localeId } from "date-fns/locale"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  Button,
+  DataState,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  RadioGroup,
+  RadioGroupItem,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { TimePicker } from "@/components/ui/time-picker"
-import { toast } from "@/components/ui/toast-api"
+  Textarea,
+  TimePicker,
+  toast,
+} from "@/components"
 import {
-  formatTimeSlot,
   NotFoundError,
   routineQuery,
   submitScheduleChange,
-  WEEKDAYS,
-  type ChangeRequest,
-  type RoutineDetail,
-} from "@/features/jadwal/api/jadwal"
+} from "@/features/jadwal/api"
+import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
+import type { ChangeRequest, RoutineDetail } from "@/types/jadwal"
 import {
   ChangeProgressCard,
   ChangeSummaryCard,
-} from "@/features/jadwal/components/change-request"
+} from "@/features/jadwal/components"
 import {
   CHANGE_DAY_OPTIONS,
   REASON_MAX,
   withCurrentSchedule,
   type ScheduleChangeInput,
-} from "@/features/jadwal/schemas/perubahan-jadwal-schema"
-import { FormGroup } from "@/features/pendaftaran/components/form-group"
+} from "@/features/jadwal/schemas"
+import { FormGroup } from "@/features/pendaftaran/components"
 
 /*
  * W4 · Jadwal Les / Ajukan perubahan · frame "Ajukan perubahan",

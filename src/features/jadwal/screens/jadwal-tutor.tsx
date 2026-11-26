@@ -3,23 +3,19 @@ import { isToday } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
+import { TabScreen, DataState, FilterPill, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
-import {
-  tutorScheduleQuery,
-  type TutorScheduleDay,
-} from "@/features/jadwal/api/jadwal-tutor"
-import { formatWeekRange, joinDays } from "@/features/jadwal/lib/format"
-import { formatTimeRange, formatWeekdayDate } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
+import { tutorScheduleQuery } from "@/features/jadwal/api"
+import type { TutorScheduleDay } from "@/types/jadwal"
+import { formatWeekRange, joinDays } from "@/features/jadwal/lib"
+import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * T5 · Jadwal (tab tutor) · Figma "Jadwal / Tutor".

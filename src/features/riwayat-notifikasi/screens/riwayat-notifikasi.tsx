@@ -8,28 +8,32 @@ import { format, subMonths } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterChip } from "@/components/ui/filter-chip"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { toast } from "@/components/ui/toast-api"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { CHANNEL_LABEL } from "@/features/pengaturan-notifikasi/api/pengaturan-notifikasi"
+import {
+  DetailScreen,
+  Button,
+  DataState,
+  FilterChip,
+  FilterPill,
+  ListItem,
+  toast,
+} from "@/components"
+import { DashboardList } from "@/features/dashboard/components"
+import { CHANNEL_LABEL } from "@/features/pengaturan-notifikasi/api"
 import {
   KIND_LABEL,
   notificationLogsQuery,
   PERIODS,
   resendAllFailed,
-  type LogFilter,
-  type LogStatus,
-  type NotificationKind,
-  type NotificationLog,
-  type Period,
-} from "@/features/riwayat-notifikasi/api/riwayat-notifikasi"
-import { formatDayMonth } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+} from "@/features/riwayat-notifikasi/api"
+import type {
+  LogFilter,
+  LogStatus,
+  LogNotificationKind,
+  NotificationLog,
+  Period,
+} from "@/types/riwayat-notifikasi"
+import { formatDayMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * P13 · Riwayat Notifikasi · Figma "Riwayat Notifikasi / Daftar",
@@ -39,7 +43,7 @@ import { cn } from "@/lib/styles/cn"
  * (Kirim ulang semua; ketuk → detail) → Terkirim. Disimpan di
  * ?status=…&jenis=…&periode=….
  */
-const KINDS = Object.keys(KIND_LABEL) as NotificationKind[]
+const KINDS = Object.keys(KIND_LABEL) as LogNotificationKind[]
 const time = (d: Date) => format(d, "HH.mm")
 
 function periodLabel(period: Period, now = new Date()) {
@@ -56,7 +60,7 @@ function RiwayatNotifikasi() {
   const queryClient = useQueryClient()
   const [params, setParams] = useSearchParams()
   const statusParam = params.get("status")
-  const kindParam = params.get("jenis") as NotificationKind | null
+  const kindParam = params.get("jenis") as LogNotificationKind | null
   const periodParam = params.get("periode") as Period | null
   const filter: LogFilter = {
     status: statusParam === "gagal" || statusParam === "terkirim" ? statusParam : undefined,

@@ -1,6 +1,6 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Button · Figma PINTARA → Components → 01 · Actions → Button
@@ -80,5 +80,5 @@ function Button({
     />
   )
 }
-
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants }

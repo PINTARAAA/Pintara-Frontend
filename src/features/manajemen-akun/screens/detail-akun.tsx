@@ -11,20 +11,21 @@ import {
 } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
-import { toast } from "@/components/ui/toast-api"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { initialsOf } from "@/features/data-master/api/data-master"
 import {
-  InfoCard,
-  ProfileHeader,
-} from "@/features/data-master/components/profile-parts"
+  DetailScreen,
+  ConfirmDialog,
+  Button,
+  Checkbox,
+  DataState,
+  ListItem,
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  toast,
+} from "@/components"
+import { DashboardList } from "@/features/dashboard/components"
+import { initialsOf } from "@/features/data-master/api"
+import { InfoCard, ProfileHeader } from "@/features/data-master/components"
 import {
   accountQuery,
   linkableStudentsQuery,
@@ -33,9 +34,9 @@ import {
   resetPassword,
   ROLE_LABEL,
   setAccountStatus,
-  type AccountDetail,
-} from "@/features/manajemen-akun/api/akun"
-import { formatRelativeDay } from "@/lib/format/date"
+} from "@/features/manajemen-akun/api"
+import type { AccountDetail } from "@/types/manajemen-akun"
+import { formatRelativeDay } from "@/lib/format"
 
 /*
  * P10 · Detail Akun · Figma "Manajemen Akun / Detail" dan "Konfirmasi reset

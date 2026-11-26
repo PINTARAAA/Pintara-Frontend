@@ -1,4 +1,4 @@
-import { RiwayatTutor } from "@/features/presensi/screens/riwayat-tutor"
+import { RiwayatTutor } from "@/features/presensi"
 
 export default function RiwayatTutorRoute() {
   return <RiwayatTutor />

@@ -1,32 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
+  DetailScreen,
+  AlertBanner,
+  StatusBadge,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { toast } from "@/components/ui/toast-api"
+  DataState,
+  toast,
+} from "@/components"
 import {
   approveSession,
   NotFoundError,
   sessionQuery,
-  type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import {
-  NotesCard,
-  ReviewCard,
-} from "@/features/absensi/components/session-cards"
-import { formatSessionTitle } from "@/features/absensi/lib/format"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatTimeRange } from "@/lib/format/date"
+} from "@/features/absensi/api"
+import type { AttendanceSession } from "@/types/absensi"
+import { NotesCard, ReviewCard } from "@/features/absensi/components"
+import { formatSessionTitle } from "@/features/absensi/lib"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * W5 · Validasi Absensi / Detail sesi

@@ -9,37 +9,40 @@ import {
 } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
 import {
+  TabScreen,
+  StatusBadge,
+  Button,
+  DataState,
+  ListItem,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
+} from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
 import {
   billsQuery,
   daysUntilDue,
   paymentsQuery,
   remainingOf,
   statusOf,
-  type Bill,
-  type BillsOverview,
-  type Payment,
-  type PaymentStatus,
-} from "@/features/tagihan/api/tagihan"
-import { formatDue, formatMonth, formatPeriod } from "@/features/tagihan/lib/format"
-import { formatRupiah } from "@/lib/format/currency"
-import { cn } from "@/lib/styles/cn"
+} from "@/features/tagihan/api"
+import { formatDue, formatMonth, formatPeriod } from "@/features/tagihan/lib"
+import { formatRupiah } from "@/lib/format"
+import { cn } from "@/lib/styles"
+import type {
+  Bill,
+  BillsOverview,
+  Payment,
+  PaymentStatus,
+} from "@/types/tagihan"
 
 /*
  * W6 · Tagihan (tab) · Figma "Tagihan / Daftar", "Tagihan / Kosong" dan

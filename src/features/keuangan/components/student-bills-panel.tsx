@@ -5,21 +5,19 @@ import { id as localeId } from "date-fns/locale"
 import { UserIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { StackedProgressBar } from "@/components/ui/stacked-progress-bar"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { monthKey } from "@/features/keuangan/api/honor"
 import {
-  studentBillsQuery,
-  type StudentBillList,
-  type StudentBillRow,
-} from "@/features/keuangan/api/laporan"
-import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
-import { formatDayMonth } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+  Button,
+  DataState,
+  FilterPill,
+  ListItem,
+  StackedProgressBar,
+} from "@/components"
+import { DashboardList } from "@/features/dashboard/components"
+import { monthKey, studentBillsQuery } from "@/features/keuangan/api"
+import type { StudentBillList, StudentBillRow } from "@/types/keuangan"
+
+import { formatRupiah, formatRupiahCompact, formatDayMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * P8 · Tagihan siswa · Figma "Laporan Keuangan / Tagihan siswa".

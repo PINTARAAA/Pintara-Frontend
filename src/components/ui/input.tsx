@@ -1,12 +1,11 @@
 import * as React from "react"
 import { Input as InputPrimitive } from "@base-ui/react/input"
-import { cn } from "@/lib/styles/cn"
-
 import {
+  cn,
   fieldControlVariants,
   fieldHeight,
   type FieldSize,
-} from "@/lib/styles/field-variants"
+} from "@/lib/styles"
 
 /*
  * Input · Figma PINTARA → Components → 02 · Form Controls → Input

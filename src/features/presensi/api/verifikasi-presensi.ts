@@ -1,17 +1,23 @@
 import { queryOptions } from "@tanstack/react-query"
 import { isAfter, isSameMonth, startOfMonth, subMonths } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
-import { addNotification } from "@/features/notifikasi/api/notifikasi"
+import { addNotification } from "@/features/notifikasi/api"
 import {
   finalizeReadySessions,
   isReadyForFinal,
   NotFoundError,
   resolveObjection,
   snapshotTutorSessions,
-  type ObjectionResolution,
-  type TutorSession,
 } from "@/features/presensi/api/presensi"
+import { otherTutors } from "@/lib/data/presensi"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import type {
+  Counts,
+  FinalByTutor,
+  FinalOverview,
+  ObjectionResolution,
+  TutorSession,
+} from "@/types/presensi"
 
 /*
  * Verifikasi Final Presensi (pengelola) · Figma PINTARA → UI Screen →
@@ -29,54 +35,9 @@ import {
  */
 export const BUDI = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
 
-type Counts = {
-  final: number
-  ready: number
-  waiting: number
-  notCollected: number
-}
-
-/* Angka contoh tutor lain untuk bulan berjalan (bulan lalu: semua final) */
-const otherTutors: { name: string; subjects: string[]; counts: Counts }[] = [
-  {
-    name: "Kak Laila Fitri",
-    subjects: ["Matematika"],
-    counts: { final: 52, ready: 7, waiting: 1, notCollected: 1 },
-  },
-  {
-    name: "Kak Dimas Arya",
-    subjects: ["Fisika", "Matematika"],
-    counts: { final: 48, ready: 5, waiting: 1, notCollected: 1 },
-  },
-  {
-    name: "Kak Nadia Safitri",
-    subjects: ["Bahasa Inggris"],
-    counts: { final: 41, ready: 0, waiting: 1, notCollected: 0 },
-  },
-  {
-    name: "Kak Yoga Pratama",
-    subjects: ["Fisika"],
-    counts: { final: 6, ready: 0, waiting: 0, notCollected: 0 },
-  },
-]
-
 const total = (c: Counts) => c.final + c.ready + c.waiting + c.notCollected
 
 /* ---------- Ringkasan per bulan ---------- */
-
-export type FinalOverview = {
-  months: Date[]
-  month: Date
-  total: number
-  final: number
-  ready: number
-  waiting: number
-  disputed: number
-  notCollected: number
-  objections: TutorSession[]
-  /* Presensi lengkap per tutor, terbanyak dulu */
-  readyByTutor: { tutor: string; count: number }[]
-}
 
 function buildOverview(month: Date): FinalOverview {
   const now = new Date()
@@ -202,14 +163,6 @@ export async function reviewObjection(
 }
 
 /* ---------- P7 · Sumber rekap honor ---------- */
-
-export type FinalByTutor = {
-  tutor: string
-  /* Jumlah presensi final per mapel */
-  bySubject: Record<string, number>
-  /* Rincian sesi (hanya tersedia untuk data per sesi, mis. Kak Budi) */
-  sessions?: TutorSession[]
-}
 
 /* Presensi terverifikasi final per tutor pada bulan tsb (dibaca tanpa jeda) */
 export function finalByTutor(month: Date): FinalByTutor[] {

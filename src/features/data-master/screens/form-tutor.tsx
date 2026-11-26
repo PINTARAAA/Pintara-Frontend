@@ -9,37 +9,34 @@ import {
 } from "react-hook-form"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DataState } from "@/components/ui/data-state"
 import {
+  DetailScreen,
+  Button,
+  Checkbox,
+  DataState,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { TimePicker } from "@/components/ui/time-picker"
-import { toast } from "@/components/ui/toast-api"
+  Input,
+  TimePicker,
+  toast,
+} from "@/components"
 import {
-  DAYS,
   DuplicateEmailError,
-  LEVELS,
   NotFoundError,
   saveTutor,
-  TUTOR_SUBJECTS,
   tutorQuery,
-  type Level,
-  type Tutor,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
+import { DAYS, LEVELS, TUTOR_SUBJECTS } from "@/lib/data/data-master"
+import type { Level, Tutor } from "@/types/data-master"
 import {
   EMPTY_TUTOR,
   tutorSchema,
   type TutorFormInput,
-} from "@/features/data-master/schemas/tutor-schema"
-import { FormGroup } from "@/features/pendaftaran/components/form-group"
-import { formatRupiah } from "@/lib/format/currency"
+} from "@/features/data-master/schemas"
+import { FormGroup } from "@/features/pendaftaran/components"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * P9 · Tambah Tutor / Ubah Profil Tutor · Figma "Data Tutor / Tambah tutor".

@@ -6,10 +6,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import type { AttendanceSession } from "@/features/absensi/api/absensi"
-import { RATING_LABELS } from "@/features/absensi/lib/format"
-import { formatDateTime } from "@/lib/format/date"
+} from "@/components"
+import type { AttendanceSession } from "@/types/absensi"
+import { RATING_LABELS } from "@/features/absensi/lib"
+import { formatDateTime } from "@/lib/format"
 
 /*
  * Kartu bersama Detail Sesi (W5) dan Riwayat Les / Detail sesi (W7):

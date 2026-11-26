@@ -2,7 +2,7 @@ import * as React from "react"
 import { XIcon } from "lucide-react"
 
 import { StatusIcon, type FeedbackStatus } from "@/components/ui/status-icon"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Alert banner · Figma PINTARA → Components → 06 · Feedback & Overlay

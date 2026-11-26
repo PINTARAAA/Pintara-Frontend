@@ -2,24 +2,28 @@ import * as React from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Navigate, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  AlertBanner,
+  Button,
+  DataState,
+  Field,
+  FieldDescription,
+  FieldLabel,
+  Textarea,
+  toast,
+} from "@/components"
 import {
   chooseAnotherTutor,
   offerDraftQuery,
   OfferError,
   offerQuery,
   sendOffer,
-  type OfferDraft,
-} from "@/features/penawaran/api/penawaran"
-import { OfferSummaryCard } from "@/features/penawaran/components/offer-summary"
-import { firstName } from "@/features/penawaran/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api/verifikasi"
+} from "@/features/penawaran/api"
+import type { OfferDraft } from "@/types/penawaran"
+import { OfferSummaryCard } from "@/features/penawaran/components"
+import { firstName } from "@/lib/format"
+import { NotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Buat Penawaran · Figma "Penawaran / Buat penawaran" dan

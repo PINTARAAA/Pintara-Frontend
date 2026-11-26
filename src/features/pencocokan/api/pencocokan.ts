@@ -1,14 +1,21 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
 import {
   assignTutor,
   needsTutor,
   NotFoundError,
   snapshotRegistrations,
-  type Level,
-  type PengelolaRegistration,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/verifikasi/api"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { tutors } from "@/lib/data/pencocokan"
+import type {
+  Candidate,
+  Criterion,
+  MatchingCandidates,
+  MatchingTutor,
+  OfferTutorInfo,
+} from "@/types/pencocokan"
+import type { PengelolaRegistration } from "@/types/verifikasi"
 
 /*
  * Pencocokan Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -26,143 +33,7 @@ import {
  */
 export const MAX_DISTANCE_KM = 5
 
-type Tutor = {
-  id: string
-  name: string
-  /* Nama sapaan untuk tombol, mis. "Kak Dimas" */
-  shortName: string
-  initials: string
-  education: string
-  subjects: string[]
-  levels: Level[]
-  /* Hari mengajar dan rentang jam "HH.mm" */
-  days: string[]
-  from: string
-  until: string
-  rating: number
-  activeStudents: number
-  /* Tarif tutor per sesi (Rupiah) */
-  rate: number
-  /*
-   * Slot yang baru saja terisi siswa lain, mis. "Senin 19.00". Belum
-   * tercermin di kriteria ketersediaan (data jadwal tersinkron berkala),
-   * jadi baru ketahuan saat penawaran akan dikirim (P4 · Error).
-   */
-  takenSlots?: string[]
-  /* Jarak ke alamat les per pendaftaran (dari layanan peta di backend) */
-  distanceKm: Record<string, number>
-  defaultDistanceKm: number
-}
-
-/* ---------- Data contoh ---------- */
-
-const tutors: Tutor[] = [
-  {
-    id: "tt-dimas",
-    name: "Kak Dimas Arya",
-    shortName: "Kak Dimas",
-    initials: "DA",
-    education: "S1 Pendidikan Fisika · Univ. Trunojoyo",
-    subjects: ["Fisika", "Matematika"],
-    levels: ["SMP", "SMA"],
-    days: ["Senin", "Selasa", "Kamis"],
-    from: "16.00",
-    until: "21.00",
-    rating: 4.8,
-    activeStudents: 4,
-    rate: 60_000,
-    distanceKm: { "reg-0115": 2.1 },
-    defaultDistanceKm: 4.2,
-  },
-  {
-    id: "tt-laila",
-    name: "Kak Laila Fitri",
-    shortName: "Kak Laila",
-    initials: "LF",
-    education: "S1 Matematika · Univ. Negeri Surabaya",
-    subjects: ["Matematika"],
-    levels: ["SD", "SMP", "SMA"],
-    days: ["Kamis", "Sabtu"],
-    from: "15.00",
-    until: "21.00",
-    rating: 4.9,
-    activeStudents: 6,
-    rate: 55_000,
-    distanceKm: { "reg-0115": 3.4 },
-    defaultDistanceKm: 3.1,
-  },
-  {
-    id: "tt-yoga",
-    name: "Kak Yoga Pratama",
-    shortName: "Kak Yoga",
-    initials: "YP",
-    education: "S1 Fisika · ITS",
-    subjects: ["Fisika", "Matematika"],
-    levels: ["SMA"],
-    days: ["Senin", "Rabu", "Kamis"],
-    from: "18.00",
-    until: "21.00",
-    rating: 4.6,
-    activeStudents: 2,
-    rate: 65_000,
-    takenSlots: ["Senin 19.00"],
-    distanceKm: { "reg-0115": 6.8 },
-    defaultDistanceKm: 7.5,
-  },
-  {
-    id: "tt-nadia",
-    name: "Kak Nadia Safitri",
-    shortName: "Kak Nadia",
-    initials: "NS",
-    education: "S1 Pendidikan Bahasa Inggris · Univ. Trunojoyo",
-    subjects: ["Bahasa Inggris"],
-    levels: ["SD", "SMP"],
-    days: ["Kamis", "Jumat"],
-    from: "15.00",
-    until: "18.00",
-    rating: 4.7,
-    activeStudents: 5,
-    rate: 50_000,
-    distanceKm: { "reg-0112": 1.8 },
-    defaultDistanceKm: 2.5,
-  },
-  {
-    id: "tt-rina",
-    name: "Kak Rina Oktavia",
-    shortName: "Kak Rina",
-    initials: "RO",
-    education: "S1 Sastra Inggris · Univ. Airlangga",
-    subjects: ["Bahasa Inggris"],
-    levels: ["SMP", "SMA"],
-    days: ["Selasa", "Jumat"],
-    from: "14.00",
-    until: "17.00",
-    rating: 4.5,
-    activeStudents: 3,
-    rate: 50_000,
-    distanceKm: { "reg-0112": 8.2 },
-    defaultDistanceKm: 6.4,
-  },
-]
-
 /* ---------- Penilaian ---------- */
-
-export type Criterion = { label: string; met: boolean }
-
-export type Candidate = {
-  tutorId: string
-  name: string
-  shortName: string
-  initials: string
-  education: string
-  rating: number
-  activeStudents: number
-  criteria: Criterion[]
-  /* 0–100 */
-  score: number
-  /* Semua kriteria terpenuhi */
-  fullMatch: boolean
-}
 
 const minutes = (time: string) => {
   const [h, m] = time.split(/[.:]/).map(Number)
@@ -178,7 +49,7 @@ export const joinAnd = (items: string[]) =>
 const km = (value: number) =>
   value.toLocaleString("id-ID", { maximumFractionDigits: 1 })
 
-function evaluate(tutor: Tutor, r: PengelolaRegistration): Candidate {
+function evaluate(tutor: MatchingTutor, r: PengelolaRegistration): Candidate {
   const { level } = r.student
   const { subjects, days, startTime } = r.needs
 
@@ -267,13 +138,6 @@ export const matchingQueueQuery = () =>
 
 /* ---------- Kandidat ---------- */
 
-export type MatchingCandidates = {
-  registration: PengelolaRegistration
-  /* Tutor yang mengajar minimal satu mapel di jenjang ini, skor tertinggi dulu */
-  candidates: Candidate[]
-  fullMatches: number
-}
-
 export async function getMatchingCandidates(
   id: string
 ): Promise<MatchingCandidates> {
@@ -315,16 +179,6 @@ export async function selectTutor(registrationId: string, tutorId: string) {
 }
 
 /* ---------- Untuk penawaran (P4) ---------- */
-
-export type OfferTutorInfo = {
-  id: string
-  name: string
-  shortName: string
-  rate: number
-  distanceKm: number
-  /* Slot jadwal diminta yang sudah terisi siswa lain, mis. "Senin 19.00" */
-  takenSlot: string | null
-}
 
 export function getOfferTutorInfo(
   tutorId: string,

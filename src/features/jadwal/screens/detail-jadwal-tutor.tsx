@@ -3,18 +3,21 @@ import { format, isAfter, isToday } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { NotFoundError } from "@/features/jadwal/api/jadwal"
 import {
-  tutorScheduleSessionQuery,
-  type TutorScheduleDetail,
-} from "@/features/jadwal/api/jadwal-tutor"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatTimeRange, formatWeekdayDate } from "@/lib/format/date"
+  DetailScreen,
+  AlertBanner,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+} from "@/components"
+import { NotFoundError, tutorScheduleSessionQuery } from "@/features/jadwal/api"
+import type { TutorScheduleDetail } from "@/types/jadwal"
+
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
 
 /*
  * T5 · Detail Jadwal (tutor) · Figma "Jadwal / Tutor - Detail sesi".

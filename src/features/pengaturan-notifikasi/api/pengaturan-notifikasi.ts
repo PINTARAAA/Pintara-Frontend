@@ -1,6 +1,12 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { settings } from "@/lib/data/pengaturan-notifikasi"
+import type {
+  Channel,
+  NotificationSetting,
+  SettingInput,
+} from "@/types/pengaturan-notifikasi"
 
 /*
  * Pengaturan Notifikasi · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -16,7 +22,6 @@ import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
  * kejadian di sistem. Template memakai variabel {nama_variabel} yang diganti
  * data sebenarnya saat dikirim.
  */
-export type Channel = "whatsapp" | "email" | "aplikasi"
 
 export const CHANNEL_LABEL: Record<Channel, string> = {
   whatsapp: "WhatsApp",
@@ -24,167 +29,7 @@ export const CHANNEL_LABEL: Record<Channel, string> = {
   aplikasi: "Notifikasi aplikasi",
 }
 
-export type Timing =
-  /* Sebelum sesi dimulai, dalam jam */
-  | { kind: "sebelum_sesi"; hoursBefore: number }
-  /* Belum diisi N hari setelah sesi, dikirim jam tertentu, diulang maks. N hari */
-  | { kind: "setelah_sesi"; daysAfter: number; time: string; maxRepeat: number }
-  | { kind: "kejadian" }
-
-export type NotificationSetting = {
-  id: string
-  group: "pengingat" | "kejadian"
-  title: string
-  /* Judul layar ubah, mis. "Pengingat Presensi" */
-  screenTitle: string
-  recipient: string
-  trigger: string
-  /* Keterangan kartu "aktif", mis. "Dikirim ke tutor yang belum mengisi presensi" */
-  activeNote: string
-  enabled: boolean
-  channel: Channel
-  timing: Timing
-  template: string
-  variables: string[]
-  /* Contoh nilai variabel untuk pratinjau */
-  sample: Record<string, string>
-  previewNote: string
-}
-
 export const TEMPLATE_MAX = 500
-
-const settings: NotificationSetting[] = [
-  {
-    id: "pengingat-jadwal",
-    group: "pengingat",
-    title: "Pengingat jadwal les",
-    screenTitle: "Pengingat Jadwal Les",
-    recipient: "Ke tutor",
-    trigger: "sebelum sesi",
-    activeNote: "Dikirim ke tutor sebelum setiap sesi dimulai",
-    enabled: true,
-    channel: "whatsapp",
-    timing: { kind: "sebelum_sesi", hoursBefore: 2 },
-    template:
-      "Halo {nama_tutor}, pengingat les {mapel} bersama {nama_siswa} hari ini pukul {jam} di {alamat}.",
-    variables: ["nama_tutor", "nama_siswa", "mapel", "jam", "alamat"],
-    sample: {
-      nama_tutor: "Kak Budi",
-      nama_siswa: "Aisyah Putri",
-      mapel: "Matematika",
-      jam: "16.00",
-      alamat: "Jl. Trunojoyo No. 12",
-    },
-    previewNote: "Contoh dengan data tutor sebenarnya",
-  },
-  {
-    id: "pengingat-presensi",
-    group: "pengingat",
-    title: "Pengingat presensi",
-    screenTitle: "Pengingat Presensi",
-    recipient: "Ke tutor",
-    trigger: "jika presensi belum diisi",
-    activeNote: "Dikirim ke tutor yang belum mengisi presensi",
-    enabled: true,
-    channel: "whatsapp",
-    timing: { kind: "setelah_sesi", daysAfter: 1, time: "08.00", maxRepeat: 3 },
-    template:
-      "Halo {nama_tutor}, presensi les {mapel} bersama {nama_siswa} pada {tanggal} belum diisi. Mohon isi di PINTARA ya.",
-    variables: ["nama_tutor", "nama_siswa", "mapel", "tanggal", "jam"],
-    sample: {
-      nama_tutor: "Kak Yoga",
-      nama_siswa: "Rafi Hidayat",
-      mapel: "Fisika",
-      tanggal: "Senin, 23 Nov",
-      jam: "19.00",
-    },
-    previewNote: "Contoh dengan data tutor sebenarnya",
-  },
-  {
-    id: "pendaftaran-baru",
-    group: "kejadian",
-    title: "Pendaftaran baru",
-    screenTitle: "Pendaftaran Baru",
-    recipient: "Ke pengelola",
-    trigger: "saat wali mengirim pendaftaran",
-    activeNote: "Dikirim ke pengelola saat ada pendaftaran baru",
-    enabled: true,
-    channel: "aplikasi",
-    timing: { kind: "kejadian" },
-    template:
-      "Pendaftaran baru dari {nama_wali} untuk {nama_siswa} ({kelas}). Segera verifikasi di PINTARA.",
-    variables: ["nama_wali", "nama_siswa", "kelas"],
-    sample: { nama_wali: "Sari Wulandari", nama_siswa: "Aisyah Putri", kelas: "8 SMP" },
-    previewNote: "Contoh dengan data pendaftaran terakhir",
-  },
-  {
-    id: "hasil-verifikasi",
-    group: "kejadian",
-    title: "Hasil verifikasi pendaftaran",
-    screenTitle: "Hasil Verifikasi",
-    recipient: "Ke wali",
-    trigger: "saat diverifikasi atau ditolak",
-    activeNote: "Dikirim ke wali setelah pendaftaran diperiksa",
-    enabled: true,
-    channel: "whatsapp",
-    timing: { kind: "kejadian" },
-    template:
-      "Halo {nama_wali}, pendaftaran {nama_siswa} {status}. Lihat detailnya di PINTARA.",
-    variables: ["nama_wali", "nama_siswa", "status"],
-    sample: { nama_wali: "Ibu Sari", nama_siswa: "Aisyah Putri", status: "sudah diverifikasi" },
-    previewNote: "Contoh dengan data pendaftaran terakhir",
-  },
-  {
-    id: "penawaran-tutor",
-    group: "kejadian",
-    title: "Penawaran tutor",
-    screenTitle: "Penawaran Tutor",
-    recipient: "Ke tutor",
-    trigger: "saat penawaran dikirim",
-    activeNote: "Dikirim ke tutor saat ada penawaran siswa baru",
-    enabled: true,
-    channel: "whatsapp",
-    timing: { kind: "kejadian" },
-    template:
-      "Halo {nama_tutor}, ada penawaran les {mapel} untuk {nama_siswa} setiap {jadwal}. Konfirmasi di PINTARA.",
-    variables: ["nama_tutor", "nama_siswa", "mapel", "jadwal"],
-    sample: { nama_tutor: "Kak Dimas", nama_siswa: "Rafi Hidayat", mapel: "Fisika", jadwal: "Senin 19.00" },
-    previewNote: "Contoh dengan data penawaran terakhir",
-  },
-  {
-    id: "keberatan-presensi",
-    group: "kejadian",
-    title: "Keberatan presensi",
-    screenTitle: "Keberatan Presensi",
-    recipient: "Ke pengelola dan tutor",
-    trigger: "saat wali mengajukan keberatan",
-    activeNote: "Dikirim saat wali mengajukan keberatan presensi",
-    enabled: true,
-    channel: "aplikasi",
-    timing: { kind: "kejadian" },
-    template:
-      "{nama_wali} mengajukan keberatan atas presensi {mapel} {nama_siswa} pada {tanggal}.",
-    variables: ["nama_wali", "nama_siswa", "mapel", "tanggal"],
-    sample: { nama_wali: "Sari Wulandari", nama_siswa: "Aisyah Putri", mapel: "Matematika", tanggal: "19 Nov" },
-    previewNote: "Contoh dengan data keberatan terakhir",
-  },
-  {
-    id: "rekap-honor",
-    group: "kejadian",
-    title: "Rekap honor siap",
-    screenTitle: "Rekap Honor Siap",
-    recipient: "Ke pengelola",
-    trigger: "saat semua presensi bulan ini final",
-    activeNote: "Dikirim ke pengelola saat rekap honor bisa dihitung",
-    enabled: false,
-    channel: "aplikasi",
-    timing: { kind: "kejadian" },
-    template: "Semua presensi {bulan} sudah final. Rekap honor siap dihitung di PINTARA.",
-    variables: ["bulan"],
-    sample: { bulan: "November 2026" },
-    previewNote: "Contoh dengan periode berjalan",
-  },
-]
 
 /* ---------- Ringkasan ---------- */
 
@@ -258,11 +103,6 @@ export const notificationSettingQuery = (id: string) =>
     queryKey: ["pengaturan-notifikasi", id],
     queryFn: () => getNotificationSetting(id),
   })
-
-export type SettingInput = Pick<
-  NotificationSetting,
-  "enabled" | "channel" | "timing" | "template"
->
 
 export async function saveNotificationSetting(
   id: string,

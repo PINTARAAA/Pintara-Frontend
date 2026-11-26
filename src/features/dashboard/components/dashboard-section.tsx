@@ -1,18 +1,20 @@
 import * as React from "react"
 import { Link } from "react-router"
 
-import { Button } from "@/components/ui/button"
-import { List } from "@/components/ui/list-item"
-import { cn } from "@/lib/styles/cn"
+import { Button, List } from "@/components"
+import { cn } from "@/lib/styles"
 
 function DashboardSection({
   title,
   description,
   action,
   className,
+  headingClassName,
   children,
 }: {
   title: string
+  /* Kelas tambahan untuk judul, mis. "lg:text-headline" di desktop */
+  headingClassName?: string
   /* Keterangan Caption di bawah judul, mis. rentang tanggal "24–30 November 2026" */
   description?: React.ReactNode
   action?: { label: string; to: string }
@@ -24,7 +26,10 @@ function DashboardSection({
     <section aria-labelledby={headingId} className={cn("flex flex-col gap-ns-m", className)}>
       <div className="flex items-center justify-between gap-ns-s">
         <div className="flex flex-col gap-ns-2xs leading-normal">
-          <h2 id={headingId} className="text-body font-bold text-grayscale-text-title">
+          <h2
+            id={headingId}
+            className={cn("text-body font-bold text-grayscale-text-title", headingClassName)}
+          >
             {title}
           </h2>
           {description != null && (

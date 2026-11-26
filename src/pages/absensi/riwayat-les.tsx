@@ -1,4 +1,4 @@
-import { RiwayatLes } from "@/features/absensi/screens/riwayat-les"
+import { RiwayatLes } from "@/features/absensi"
 
 export default function RiwayatLesRoute() {
   return <RiwayatLes />

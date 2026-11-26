@@ -1,4 +1,4 @@
-import { AjukanKeberatan } from "@/features/absensi/screens/ajukan-keberatan"
+import { AjukanKeberatan } from "@/features/absensi"
 
 export default function AjukanKeberatanRoute() {
   return <AjukanKeberatan />

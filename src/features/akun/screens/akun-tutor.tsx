@@ -1,16 +1,24 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { tutorAccountQuery } from "@/features/akun/api/akun"
-import { AccountHelp } from "@/features/akun/components/account-help"
-import { AccountProfile } from "@/features/akun/components/account-profile"
-import { DashboardSection } from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatRupiah } from "@/lib/format/currency"
+import {
+  TabScreen,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+} from "@/components"
+import { tutorAccountQuery } from "@/features/akun/api"
+import { AccountHelp, AccountProfile } from "@/features/akun/components"
+
+import {
+  DashboardSection,
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * T6 · Akun (tutor) · Figma "Akun / Tutor"

@@ -1,4 +1,4 @@
-import { DataTutor } from "@/features/data-master/screens/data-tutor"
+import { DataTutor } from "@/features/data-master"
 
 export default function DataTutorRoute() {
   return <DataTutor />
