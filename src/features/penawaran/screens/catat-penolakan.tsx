@@ -8,6 +8,7 @@ import { z } from "zod"
 import {
   DetailScreen,
   ResultScreen,
+  RESULT_BUTTON_DESKTOP,
   AlertBanner,
   Button,
   DataState,
@@ -39,6 +40,10 @@ import { NotFoundError } from "@/features/verifikasi/api"
  * wajib) → Catatan (opsional; wajib bila "Lainnya") → banner info siswa
  * kembali ke pencocokan. Bilah aksi: Batal · Simpan Penolakan
  * (Destructive). Setelah tersimpan tampil layar hasil "Penolakan tercatat".
+ *
+ * Desktop (Figma "… (Desktop)"): Page header "← Detail Penawaran", formulir
+ * selebar 720px, alasan dalam dua kolom, tombol rata kanan di bawah garis
+ * pemisah. Layar hasil: Page header "Penawaran".
  */
 const LES = "/pengelola/les"
 const NOTE_MAX = 500
@@ -75,7 +80,12 @@ function CatatPenolakan() {
   }
 
   return (
-    <DetailScreen title="Catat Penolakan">
+    <DetailScreen
+      title="Catat Penolakan"
+      backLabel="Detail Penawaran"
+      desktopHeader="page"
+      desktopWidth="form"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat penawaran…" />
       ) : query.isError && !(query.error instanceof NotFoundError) ? (
@@ -153,6 +163,9 @@ function DeclineFormScreen({
   return (
     <DetailScreen
       title="Catat Penolakan"
+      backLabel="Detail Penawaran"
+      desktopHeader="page"
+      desktopWidth="form"
       surface="default"
       className="gap-ns-2xl"
       footer={
@@ -201,8 +214,8 @@ function DeclineFormScreen({
                 value={field.value ?? null}
                 onValueChange={(v) => field.onChange(v)}
                 onBlur={field.onBlur}
-                /* Tiap baris setinggi 48px seperti Figma */
-                className="gap-0 *:min-h-12"
+                /* Mobile: tiap baris 48px; desktop: dua kolom, baris 32px */
+                className="gap-0 *:min-h-12 lg:grid-cols-2 lg:gap-x-ns-2xl lg:*:min-h-8"
               >
                 {DECLINE_REASONS.map((r) => (
                   <RadioGroupItem
@@ -262,6 +275,7 @@ function DeclinedResult({ offer }: { offer: Offer }) {
   const navigate = useNavigate()
   return (
     <ResultScreen
+      pageTitle="Penawaran"
       status="warning"
       title="Penolakan tercatat"
       description={`${firstName(offer.student.name)} kembali ke daftar pencocokan. Pilih tutor lain agar les bisa segera dimulai.`}
@@ -269,6 +283,7 @@ function DeclinedResult({ offer }: { offer: Offer }) {
         <>
           <Button
             size="lg"
+            className={RESULT_BUTTON_DESKTOP}
             nativeButton={false}
             render={
               <Link to={`${LES}/pencocokan/${offer.registrationId}`} replace />
