@@ -28,6 +28,7 @@ function TabScreen({
   action,
   subheader,
   desktopHeader = "bar",
+  desktopHeaderActions,
   className,
   children,
 }: {
@@ -38,6 +39,11 @@ function TabScreen({
   subheader?: React.ReactNode
   /* bar = Top app bar juga di desktop, page = Page header desktop */
   desktopHeader?: "bar" | "page"
+  /*
+   * Khusus desktopHeader="page": aksi di kanan Page header, hanya tampil
+   * di desktop, mis. pil periode + tombol halaman
+   */
+  desktopHeaderActions?: React.ReactNode
   className?: string
   children: React.ReactNode
 }) {
@@ -55,6 +61,7 @@ function TabScreen({
           <PageHeader
             className="hidden pl-(--gutter) pr-(--gutter-end) pt-ns-3xl lg:flex"
             title={title}
+            actions={desktopHeaderActions}
           />
         )}
         <TopAppBar

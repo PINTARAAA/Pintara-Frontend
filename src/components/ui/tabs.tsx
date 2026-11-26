@@ -49,7 +49,12 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        "group/tabs-trigger relative inline-flex h-12 items-center justify-center gap-ns-s rounded-t-md border-b-2 border-transparent bg-grayscale-surface-default px-ns-l text-subtitle leading-none font-normal whitespace-nowrap text-grayscale-text-body transition-colors outline-none",
+        /*
+         * bg-clip-padding: latar tab tidak menutupi area border bawah yang
+         * transparan, sehingga garis bawah TabsList (border-b, tab -mb-px)
+         * tetap menyambung di bawah tab tidak aktif
+         */
+        "group/tabs-trigger relative inline-flex h-12 items-center justify-center gap-ns-s rounded-t-md border-b-2 border-transparent bg-grayscale-surface-default bg-clip-padding px-ns-l text-subtitle leading-none font-normal whitespace-nowrap text-grayscale-text-body transition-colors outline-none",
         "hover:bg-grayscale-surface-subtitle focus-visible:ring-2 focus-visible:ring-primary-border-lighter focus-visible:ring-inset",
         "data-active:border-primary-border-default data-active:font-bold data-active:text-primary-text-primary data-active:hover:bg-grayscale-surface-default",
         "data-disabled:pointer-events-none data-disabled:bg-grayscale-surface-disabled",
