@@ -105,7 +105,7 @@ function BillList({ data }: { data: StudentBillList }) {
         aria-label="Ringkasan tagihan"
         className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal"
       >
-        <div className="gap-ns-2xs flex flex-col">
+        <div className="gap-ns-s flex flex-col">
           <p className="text-body text-grayscale-text-title font-bold">
             {formatRupiahCompact(data.paid)} dari{" "}
             {formatRupiahCompact(data.total)} terbayar

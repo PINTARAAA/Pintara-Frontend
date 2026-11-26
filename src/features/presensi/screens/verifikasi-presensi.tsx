@@ -47,6 +47,10 @@ import { cn } from "@/lib/styles"
  * diverifikasi per tutor → Belum lengkap (menunggu wali · belum dikumpulkan).
  * "Verifikasi N Presensi" membuka Confirmation modal; setelah final, tombol
  * berganti "Hitung Rekap Honor" (P7). Bulan disimpan di ?bulan=YYYY-MM.
+ *
+ * Desktop (Figma "… (Desktop)"): Page header tanpa tautan kembali; pil
+ * periode dan tombol aksi di kanan header. Kolom kiri: Siap diverifikasi →
+ * Keberatan wali; kolom kanan 420px: ringkasan → Belum lengkap (jarak 40).
  */
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
@@ -63,6 +67,23 @@ function VerifikasiPresensi() {
   })
   const data = query.data
   const [confirmOpen, setConfirmOpen] = React.useState(false)
+
+  const periodPill = data && (
+    <FilterPill
+      label="Periode"
+      menuLabel="Pilih periode"
+      value={monthKey(data.month)}
+      options={data.months.map((m) => ({
+        value: monthKey(m),
+        label: monthLabel(m),
+      }))}
+      onValueChange={(v) =>
+        setParams(v === monthKey(data.months[0]) ? {} : { bulan: v }, {
+          replace: true,
+        })
+      }
+    />
+  )
 
   const finalize = useMutation({
     mutationFn: () => finalizeAttendance(data?.month ?? new Date()),
@@ -84,6 +105,11 @@ function VerifikasiPresensi() {
   return (
     <DetailScreen
       title="Verifikasi Presensi"
+      backLabel={null}
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
+      desktopHeaderActions={periodPill}
       footer={
         data &&
         (data.ready > 0 ? (
@@ -115,29 +141,17 @@ function VerifikasiPresensi() {
         <div
           aria-busy={query.isPlaceholderData}
           className={cn(
-            "gap-ns-2xl flex flex-col transition-opacity",
+            "gap-ns-2xl lg:gap-x-ns-4xl flex flex-col transition-opacity lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start",
             query.isPlaceholderData && "opacity-60"
           )}
         >
-          <FilterPill
-            label="Periode"
-            menuLabel="Pilih periode"
-            value={monthKey(data.month)}
-            options={data.months.map((m) => ({
-              value: monthKey(m),
-              label: monthLabel(m),
-            }))}
-            onValueChange={(v) =>
-              setParams(v === monthKey(data.months[0]) ? {} : { bulan: v }, {
-                replace: true,
-              })
-            }
-          />
+          {/* Desktop: pil periode pindah ke Page header */}
+          <div className="lg:hidden">{periodPill}</div>
 
-          <SummaryCard data={data} />
+          <SummaryCard data={data} className="lg:col-start-2 lg:row-start-1" />
 
-          <div className="gap-ns-2xl grid lg:grid-cols-2 lg:items-start">
-            <div className="gap-ns-2xl flex flex-col">
+          <div className="gap-ns-2xl grid lg:contents">
+            <div className="gap-ns-2xl flex flex-col lg:col-start-1 lg:row-span-2 lg:row-start-1">
               {data.objections.length > 0 && (
                 <DashboardSection title="Keberatan wali">
                   <DashboardList>
@@ -158,7 +172,11 @@ function VerifikasiPresensi() {
               )}
 
               {data.ready > 0 && (
-                <DashboardSection title={`Siap diverifikasi · ${data.ready}`}>
+                <DashboardSection
+                  title={`Siap diverifikasi · ${data.ready}`}
+                  /* Desktop (Figma): Siap diverifikasi di atas Keberatan */
+                  className="lg:order-first"
+                >
                   <DashboardList>
                     {data.readyByTutor.map((t) => (
                       <ListItem
@@ -174,7 +192,7 @@ function VerifikasiPresensi() {
               )}
             </div>
 
-            <div className="gap-ns-m flex flex-col">
+            <div className="gap-ns-m flex flex-col lg:col-start-2 lg:row-start-2">
               {data.waiting + data.notCollected > 0 && (
                 <DashboardSection
                   title={`Belum lengkap · ${data.waiting + data.notCollected}`}
@@ -230,7 +248,13 @@ function shortReason(reason?: string) {
   return first.length > 40 ? `${first.slice(0, 38)}…` : first
 }
 
-function SummaryCard({ data }: { data: FinalOverview }) {
+function SummaryCard({
+  data,
+  className,
+}: {
+  data: FinalOverview
+  className?: string
+}) {
   const subtitle =
     data.ready > 0
       ? `${data.ready} presensi lengkap siap diverifikasi`
@@ -241,9 +265,12 @@ function SummaryCard({ data }: { data: FinalOverview }) {
   return (
     <section
       aria-label="Ringkasan presensi"
-      className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal"
+      className={cn(
+        "gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal",
+        className
+      )}
     >
-      <div className="gap-ns-2xs flex flex-col">
+      <div className="gap-ns-s flex flex-col">
         <p className="text-body text-grayscale-text-title font-bold">
           {data.final} dari {data.total} presensi final
         </p>

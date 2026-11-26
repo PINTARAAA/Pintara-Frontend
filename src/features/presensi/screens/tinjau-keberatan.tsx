@@ -42,6 +42,10 @@ import { formatTimeRange } from "@/lib/format"
  * pelaksanaan (Mulai · Selesai) → Catatan koreksi (wajib, maks. 500).
  * Bilah aksi: Sesuai Tutor (data tutor dipertahankan) · Simpan Koreksi.
  * Keduanya mengembalikan presensi ke "Siap diverifikasi".
+ *
+ * Desktop (Figma "… / Tinjau keberatan (Desktop)"): Page header "← Verifikasi
+ * Presensi" dengan tombol di kanan; ringkasan selebar konten, lalu Keberatan
+ * wali + Data dari tutor di kiri dan formulir koreksi 420px di kanan.
  */
 const BACK = "/pengelola/presensi"
 const NOTE_MAX = 500
@@ -58,7 +62,11 @@ function TinjauKeberatan() {
   }
 
   return (
-    <DetailScreen title="Tinjau Keberatan">
+    <DetailScreen
+      title="Tinjau Keberatan"
+      backLabel="Verifikasi Presensi"
+      desktopHeader="page"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat keberatan…" />
       ) : query.isError && !(query.error instanceof NotFoundError) ? (
@@ -157,6 +165,10 @@ function ReviewForm({ session }: { session: TutorSession }) {
   return (
     <DetailScreen
       title="Tinjau Keberatan"
+      backLabel="Verifikasi Presensi"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       surface="default"
       footer={
         <>
@@ -184,125 +196,134 @@ function ReviewForm({ session }: { session: TutorSession }) {
         <StatusBadge category="presensi" status="keberatan" />
       </div>
 
-      <Card size="compact">
-        <CardHeader className="gap-ns-2xs">
-          <CardTitle>Keberatan wali</CardTitle>
-          <p className="text-caption text-grayscale-text-caption leading-normal">
-            {session.student.parentSalutation} {session.student.parentName}
-            {record.objection && ` · ${stamp(record.objection.at)}`}
-          </p>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle text-grayscale-text-body leading-normal">
-            “{record.objection?.reason}”
-          </p>
-        </CardContent>
-      </Card>
+      {/*
+       * Mobile: ditumpuk. Desktop: Keberatan wali + Data dari tutor di kolom
+       * kiri, formulir koreksi 420px di kanan (jarak 40).
+       */}
+      <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-x-ns-4xl lg:gap-y-ns-2xl">
+        <Card size="compact" className="lg:col-start-1 lg:row-start-1">
+          <CardHeader className="gap-ns-2xs">
+            <CardTitle>Keberatan wali</CardTitle>
+            <p className="text-caption text-grayscale-text-caption leading-normal">
+              {session.student.parentSalutation} {session.student.parentName}
+              {record.objection && ` · ${stamp(record.objection.at)}`}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <p className="text-subtitle text-grayscale-text-body leading-normal">
+              “{record.objection?.reason}”
+            </p>
+          </CardContent>
+        </Card>
 
-      <Card size="compact">
-        <CardHeader className="gap-ns-2xs">
-          <CardTitle>Data dari tutor</CardTitle>
-          <p className="text-caption text-grayscale-text-caption leading-normal">
-            Diisi {BUDI.shortName} · {stamp(record.submittedAt)}
-          </p>
-        </CardHeader>
-        <CardContent>
-          <dl className="gap-ns-m flex flex-col">
-            <SummaryRow label="Waktu" labelClassName="w-[104px]">
-              {tutorStart}–{tutorEnd}
-            </SummaryRow>
-            <SummaryRow label="Kehadiran siswa" labelClassName="w-[104px]">
-              {record.studentPresent === false ? "Tidak hadir" : "Hadir"}
-            </SummaryRow>
-            {record.topic && (
-              <SummaryRow label="Materi" labelClassName="w-[104px]">
-                {record.topic}
+        <Card size="compact" className="lg:col-start-1 lg:row-start-2">
+          <CardHeader className="gap-ns-2xs">
+            <CardTitle>Data dari tutor</CardTitle>
+            <p className="text-caption text-grayscale-text-caption leading-normal">
+              Diisi {BUDI.shortName} · {stamp(record.submittedAt)}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <dl className="gap-ns-m flex flex-col">
+              <SummaryRow label="Waktu" labelClassName="w-[104px]">
+                {tutorStart}–{tutorEnd}
               </SummaryRow>
-            )}
-          </dl>
-        </CardContent>
-      </Card>
+              <SummaryRow label="Kehadiran siswa" labelClassName="w-[104px]">
+                {record.studentPresent === false ? "Tidak hadir" : "Hadir"}
+              </SummaryRow>
+              {record.topic && (
+                <SummaryRow label="Materi" labelClassName="w-[104px]">
+                  {record.topic}
+                </SummaryRow>
+              )}
+            </dl>
+          </CardContent>
+        </Card>
 
-      <form
-        noValidate
-        aria-label="Formulir tinjauan keberatan"
-        onSubmit={(e) => e.preventDefault()}
-        className="gap-ns-l flex flex-col"
-      >
-        <fieldset
-          className="gap-ns-m flex flex-col"
-          aria-describedby={errors.time ? "time-error" : undefined}
+        <form
+          noValidate
+          aria-label="Formulir tinjauan keberatan"
+          onSubmit={(e) => e.preventDefault()}
+          className="gap-ns-l flex flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1"
         >
-          <legend className="mb-ns-m text-body text-grayscale-text-title leading-normal font-bold">
-            Koreksi waktu pelaksanaan
-          </legend>
-          <div className="gap-ns-m grid grid-cols-2">
-            <Field>
-              <FieldLabel htmlFor="koreksi-mulai">Mulai</FieldLabel>
-              <TimePicker
-                id="koreksi-mulai"
-                start="07.00"
-                end="21.00"
-                step={15}
-                value={start}
-                onValueChange={(v) => {
-                  setStart(v)
-                  setErrors((e) => ({ ...e, time: undefined }))
-                }}
-                invalid={!!errors.time}
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="koreksi-selesai">Selesai</FieldLabel>
-              <TimePicker
-                id="koreksi-selesai"
-                start="07.15"
-                end="22.00"
-                step={15}
-                value={end}
-                onValueChange={(v) => {
-                  setEnd(v)
-                  setErrors((e) => ({ ...e, time: undefined }))
-                }}
-                invalid={!!errors.time}
-              />
-            </Field>
-          </div>
-          {errors.time && (
-            <FieldError id="time-error">{errors.time}</FieldError>
-          )}
-        </fieldset>
+          <fieldset
+            className="gap-ns-m flex flex-col"
+            aria-describedby={errors.time ? "time-error" : undefined}
+          >
+            <legend className="mb-ns-m text-body text-grayscale-text-title leading-normal font-bold">
+              Koreksi waktu pelaksanaan
+            </legend>
+            <div className="gap-ns-m grid grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="koreksi-mulai">Mulai</FieldLabel>
+                <TimePicker
+                  id="koreksi-mulai"
+                  start="07.00"
+                  end="21.00"
+                  step={15}
+                  value={start}
+                  onValueChange={(v) => {
+                    setStart(v)
+                    setErrors((e) => ({ ...e, time: undefined }))
+                  }}
+                  invalid={!!errors.time}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="koreksi-selesai">Selesai</FieldLabel>
+                <TimePicker
+                  id="koreksi-selesai"
+                  start="07.15"
+                  end="22.00"
+                  step={15}
+                  value={end}
+                  onValueChange={(v) => {
+                    setEnd(v)
+                    setErrors((e) => ({ ...e, time: undefined }))
+                  }}
+                  invalid={!!errors.time}
+                />
+              </Field>
+            </div>
+            {errors.time && (
+              <FieldError id="time-error">{errors.time}</FieldError>
+            )}
+          </fieldset>
 
-        <Field>
-          <FieldLabel htmlFor="koreksi-catatan" required>
-            Catatan koreksi
-          </FieldLabel>
-          <Textarea
-            id="koreksi-catatan"
-            maxLength={NOTE_MAX}
-            value={note}
-            onChange={(e) => {
-              setNote(e.target.value)
-              setErrors((er) => ({ ...er, note: undefined }))
-            }}
-            placeholder={`Contoh: Sudah dikonfirmasi dengan ${BUDI.shortName}…`}
-            aria-invalid={errors.note ? true : undefined}
-            aria-describedby={errors.note ? "note-error" : "note-help"}
-          />
-          {errors.note ? (
-            <FieldError id="note-error" counter={`${note.length}/${NOTE_MAX}`}>
-              {errors.note}
-            </FieldError>
-          ) : (
-            <FieldDescription
-              id="note-help"
-              counter={`${note.length}/${NOTE_MAX}`}
-            >
-              Dikirim ke tutor dan wali sebagai hasil peninjauan.
-            </FieldDescription>
-          )}
-        </Field>
-      </form>
+          <Field>
+            <FieldLabel htmlFor="koreksi-catatan" required>
+              Catatan koreksi
+            </FieldLabel>
+            <Textarea
+              id="koreksi-catatan"
+              maxLength={NOTE_MAX}
+              value={note}
+              onChange={(e) => {
+                setNote(e.target.value)
+                setErrors((er) => ({ ...er, note: undefined }))
+              }}
+              placeholder={`Contoh: Sudah dikonfirmasi dengan ${BUDI.shortName}…`}
+              aria-invalid={errors.note ? true : undefined}
+              aria-describedby={errors.note ? "note-error" : "note-help"}
+            />
+            {errors.note ? (
+              <FieldError
+                id="note-error"
+                counter={`${note.length}/${NOTE_MAX}`}
+              >
+                {errors.note}
+              </FieldError>
+            ) : (
+              <FieldDescription
+                id="note-help"
+                counter={`${note.length}/${NOTE_MAX}`}
+              >
+                Dikirim ke tutor dan wali sebagai hasil peninjauan.
+              </FieldDescription>
+            )}
+          </Field>
+        </form>
+      </div>
     </DetailScreen>
   )
 }

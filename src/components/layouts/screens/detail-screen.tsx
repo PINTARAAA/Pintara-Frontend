@@ -48,14 +48,18 @@ function DetailScreen({
   desktopHeader = "bar",
   desktopActions = "footer",
   desktopWidth = "default",
+  desktopHeaderActions,
   className,
   children,
 }: {
   title: React.ReactNode
   /* Default: kembali ke halaman sebelumnya */
   onBack?: () => void
-  /* Label tautan kembali di Page header desktop, mis. "Pendaftaran" */
-  backLabel?: string
+  /*
+   * Label tautan kembali di Page header desktop, mis. "Pendaftaran";
+   * null = tanpa tautan kembali (halaman utama menu sidebar)
+   */
+  backLabel?: string | null
   action?: React.ReactNode
   /* Area menempel di bawah top app bar, mis. Progress stepper formulir */
   subheader?: React.ReactNode
@@ -68,6 +72,11 @@ function DetailScreen({
   /* Khusus desktopHeader="page": letak tombol `footer` di desktop */
   desktopActions?: "footer" | "header"
   desktopWidth?: keyof typeof WIDTHS
+  /*
+   * Khusus desktopHeader="page": elemen tambahan di kanan Page header
+   * (sebelum tombol), hanya tampil di desktop, mis. pil periode
+   */
+  desktopHeaderActions?: React.ReactNode
   className?: string
   children: React.ReactNode
 }) {
@@ -91,15 +100,21 @@ function DetailScreen({
           <PageHeader
             className="hidden pl-(--gutter) pr-(--gutter-end) pt-ns-3xl lg:flex"
             title={title}
-            back={{ label: backLabel, onClick: back }}
+            back={
+              backLabel === null
+                ? undefined
+                : { label: backLabel, onClick: back }
+            }
             actions={
-              (action != null ||
-                (footer != null && desktopActions === "header")) && (
+              action != null ||
+              desktopHeaderActions != null ||
+              (footer != null && desktopActions === "header") ? (
                 <>
+                  {desktopHeaderActions}
                   {action}
                   {desktopActions === "header" && footer}
                 </>
-              )
+              ) : null
             }
           />
         )}
