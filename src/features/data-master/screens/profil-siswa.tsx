@@ -32,6 +32,10 @@ function ProfilSiswa() {
   return (
     <DetailScreen
       title="Profil Siswa"
+      backLabel="Data Siswa"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       action={
         student && (
           <ProfileMenu
@@ -100,56 +104,59 @@ function ProfilSiswa() {
             caption={`Kelas ${student.grade} · ${student.school}`}
             status={student.status}
           />
-          <InfoCard
-            title="Data siswa"
-            rows={[
-              ["Alamat les", student.address],
-              ["Mata pelajaran", student.subjects.join(", ")],
-              ["Kebutuhan belajar", student.needs],
-            ]}
-          />
-          <InfoCard
-            title="Wali & akun"
-            rows={[
-              ["Wali", student.guardian.name],
-              ["WhatsApp", student.guardian.phone],
-              [
-                "Akun wali",
-                `${student.guardian.accountActive ? "Aktif" : "Belum aktif"} · tertaut ke ${student.guardian.linkedStudents} siswa`,
-              ],
-            ]}
-          />
-          <InfoCard title="Les aktif">
-            {student.lessons.length > 0 ? (
-              <ul className="gap-ns-m flex flex-col">
-                {student.lessons.map((l) => (
-                  <li
-                    key={`${l.subject}-${l.day}`}
-                    className="gap-ns-m bg-grayscale-surface-subtitle px-ns-l py-ns-m flex items-center rounded-(--comp-radius-md) leading-normal"
-                  >
-                    <CalendarIcon
-                      aria-hidden="true"
-                      className="text-grayscale-text-title size-5 shrink-0"
-                    />
-                    <div className="gap-ns-2xs flex min-w-0 flex-col">
-                      <p className="text-subtitle leading-normal text-grayscale-text-title font-bold">
-                        {l.subject} · setiap {l.day}
-                      </p>
-                      <p className="text-caption leading-normal text-grayscale-text-caption">
-                        {l.from}–{l.until} · {l.tutorName}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-subtitle text-grayscale-text-caption leading-normal">
-                {student.status === "nonaktif"
-                  ? "Siswa sudah tidak mengikuti les."
-                  : "Belum ada les aktif. Cocokkan tutor di menu Les."}
-              </p>
-            )}
-          </InfoCard>
+          {/* Desktop (Figma "Data Siswa / Profil (Desktop)"): 3 kolom */}
+          <div className="lg:gap-ns-2xl contents lg:grid lg:grid-cols-3">
+            <InfoCard
+              title="Data siswa"
+              rows={[
+                ["Alamat les", student.address],
+                ["Mata pelajaran", student.subjects.join(", ")],
+                ["Kebutuhan belajar", student.needs],
+              ]}
+            />
+            <InfoCard
+              title="Wali & akun"
+              rows={[
+                ["Wali", student.guardian.name],
+                ["WhatsApp", student.guardian.phone],
+                [
+                  "Akun wali",
+                  `${student.guardian.accountActive ? "Aktif" : "Belum aktif"} · tertaut ke ${student.guardian.linkedStudents} siswa`,
+                ],
+              ]}
+            />
+            <InfoCard title="Les aktif">
+              {student.lessons.length > 0 ? (
+                <ul className="gap-ns-m flex flex-col">
+                  {student.lessons.map((l) => (
+                    <li
+                      key={`${l.subject}-${l.day}`}
+                      className="gap-ns-m bg-grayscale-surface-subtitle px-ns-l py-ns-m flex items-center rounded-(--comp-radius-md) leading-normal"
+                    >
+                      <CalendarIcon
+                        aria-hidden="true"
+                        className="text-grayscale-text-title size-5 shrink-0"
+                      />
+                      <div className="gap-ns-2xs flex min-w-0 flex-col">
+                        <p className="text-subtitle leading-normal text-grayscale-text-title font-bold">
+                          {l.subject} · setiap {l.day}
+                        </p>
+                        <p className="text-caption leading-normal text-grayscale-text-caption">
+                          {l.from}–{l.until} · {l.tutorName}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-subtitle text-grayscale-text-caption leading-normal">
+                  {student.status === "nonaktif"
+                    ? "Siswa sudah tidak mengikuti les."
+                    : "Belum ada les aktif. Cocokkan tutor di menu Les."}
+                </p>
+              )}
+            </InfoCard>
+          </div>
         </>
       ) : null}
     </DetailScreen>

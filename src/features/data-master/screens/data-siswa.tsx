@@ -6,16 +6,16 @@ import { Link, useNavigate } from "react-router"
 
 import {
   DetailScreen,
+  Button,
   StatusBadge,
   DataState,
   ListItem,
   TopAppBarButton,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components"
 import { studentsQuery } from "@/features/data-master/api"
 import { STUDENT_SUBJECTS } from "@/lib/data/data-master"
 import type { StudentRow } from "@/types/data-master"
-import { MasterFilters } from "@/features/data-master/components"
+import { MasterFilters, MasterList } from "@/features/data-master/components"
 import { useMasterFilter } from "@/features/data-master/hooks"
 import { cn } from "@/lib/styles"
 
@@ -25,6 +25,9 @@ import { cn } from "@/lib/styles"
  * Kolom cari nama siswa/wali + pil Mata pelajaran · Lokasi · Status →
  * "N siswa ditemukan" → daftar (kelas · mapel · tutor / "belum ada tutor";
  * nonaktif: "selesai <bulan>" + badge). Tombol + → Tambah Siswa.
+ *
+ * Desktop (Figma "Data Siswa / Daftar (Desktop)"): Page header tanpa
+ * tautan kembali dengan tombol Tambah Siswa; cari + pil satu baris.
  */
 const shortTutor = (name: string) => name.split(" ").slice(0, 2).join(" ")
 
@@ -58,11 +61,20 @@ function DataSiswa() {
   return (
     <DetailScreen
       title="Data Siswa"
+      backLabel={null}
+      desktopHeader="page"
+      desktopWidth="wide"
+      desktopHeaderActions={
+        <Button onClick={() => navigate("/pengelola/siswa/tambah")}>
+          Tambah Siswa
+        </Button>
+      }
       action={
+        /* Ikon + khusus mobile; desktop memakai tombol di Page header */
         <TopAppBarButton
           label="Tambah siswa"
           variant="plain"
-          className="text-primary-surface-default"
+          className="text-primary-surface-default lg:hidden"
           /* SEMENTARA: layar Tambah Siswa belum ada di Figma */
           onClick={() => navigate("/pengelola/siswa/tambah")}
         >
@@ -113,8 +125,12 @@ function DataSiswa() {
           <p className="text-caption text-grayscale-text-caption leading-normal">
             {query.data.length} siswa ditemukan
           </p>
-          <DashboardList>
-            {query.data.map((s) => (
+          {/* 10 baris pertama; sisanya lewat "Lihat N siswa lainnya" */}
+          <MasterList
+            key={JSON.stringify(filter)}
+            items={query.data}
+            noun="siswa"
+            renderItem={(s) => (
               <ListItem
                 key={s.id}
                 icon={<UserIcon />}
@@ -128,8 +144,8 @@ function DataSiswa() {
                 chevron
                 render={<Link to={`/pengelola/siswa/${s.id}`} />}
               />
-            ))}
-          </DashboardList>
+            )}
+          />
         </div>
       )}
     </DetailScreen>

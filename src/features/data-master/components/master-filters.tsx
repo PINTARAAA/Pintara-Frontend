@@ -1,7 +1,7 @@
 import * as React from "react"
 import { SearchIcon } from "lucide-react"
 
-import { FilterPill, Input } from "@/components"
+import { FilterChip, FilterPill, Input } from "@/components"
 import { DISTRICTS } from "@/lib/data/data-master"
 import type { MasterFilter } from "@/types/data-master"
 import { ALL } from "@/features/data-master/hooks"
@@ -10,6 +10,9 @@ import { ALL } from "@/features/data-master/hooks"
  * P9 · "Search & filters" pada Data Tutor / Data Siswa: kolom cari lalu
  * baris pil Mata pelajaran · Lokasi · Status (bisa digeser horizontal).
  * Nilai disimpan di ?q=…&mapel=…&lokasi=…&status=….
+ *
+ * Desktop (Figma "… / Daftar (Desktop)"): kolom cari 360px dan pil dalam
+ * satu baris, pil tidak lagi digeser.
  */
 function MasterFilters({
   searchLabel,
@@ -23,56 +26,73 @@ function MasterFilters({
   onChange: (key: "q" | "mapel" | "lokasi" | "status", value: string) => void
 }) {
   return (
-    <div className="gap-ns-m flex flex-col">
+    <div className="gap-ns-m lg:gap-ns-l flex flex-col lg:flex-row lg:items-center">
       <SearchField
         label={searchLabel}
         value={filter.query ?? ""}
         onCommit={(q) => onChange("q", q)}
       />
-      <div className="gap-ns-s -mx-(--gutter) px-(--gutter) flex overflow-x-auto [scrollbar-width:none]">
-        <FilterPill
-          label="Mata pelajaran"
-          menuLabel="Pilih mata pelajaran"
-          triggerLabel={filter.subject ?? "Mata pelajaran"}
-          active={!!filter.subject}
-          value={filter.subject ?? ALL}
-          options={[
-            { value: ALL, label: "Semua mata pelajaran" },
-            ...subjects.map((s) => ({ value: s, label: s })),
-          ]}
-          onValueChange={(v) => onChange("mapel", v)}
-        />
-        <FilterPill
-          label="Lokasi"
-          menuLabel="Pilih kecamatan"
-          triggerLabel={filter.district ?? "Lokasi"}
-          active={!!filter.district}
-          value={filter.district ?? ALL}
-          options={[
-            { value: ALL, label: "Semua lokasi" },
-            ...DISTRICTS.map((d) => ({ value: d, label: `Kec. ${d}` })),
-          ]}
-          onValueChange={(v) => onChange("lokasi", v)}
-        />
-        <FilterPill
-          label="Status"
-          menuLabel="Pilih status"
-          triggerLabel={
-            filter.status === "aktif"
-              ? "Aktif"
-              : filter.status === "nonaktif"
-                ? "Nonaktif"
-                : "Status"
-          }
-          active={!!filter.status}
-          value={filter.status ?? ALL}
-          options={[
-            { value: ALL, label: "Semua status" },
-            { value: "aktif", label: "Aktif" },
-            { value: "nonaktif", label: "Nonaktif" },
-          ]}
-          onValueChange={(v) => onChange("status", v)}
-        />
+      {/*
+       * Filter aktif tampil sebagai FilterChip dengan tombol × untuk
+       * menghapusnya (sama seperti Rekap & Riwayat Les dan Riwayat
+       * Notifikasi); filter belum dipakai tampil sebagai FilterPill.
+       */}
+      <div className="gap-ns-s -mx-(--gutter) px-(--gutter) flex overflow-x-auto [scrollbar-width:none] lg:mx-0 lg:overflow-visible lg:px-0">
+        {filter.subject ? (
+          <FilterChip
+            label={filter.subject}
+            onClear={() => onChange("mapel", ALL)}
+          />
+        ) : (
+          <FilterPill
+            label="Mata pelajaran"
+            menuLabel="Pilih mata pelajaran"
+            triggerLabel="Mata pelajaran"
+            value={ALL}
+            options={[
+              { value: ALL, label: "Semua mata pelajaran" },
+              ...subjects.map((s) => ({ value: s, label: s })),
+            ]}
+            onValueChange={(v) => onChange("mapel", v)}
+          />
+        )}
+        {filter.district ? (
+          <FilterChip
+            label={`Kec. ${filter.district}`}
+            onClear={() => onChange("lokasi", ALL)}
+          />
+        ) : (
+          <FilterPill
+            label="Lokasi"
+            menuLabel="Pilih kecamatan"
+            triggerLabel="Lokasi"
+            value={ALL}
+            options={[
+              { value: ALL, label: "Semua lokasi" },
+              ...DISTRICTS.map((d) => ({ value: d, label: `Kec. ${d}` })),
+            ]}
+            onValueChange={(v) => onChange("lokasi", v)}
+          />
+        )}
+        {filter.status ? (
+          <FilterChip
+            label={filter.status === "aktif" ? "Aktif" : "Nonaktif"}
+            onClear={() => onChange("status", ALL)}
+          />
+        ) : (
+          <FilterPill
+            label="Status"
+            menuLabel="Pilih status"
+            triggerLabel="Status"
+            value={ALL}
+            options={[
+              { value: ALL, label: "Semua status" },
+              { value: "aktif", label: "Aktif" },
+              { value: "nonaktif", label: "Nonaktif" },
+            ]}
+            onValueChange={(v) => onChange("status", v)}
+          />
+        )}
       </div>
     </div>
   )
@@ -105,7 +125,7 @@ function SearchField({
   }, [draft, value])
 
   return (
-    <div className="relative">
+    <div className="relative lg:w-90 lg:shrink-0">
       <Input
         type="search"
         aria-label={label}
