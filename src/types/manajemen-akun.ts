@@ -12,7 +12,6 @@ export type Account = {
   createdAt: Date
   lastLoginAt: Date | null
   status: AccountStatus
-  /* Wali saja: id siswa yang tertaut */
   studentIds: string[]
 }
 

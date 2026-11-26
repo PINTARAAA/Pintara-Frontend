@@ -1,13 +1,7 @@
 import type { StatusOf } from "@/lib/constants/status"
 
 export type TaskIcon =
-  | "clipboard"
-  | "alert"
-  | "wallet"
-  | "user-plus"
-  | "users"
-  | "calendar"
-  | "book"
+  "clipboard" | "alert" | "wallet" | "user-plus" | "users" | "calendar" | "book"
 
 export type DashboardTask = {
   id: string

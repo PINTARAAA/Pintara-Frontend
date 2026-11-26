@@ -15,7 +15,6 @@ export type Recipient = {
   name: string
   role: "tutor" | "wali" | "pengelola"
   contact: string
-  /* Akun di Manajemen Akun (P10), untuk "Ubah Kontak" */
   accountId?: string
 }
 
@@ -29,10 +28,8 @@ export type NotificationLog = {
   message: string
   attempts: number
   lastAttemptAt: Date
-  /* Gagal saja: penyebab lengkap (detail) dan ringkas (daftar) */
   reason?: string
   reasonShort?: string
-  /* Penyebab yang tidak hilang dengan kirim ulang (kontak tidak valid) */
   permanent?: boolean
   resentAt?: Date
 }

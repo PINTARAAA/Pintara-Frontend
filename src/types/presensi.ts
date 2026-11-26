@@ -7,7 +7,6 @@ export type ValidationStatus = Extract<
 
 export type AttendanceRecord = {
   held: boolean
-  /* "HH.mm" — hanya bila terlaksana */
   actualStart?: string
   actualEnd?: string
   studentPresent?: boolean
@@ -17,16 +16,9 @@ export type AttendanceRecord = {
   cancelReason?: string
   submittedAt: Date
   validation: ValidationStatus
-  /* Diisi bila wali mengajukan keberatan (W5) */
   objection?: { reason: string; at: Date }
-  /* Waktu wali menyetujui kehadiran */
   validatedAt?: Date
-  /*
-   * Hasil tinjauan keberatan oleh Pengelola (P6). corrected = waktu
-   * pelaksanaan dikoreksi; false = data tutor dinyatakan sesuai.
-   */
   review?: { corrected: boolean; note: string; at: Date }
-  /* Verifikasi final Pengelola (P6): masuk rekap honor, tutor tak bisa ubah */
   finalAt?: Date
 }
 
@@ -36,7 +28,6 @@ export type TutorSession = {
   student: {
     name: string
     parentName: string
-    /* Sapaan wali, mis. "Ibu" / "Bapak" */
     parentSalutation: string
   }
   start: Date
@@ -45,9 +36,7 @@ export type TutorSession = {
 }
 
 export type TutorSessionList = {
-  /* Sesi yang sudah dimulai tetapi belum dipresensi */
   toFill: TutorSession[]
-  /* Sesi hari ini yang belum dimulai */
   laterToday: TutorSession[]
   filled: TutorSession[]
 }
@@ -55,7 +44,6 @@ export type TutorSessionList = {
 export type AttendanceStatusOverview = {
   months: Date[]
   month: Date
-  /* Sesi yang sudah dimulai pada bulan ini */
   total: number
   disputed: TutorSession[]
   waiting: TutorSession[]
@@ -66,9 +54,7 @@ export type AttendanceStatusOverview = {
 export type TutorHistory = {
   months: Date[]
   month: Date
-  /* Nama siswa yang diajar (untuk filter) */
   students: string[]
-  /* null = semua siswa */
   student: string | null
   sessions: TutorSession[]
   summary: {
@@ -114,14 +100,11 @@ export type FinalOverview = {
   disputed: number
   notCollected: number
   objections: TutorSession[]
-  /* Presensi lengkap per tutor, terbanyak dulu */
   readyByTutor: { tutor: string; count: number }[]
 }
 
 export type FinalByTutor = {
   tutor: string
-  /* Jumlah presensi final per mapel */
   bySubject: Record<string, number>
-  /* Rincian sesi (hanya tersedia untuk data per sesi, mis. Kak Budi) */
   sessions?: TutorSession[]
 }

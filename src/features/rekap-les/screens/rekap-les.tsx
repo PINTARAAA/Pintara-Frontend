@@ -1,4 +1,3 @@
-import * as React from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
@@ -22,7 +21,9 @@ import { DashboardList } from "@/features/dashboard/components"
 import { parseMonth } from "@/features/keuangan/lib"
 import { firstName } from "@/features/presensi/lib"
 import { lessonRecapQuery } from "@/features/rekap-les/api"
+
 import type { LessonRecap, RecapSession } from "@/types/rekap-les"
+import { useExpandable } from "@/hooks"
 import { formatShortWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 
@@ -61,7 +62,9 @@ function RekapLes() {
   })
   const data = query.data
 
-  const update = (next: Partial<Record<"tab" | "bulan" | "tutor" | "siswa", string | null>>) => {
+  const update = (
+    next: Partial<Record<"tab" | "bulan" | "tutor" | "siswa", string | null>>,
+  ) => {
     const search = new URLSearchParams(params)
     for (const [key, value] of Object.entries(next)) {
       if (value) search.set(key, value)
@@ -117,7 +120,7 @@ function RekapLes() {
                 aria-busy={query.isPlaceholderData}
                 className={cn(
                   "gap-ns-l flex flex-col transition-opacity lg:max-w-3xl",
-                  query.isPlaceholderData && "opacity-60"
+                  query.isPlaceholderData && "opacity-60",
                 )}
               >
                 {t.value === "tutor" && (
@@ -132,7 +135,9 @@ function RekapLes() {
                     onPick={(id) => update({ siswa: id, tab: "riwayat" })}
                   />
                 )}
-                {t.value === "riwayat" && <History data={data} filter={filter} />}
+                {t.value === "riwayat" && (
+                  <History data={data} filter={filter} />
+                )}
               </div>
             )}
           </TabsContent>
@@ -151,7 +156,9 @@ function Filters({
 }: {
   data: LessonRecap
   filter: Filter
-  onChange: (next: Partial<Record<"bulan" | "tutor" | "siswa", string | null>>) => void
+  onChange: (
+    next: Partial<Record<"bulan" | "tutor" | "siswa", string | null>>,
+  ) => void
 }) {
   const tutor = data.tutorOptions.find((t) => t.id === filter.tutorId)
   const student = data.studentOptions.find((s) => s.id === filter.studentId)
@@ -163,7 +170,10 @@ function Filters({
         label="Periode"
         menuLabel="Pilih periode"
         value={monthKey(data.month)}
-        options={data.months.map((m) => ({ value: monthKey(m), label: monthLabel(m) }))}
+        options={data.months.map((m) => ({
+          value: monthKey(m),
+          label: monthLabel(m),
+        }))}
         onValueChange={(v) => onChange({ bulan: v === current ? null : v })}
       />
       {filter.tutorId ? (
@@ -218,18 +228,14 @@ function SummaryCard({ title, caption }: { title: string; caption: string }) {
   )
 }
 
-function useExpandable<T>(items: T[]) {
-  const [expanded, setExpanded] = React.useState(false)
-  return {
-    visible: expanded ? items : items.slice(0, PREVIEW),
-    hidden: items.length - PREVIEW,
-    expanded,
-    toggle: () => setExpanded((v) => !v),
-  }
-}
-
-function PerTutor({ data, onPick }: { data: LessonRecap; onPick: (id: string) => void }) {
-  const list = useExpandable(data.byTutor)
+function PerTutor({
+  data,
+  onPick,
+}: {
+  data: LessonRecap
+  onPick: (id: string) => void
+}) {
+  const list = useExpandable(data.byTutor, PREVIEW)
   return (
     <>
       <SummaryCard
@@ -253,7 +259,13 @@ function PerTutor({ data, onPick }: { data: LessonRecap; onPick: (id: string) =>
         ))}
       </DashboardList>
       {list.hidden > 0 && (
-        <Button variant="tertiary" size="sm" className="w-fit" aria-expanded={list.expanded} onClick={list.toggle}>
+        <Button
+          variant="tertiary"
+          size="sm"
+          className="w-fit"
+          aria-expanded={list.expanded}
+          onClick={list.toggle}
+        >
           {list.expanded ? "Ringkas" : `Lihat ${list.hidden} tutor lainnya`}
         </Button>
       )}
@@ -261,8 +273,14 @@ function PerTutor({ data, onPick }: { data: LessonRecap; onPick: (id: string) =>
   )
 }
 
-function PerStudent({ data, onPick }: { data: LessonRecap; onPick: (id: string) => void }) {
-  const list = useExpandable(data.byStudent)
+function PerStudent({
+  data,
+  onPick,
+}: {
+  data: LessonRecap
+  onPick: (id: string) => void
+}) {
+  const list = useExpandable(data.byStudent, PREVIEW)
   return (
     <>
       <SummaryCard
@@ -286,7 +304,13 @@ function PerStudent({ data, onPick }: { data: LessonRecap; onPick: (id: string) 
         ))}
       </DashboardList>
       {list.hidden > 0 && (
-        <Button variant="tertiary" size="sm" className="w-fit" aria-expanded={list.expanded} onClick={list.toggle}>
+        <Button
+          variant="tertiary"
+          size="sm"
+          className="w-fit"
+          aria-expanded={list.expanded}
+          onClick={list.toggle}
+        >
           {list.expanded ? "Ringkas" : `Lihat ${list.hidden} siswa lainnya`}
         </Button>
       )}
@@ -301,7 +325,7 @@ function PerStudent({ data, onPick }: { data: LessonRecap; onPick: (id: string) 
 function breakdown(
   items: { name: string; sessions: number }[],
   missed: number,
-  unit: string
+  unit: string,
 ) {
   const shown = items.slice(0, 3)
   return [
@@ -314,7 +338,7 @@ function breakdown(
 }
 
 function History({ data, filter }: { data: LessonRecap; filter: Filter }) {
-  const list = useExpandable(data.sessions)
+  const list = useExpandable(data.sessions, PREVIEW)
   const tutor = data.byTutor.find((t) => t.id === filter.tutorId)
   const student = data.byStudent.find((s) => s.id === filter.studentId)
 
@@ -323,18 +347,24 @@ function History({ data, filter }: { data: LessonRecap; filter: Filter }) {
       ? {
           title: `${tutor.name} · ${tutor.sessions} sesi`,
           caption: breakdown(
-            data.byStudent.map((s) => ({ name: firstName(s.name), sessions: s.sessions })),
+            data.byStudent.map((s) => ({
+              name: firstName(s.name),
+              sessions: s.sessions,
+            })),
             data.missed,
-            "siswa"
+            "siswa",
           ),
         }
       : student && !tutor
         ? {
             title: `${student.name} · ${student.sessions} sesi`,
             caption: breakdown(
-              data.byTutor.map((t) => ({ name: shortTutor(t.name), sessions: t.sessions })),
+              data.byTutor.map((t) => ({
+                name: shortTutor(t.name),
+                sessions: t.sessions,
+              })),
               data.missed,
-              "tutor"
+              "tutor",
             ),
           }
         : tutor && student
@@ -356,7 +386,13 @@ function History({ data, filter }: { data: LessonRecap; filter: Filter }) {
         ))}
       </DashboardList>
       {list.hidden > 0 && (
-        <Button variant="tertiary" size="sm" className="w-fit" aria-expanded={list.expanded} onClick={list.toggle}>
+        <Button
+          variant="tertiary"
+          size="sm"
+          className="w-fit"
+          aria-expanded={list.expanded}
+          onClick={list.toggle}
+        >
           {list.expanded ? "Ringkas" : `Lihat ${list.hidden} sesi lainnya`}
         </Button>
       )}
@@ -364,7 +400,13 @@ function History({ data, filter }: { data: LessonRecap; filter: Filter }) {
   )
 }
 
-function SessionRow({ session: s, showTutor }: { session: RecapSession; showTutor: boolean }) {
+function SessionRow({
+  session: s,
+  showTutor,
+}: {
+  session: RecapSession
+  showTutor: boolean
+}) {
   const detail =
     s.status === "tidak_terlaksana"
       ? "Tidak terlaksana"
@@ -415,7 +457,11 @@ function NotFound({
       <DataState
         state="empty"
         className="w-full"
-        title={filtered ? "Tidak ada riwayat untuk filter ini" : "Belum ada riwayat les"}
+        title={
+          filtered
+            ? "Tidak ada riwayat untuk filter ini"
+            : "Belum ada riwayat les"
+        }
         description={
           filtered
             ? `${description} Coba ubah periode atau hapus salah satu filter.`

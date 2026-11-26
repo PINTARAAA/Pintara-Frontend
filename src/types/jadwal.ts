@@ -2,13 +2,11 @@ import type { WaliStudent } from "@/types/dashboard"
 
 export type ScheduleTutor = { name: string; shortName: string }
 
-/* Jadwal rutin mingguan satu mata pelajaran */
 export type Routine = {
   id: string
   studentId: string
   subject: string
   weekday: number
-  /* "HH.mm" */
   startTime: string
   durationMinutes: number
   tutor: ScheduleTutor
@@ -17,10 +15,7 @@ export type Routine = {
 }
 
 export type ChangeRequestStatus =
-  | "ditinjau_pengelola"
-  | "konfirmasi_tutor"
-  | "disetujui"
-  | "ditolak"
+  "ditinjau_pengelola" | "konfirmasi_tutor" | "disetujui" | "ditolak"
 
 export type ChangeRequest = {
   id: string
@@ -31,7 +26,6 @@ export type ChangeRequest = {
   durationMinutes: number
   from: { weekday: number; startTime: string }
   to: { weekday: number; startTime: string }
-  /* sekali = hanya sesi terdekat; seterusnya = mulai `effectiveDate` */
   scope: "sekali" | "seterusnya"
   effectiveDate: Date
   reason: string
@@ -60,7 +54,6 @@ export type WaliSchedule = {
 export type RoutineDetail = Routine & {
   studentName: string
   nextSession: Date
-  /* Pengajuan perubahan yang masih diproses untuk jadwal ini */
   pendingRequest: ChangeRequest | null
 }
 
@@ -73,11 +66,9 @@ export type TutorRoutine = {
   id: string
   subject: string
   weekday: number
-  /* "HH.mm" */
   startTime: string
   durationMinutes: number
   student: { name: string; grade: string }
-  /* Alamat lengkap; bagian sebelum koma tampil di daftar */
   address: string
   parent: { name: string; phone: string }
 }
@@ -99,15 +90,18 @@ export type TutorScheduleDay = {
 }
 
 export type TutorSchedule = {
-  /* 0 = minggu ini (7 hari mulai hari ini) */
   week: number
   weeks: { from: Date; to: Date }[]
   days: TutorScheduleDay[]
-  /* Nama hari tanpa les dalam rentang minggu, mis. ["Kamis", "Minggu"] */
   freeDays: string[]
 }
 
 export type TutorScheduleDetail = TutorScheduleSession & {
   parent: TutorRoutine["parent"] & { whatsapp: string }
-  previous: { date: Date; subject: string; topic?: string; notes?: string } | null
+  previous: {
+    date: Date
+    subject: string
+    topic?: string
+    notes?: string
+  } | null
 }

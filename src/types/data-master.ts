@@ -18,12 +18,10 @@ export type Tutor = {
   until: string
   address: string
   district: string
-  /* Tarif honor per sesi; null = belum diatur (tidak ikut rekap honor) */
   rate: number | null
   pickup: PickupMethod
   joinedAt: Date
   activeStudents: number
-  /* Jadwal les rutin yang masih berjalan */
   activeSchedules: number
   status: AccountStatus
 }
@@ -65,7 +63,6 @@ export type Lesson = {
 export type Student = {
   id: string
   name: string
-  /* "8 SMP" */
   grade: string
   school: string
   address: string
@@ -80,7 +77,6 @@ export type Student = {
   }
   lessons: Lesson[]
   status: AccountStatus
-  /* Bulan les terakhir untuk siswa nonaktif */
   endedAt?: Date
 }
 

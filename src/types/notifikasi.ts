@@ -1,9 +1,5 @@
 export type NotificationKind =
-  | "validasi"
-  | "tagihan"
-  | "jadwal"
-  | "pembayaran"
-  | "les"
+  "validasi" | "tagihan" | "jadwal" | "pembayaran" | "les"
 
 export type AppNotification<Kind extends string = NotificationKind> = {
   id: string
@@ -12,9 +8,7 @@ export type AppNotification<Kind extends string = NotificationKind> = {
   body: string
   createdAt: Date
   read: boolean
-  /* Tujuan saat notifikasi diketuk */
   to: string
-  /* Keterangan pengganti waktu, mis. "sedang ditinjau Pengelola" */
   status?: string
 }
 
@@ -24,11 +18,7 @@ export type NotificationList<Kind extends string = NotificationKind> = {
 }
 
 export type TutorNotificationKind =
-  | "presensi"
-  | "keberatan"
-  | "pengingat"
-  | "rekap"
-  | "honor"
+  "presensi" | "keberatan" | "pengingat" | "rekap" | "honor"
 
 export type TutorNotification = AppNotification<TutorNotificationKind>
 
@@ -40,5 +30,4 @@ export type PengelolaNotificationKind =
   | "penawaran"
   | "pembayaran"
 
-export type PengelolaNotification =
-  AppNotification<PengelolaNotificationKind>
+export type PengelolaNotification = AppNotification<PengelolaNotificationKind>

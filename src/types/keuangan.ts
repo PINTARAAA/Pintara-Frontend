@@ -1,8 +1,6 @@
 import type { BillItem, BillStatus } from "@/types/tagihan"
 import type { TutorSession } from "@/types/presensi"
 
-/* ---------- Honor ---------- */
-
 export type HonorPaymentMethod = "tunai" | "transfer"
 
 export type HonorPayment = {
@@ -36,7 +34,6 @@ export type TutorProfile = {
   id: string
   name: string
   shortName: string
-  /* Tarif honor per sesi (Rupiah); null = belum diatur */
   rate: number | null
   method: HonorPaymentMethod
   methodNote?: string
@@ -46,9 +43,7 @@ export type Recap = {
   month: Date
   calculatedAt: Date
   honors: TutorHonor[]
-  /* Tutor yang dilewati karena tarif belum diatur */
   skipped: string[]
-  /* Rincian sesi per tutor (bila tersedia) */
   sessionsByTutor: Record<string, TutorSession[]>
 }
 
@@ -88,14 +83,8 @@ export type HonorPaymentInput = {
   proof: { name: string; size: number }
 }
 
-/* ---------- Laporan ---------- */
-
 export type BillPaymentMethod =
-  | "QRIS"
-  | "VA BCA"
-  | "GoPay"
-  | "Tunai di LBB"
-  | "Transfer bank"
+  "QRIS" | "VA BCA" | "GoPay" | "Tunai di LBB" | "Transfer bank"
 
 export type BillPayment = {
   id: string
@@ -103,7 +92,6 @@ export type BillPayment = {
   method: BillPaymentMethod
   status: "berhasil" | "kedaluwarsa" | "gagal"
   createdAt: Date
-  /* Dicatat manual oleh pengelola (bukan lewat payment gateway) */
   manual?: { proof?: { name: string; size: number } }
 }
 
@@ -138,7 +126,6 @@ export type FinanceSummary =
         total: number
         sessions: number
         tutors: number
-        /* false = rekap P7 belum dihitung, angka masih estimasi */
         calculated: boolean
       }
       honorPaid: { amount: number; tutors: number }

@@ -8,7 +8,6 @@ export type Bill = {
   id: string
   number: string
   studentName: string
-  /* Hari pertama periode tagihan (bulan) */
   period: Date
   dueDate: Date
   items: BillItem[]
@@ -30,7 +29,6 @@ export type Payment = {
 }
 
 export type BillsOverview = {
-  /* Tagihan belum lunas yang paling mendesak (lewat jatuh tempo dulu) */
   priority: Bill | null
   others: Bill[]
   unreadNotifications: number

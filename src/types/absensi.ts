@@ -21,7 +21,6 @@ export type AttendanceSession = {
   notes: string
   attachments: string[]
   status: SessionStatus
-  /* Diisi bila sesi tidak terlaksana (tidak perlu divalidasi), mis. "siswa sakit" */
   cancelReason?: string
   validatedAt?: Date
   objection?: { reason: string; submittedAt: Date }
@@ -31,7 +30,6 @@ export type AttendanceSession = {
 export type AttendanceOverview = {
   pending: AttendanceSession[]
   history: AttendanceSession[]
-  /* Lebih dari satu anak → nama anak ditampilkan pada daftar */
   multipleStudents: boolean
   unreadNotifications: number
 }
@@ -39,14 +37,12 @@ export type AttendanceOverview = {
 export type LessonHistory = {
   students: { id: string; name: string }[]
   studentId: string
-  /* Bulan yang punya sesi (awal bulan), terbaru dulu */
   months: Date[]
   month: Date
   sessions: AttendanceSession[]
   summary: {
     held: number
     cancelled: number
-    /* Sesi terjadwal dari besok sampai akhir bulan (bulan berjalan saja) */
     upcoming: number
     bySubject: { subject: string; count: number }[]
   }

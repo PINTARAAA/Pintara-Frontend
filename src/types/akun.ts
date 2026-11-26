@@ -21,14 +21,12 @@ export type TutorAccount = {
     subjects: string[]
     levels: string
     availability: string
-    /* Rupiah per sesi */
     rate: number
   }
   lbbContact: LbbContact
   appVersion: string
 }
 
-/* P1 · Menu Lainnya: profil pengelola + ringkasan untuk keterangan menu */
 export type PengelolaMenu = {
   name: string
   initials: string

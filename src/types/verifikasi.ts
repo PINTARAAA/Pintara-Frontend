@@ -3,22 +3,16 @@ import type { Level } from "@/types/data-master"
 export type { Level }
 
 export type RegistrationStatus =
-  | "menunggu_verifikasi"
-  | "terverifikasi"
-  | "ditolak"
+  "menunggu_verifikasi" | "terverifikasi" | "ditolak"
 
 export type RejectReason =
-  | "di_luar_jangkauan"
-  | "tutor_belum_tersedia"
-  | "data_tidak_valid"
-  | "lainnya"
+  "di_luar_jangkauan" | "tutor_belum_tersedia" | "data_tidak_valid" | "lainnya"
 
 export type PengelolaRegistration = {
   id: string
   number: string
   student: {
     name: string
-    /* Mis. "11" */
     grade: string
     level: Level
     school: string
@@ -26,7 +20,6 @@ export type PengelolaRegistration = {
   }
   parent: {
     name: string
-    /* "Bapak" / "Ibu", dipakai di pesan untuk wali */
     salutation: string
     whatsapp: string
     email: string
@@ -35,7 +28,6 @@ export type PengelolaRegistration = {
     subjects: string[]
     perWeek: number
     days: string[]
-    /* "HH.mm" */
     startTime: string
     notes?: string
   }
@@ -43,9 +35,7 @@ export type PengelolaRegistration = {
   status: RegistrationStatus
   verifiedAt?: Date
   rejection?: { reason: RejectReason; message: string; at: Date }
-  /* Diisi setelah pengelola memilih tutor (P3 · Pencocokan Tutor) */
   match?: { tutorId: string; tutorName: string; at: Date }
-  /* Tutor yang menolak penawaran untuk siswa ini (P4); tidak dicalonkan lagi */
   declinedTutorIds?: string[]
 }
 

@@ -46,6 +46,5 @@ export type LessonRecap = {
   pairs: number
   byTutor: TutorSummary[]
   byStudent: StudentSummary[]
-  /* Riwayat sesi sesuai filter, terbaru dulu */
   sessions: RecapSession[]
 }
