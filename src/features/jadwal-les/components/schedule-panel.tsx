@@ -18,6 +18,10 @@ import { formatDaysAgo, formatDayMonth } from "@/lib/format"
  * [Pengajuan perubahan dari wali (W4) → tinjau] → Perlu dijadwalkan
  * (penawaran diterima di P4 → atur jadwal) → Jadwal aktif · N pasangan
  * (ketuk → ubah jadwal).
+ *
+ * Desktop (Figma "Atur Jadwal / Daftar (Desktop)"): dua kolom, kiri
+ * (Pengajuan · Perlu dijadwalkan) mengisi sisa lebar, kanan Jadwal aktif
+ * 420px, jarak 40.
  */
 const BASE = "/pengelola/les/jadwal"
 
@@ -39,7 +43,7 @@ function SchedulePanel({ query }: { query: UseQueryResult<ScheduleBoard> }) {
   const { toSchedule, requests, active } = query.data
 
   return (
-    <div className="gap-ns-2xl grid lg:grid-cols-2 lg:items-start">
+    <div className="gap-ns-2xl lg:gap-ns-4xl grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
       <div className="gap-ns-2xl flex flex-col">
         {requests.length > 0 && (
           <DashboardSection
