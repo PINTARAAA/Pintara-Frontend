@@ -242,11 +242,10 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
     },
     /*
      * SEMENTARA: layar yang belum dibuat memakai placeholder —
-     * perbaiki data (P2) dan tambah/ubah siswa (belum ada di Figma P9)
+     * perbaiki data (P2) dan ubah profil siswa (belum ada di Figma P9)
      */
     ...[
       ["pendaftaran/:registrationId/ubah", "Perbaiki Data"],
-      ["siswa/tambah", "Tambah Siswa"],
       ["siswa/:studentId/ubah", "Ubah Profil Siswa"],
     ].map(([path, title]) => ({
       path,

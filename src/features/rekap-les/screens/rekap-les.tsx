@@ -34,6 +34,10 @@ import { cn } from "@/lib/styles"
  * urut sesi terbanyak (ketuk → filter + tab Riwayat). Riwayat: ringkasan
  * filter + daftar sesi dengan status presensi.
  * Disimpan di ?tab=…&bulan=YYYY-MM&tutor=…&siswa=….
+ *
+ * Desktop (Figma "… (Desktop)"): Page header tanpa tautan kembali dengan
+ * pil/chip filter di kanan; tab selebar 420px di bawah judul. Isi tiap tab
+ * dua kolom: daftar di kiri, kartu ringkasan 380px di kanan (jarak 40).
  */
 type Tab = "tutor" | "siswa" | "riwayat"
 const TABS: { value: Tab; label: string }[] = [
@@ -81,16 +85,27 @@ function RekapLes() {
     >
       <DetailScreen
         title="Rekap & Riwayat Les"
+        backLabel={null}
+        desktopHeader="page"
+        desktopWidth="wide"
+        desktopHeaderActions={
+          data && (
+            <div className="gap-ns-s flex items-center">
+              <Filters data={data} filter={filter} onChange={update} />
+            </div>
+          )
+        }
         subheader={
           <div className="gap-ns-s flex flex-col">
-            <div className="gap-ns-s -mx-(--gutter) px-(--gutter) flex overflow-x-auto [scrollbar-width:none]">
+            {/* Desktop: filter pindah ke Page header */}
+            <div className="gap-ns-s -mx-(--gutter) px-(--gutter) flex overflow-x-auto [scrollbar-width:none] lg:hidden">
               {data ? (
                 <Filters data={data} filter={filter} onChange={update} />
               ) : (
                 <span className="h-9" />
               )}
             </div>
-            <TabsList className="border-grayscale-border-default -mb-ns-m w-full border-b *:-mb-px">
+            <TabsList className="border-grayscale-border-default -mb-ns-m w-full border-b *:-mb-px lg:mb-0 lg:w-105">
               {TABS.map((t) => (
                 <TabsTrigger key={t.value} value={t.value}>
                   {t.label}
@@ -117,7 +132,7 @@ function RekapLes() {
               <div
                 aria-busy={query.isPlaceholderData}
                 className={cn(
-                  "gap-ns-l flex flex-col transition-opacity lg:max-w-3xl",
+                  "gap-ns-l lg:gap-x-ns-4xl flex flex-col transition-opacity lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start",
                   query.isPlaceholderData && "opacity-60",
                 )}
               >
@@ -214,15 +229,28 @@ function Filters({
   )
 }
 
+/*
+ * Kartu ringkasan. Desktop: kolom kanan baris pertama. Jarak judul →
+ * keterangan 8px (sama dengan kartu ringkasan lain).
+ */
 function SummaryCard({ title, caption }: { title: string; caption: string }) {
   return (
     <section
       aria-label="Ringkasan"
-      className="gap-ns-2xs border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal"
+      className="gap-ns-s border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal lg:col-start-2 lg:row-start-1"
     >
       <p className="text-body text-grayscale-text-title font-bold">{title}</p>
       <p className="text-caption text-grayscale-text-caption">{caption}</p>
     </section>
+  )
+}
+
+/* Desktop: isi tab (keterangan, daftar, tombol lihat) di kolom kiri */
+function LeftColumn({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="lg:gap-ns-l contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col">
+      {children}
+    </div>
   )
 }
 
@@ -240,33 +268,35 @@ function PerTutor({
         title={`${data.held} sesi terlaksana`}
         caption={`${data.missed} tidak terlaksana · ${data.byTutor.length} tutor · ${data.pairs} pasangan aktif`}
       />
-      <p className="text-caption text-grayscale-text-caption leading-normal">
-        Diurutkan dari jumlah sesi terbanyak
-      </p>
-      <DashboardList>
-        {list.visible.map((t) => (
-          <ListItem
-            key={t.id}
-            icon={<UserIcon />}
-            title={t.name}
-            description={`${t.students} siswa · ${t.missed} tidak terlaksana`}
-            trailingText={`${t.sessions} sesi`}
-            chevron
-            render={<button type="button" onClick={() => onPick(t.id)} />}
-          />
-        ))}
-      </DashboardList>
-      {list.hidden > 0 && (
-        <Button
-          variant="tertiary"
-          size="sm"
-          className="w-fit"
-          aria-expanded={list.expanded}
-          onClick={list.toggle}
-        >
-          {list.expanded ? "Ringkas" : `Lihat ${list.hidden} tutor lainnya`}
-        </Button>
-      )}
+      <LeftColumn>
+        <p className="text-caption text-grayscale-text-caption leading-normal">
+          Diurutkan dari jumlah sesi terbanyak
+        </p>
+        <DashboardList>
+          {list.visible.map((t) => (
+            <ListItem
+              key={t.id}
+              icon={<UserIcon />}
+              title={t.name}
+              description={`${t.students} siswa · ${t.missed} tidak terlaksana`}
+              trailingText={`${t.sessions} sesi`}
+              chevron
+              render={<button type="button" onClick={() => onPick(t.id)} />}
+            />
+          ))}
+        </DashboardList>
+        {list.hidden > 0 && (
+          <Button
+            variant="tertiary"
+            size="sm"
+            className="w-fit"
+            aria-expanded={list.expanded}
+            onClick={list.toggle}
+          >
+            {list.expanded ? "Ringkas" : `Lihat ${list.hidden} tutor lainnya`}
+          </Button>
+        )}
+      </LeftColumn>
     </>
   )
 }
@@ -285,33 +315,35 @@ function PerStudent({
         title={`${data.held} sesi terlaksana`}
         caption={`${data.missed} tidak terlaksana · ${data.byStudent.length} siswa · ${data.pairs} pasangan aktif`}
       />
-      <p className="text-caption text-grayscale-text-caption leading-normal">
-        Diurutkan dari jumlah sesi terbanyak
-      </p>
-      <DashboardList>
-        {list.visible.map((s) => (
-          <ListItem
-            key={s.id}
-            icon={<UserIcon />}
-            title={s.name}
-            description={`${s.tutors.map(shortTutor).join(", ")} · ${s.missed} tidak terlaksana`}
-            trailingText={`${s.sessions} sesi`}
-            chevron
-            render={<button type="button" onClick={() => onPick(s.id)} />}
-          />
-        ))}
-      </DashboardList>
-      {list.hidden > 0 && (
-        <Button
-          variant="tertiary"
-          size="sm"
-          className="w-fit"
-          aria-expanded={list.expanded}
-          onClick={list.toggle}
-        >
-          {list.expanded ? "Ringkas" : `Lihat ${list.hidden} siswa lainnya`}
-        </Button>
-      )}
+      <LeftColumn>
+        <p className="text-caption text-grayscale-text-caption leading-normal">
+          Diurutkan dari jumlah sesi terbanyak
+        </p>
+        <DashboardList>
+          {list.visible.map((s) => (
+            <ListItem
+              key={s.id}
+              icon={<UserIcon />}
+              title={s.name}
+              description={`${s.tutors.map(shortTutor).join(", ")} · ${s.missed} tidak terlaksana`}
+              trailingText={`${s.sessions} sesi`}
+              chevron
+              render={<button type="button" onClick={() => onPick(s.id)} />}
+            />
+          ))}
+        </DashboardList>
+        {list.hidden > 0 && (
+          <Button
+            variant="tertiary"
+            size="sm"
+            className="w-fit"
+            aria-expanded={list.expanded}
+            onClick={list.toggle}
+          >
+            {list.expanded ? "Ringkas" : `Lihat ${list.hidden} siswa lainnya`}
+          </Button>
+        )}
+      </LeftColumn>
     </>
   )
 }
@@ -378,22 +410,24 @@ function History({ data, filter }: { data: LessonRecap; filter: Filter }) {
   return (
     <>
       <SummaryCard title={summary.title} caption={summary.caption} />
-      <DashboardList>
-        {list.visible.map((s) => (
-          <SessionRow key={s.id} session={s} showTutor={!filter.tutorId} />
-        ))}
-      </DashboardList>
-      {list.hidden > 0 && (
-        <Button
-          variant="tertiary"
-          size="sm"
-          className="w-fit"
-          aria-expanded={list.expanded}
-          onClick={list.toggle}
-        >
-          {list.expanded ? "Ringkas" : `Lihat ${list.hidden} sesi lainnya`}
-        </Button>
-      )}
+      <LeftColumn>
+        <DashboardList>
+          {list.visible.map((s) => (
+            <SessionRow key={s.id} session={s} showTutor={!filter.tutorId} />
+          ))}
+        </DashboardList>
+        {list.hidden > 0 && (
+          <Button
+            variant="tertiary"
+            size="sm"
+            className="w-fit"
+            aria-expanded={list.expanded}
+            onClick={list.toggle}
+          >
+            {list.expanded ? "Ringkas" : `Lihat ${list.hidden} sesi lainnya`}
+          </Button>
+        )}
+      </LeftColumn>
     </>
   )
 }

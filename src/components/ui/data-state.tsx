@@ -73,6 +73,11 @@ function DataState({
     "flex min-h-80 w-full flex-col",
     !bare &&
       "rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default",
+    /*
+     * Desktop (Figma "… Kosong (Desktop)"): kartu kosong/error 480px di
+     * tengah, bukan selebar konten. Loading tetap selebar daftar.
+     */
+    !bare && state !== "loading" && "lg:mx-auto lg:max-w-120",
     className
   )
 
