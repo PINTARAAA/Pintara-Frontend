@@ -49,6 +49,7 @@ function DetailScreen({
   desktopActions = "footer",
   desktopWidth = "default",
   desktopHeaderActions,
+  desktopSubheader = "show",
   className,
   children,
 }: {
@@ -77,6 +78,11 @@ function DetailScreen({
    * (sebelum tombol), hanya tampil di desktop, mis. pil periode
    */
   desktopHeaderActions?: React.ReactNode
+  /*
+   * hidden = `subheader` hanya untuk mobile (mis. baris filter yang di
+   * desktop dipindah ke Page header lewat `desktopHeaderActions`)
+   */
+  desktopSubheader?: "show" | "hidden"
   className?: string
   children: React.ReactNode
 }) {
@@ -132,7 +138,8 @@ function DetailScreen({
           <div
             className={cn(
               "border-b border-grayscale-border-disabled bg-grayscale-surface-default pl-(--gutter) pr-(--gutter-end) py-ns-m",
-              page && "lg:border-b-0 lg:pt-ns-2xl lg:pb-0"
+              page && "lg:border-b-0 lg:pt-ns-2xl lg:pb-0",
+              desktopSubheader === "hidden" && "lg:hidden"
             )}
           >
             {subheader}
