@@ -17,12 +17,22 @@ import type { NotificationSetting } from "@/types/pengaturan-notifikasi"
  * Pengingat otomatis (jadwal les, presensi) dan Notifikasi kejadian. Tiap
  * baris: judul, penerima · waktu/pemicu, Switch aktif (langsung tersimpan),
  * chevron → layar ubah waktu & template.
+ *
+ * Desktop (Figma "… / Daftar (Desktop)" dan "Tersimpan (Desktop)"): Page
+ * header tanpa tautan kembali; dua grup berdampingan (dua kolom sama
+ * lebar, jarak 32).
  */
 function PengaturanNotifikasi() {
   const query = useQuery(notificationSettingsQuery())
 
   return (
-    <DetailScreen title="Pengaturan Notifikasi" className="gap-ns-2xl">
+    <DetailScreen
+      title="Pengaturan Notifikasi"
+      backLabel={null}
+      desktopHeader="page"
+      desktopWidth="wide"
+      className="gap-ns-2xl"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pengaturan…" />
       ) : query.isError ? (
@@ -33,7 +43,7 @@ function PengaturanNotifikasi() {
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : (
-        <>
+        <div className="gap-ns-2xl lg:gap-ns-3xl flex flex-col lg:grid lg:grid-cols-2 lg:items-start">
           <SettingGroup
             title="Pengingat otomatis"
             description="Dikirim terjadwal oleh sistem. Ketuk untuk mengubah waktu dan template."
@@ -44,7 +54,7 @@ function PengaturanNotifikasi() {
             description="Dikirim saat ada kejadian di sistem."
             items={query.data.filter((s) => s.group === "kejadian")}
           />
-        </>
+        </div>
       )}
     </DetailScreen>
   )
