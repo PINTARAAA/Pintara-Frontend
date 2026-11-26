@@ -23,6 +23,8 @@ import type { PengelolaNotificationKind } from "@/types/notifikasi"
  * Baru: pendaftaran baru, pengajuan perubahan jadwal, notifikasi gagal
  * terkirim, keberatan presensi. Sebelumnya: penawaran diterima, pembayaran
  * tagihan masuk. Kerangka daftar di NotificationScreen (sama dengan W9 · T7).
+ *
+ * Desktop: Figma "Notifikasi / Pengelola (Desktop)" lewat `desktopPage`.
  */
 const ICONS: Record<PengelolaNotificationKind, React.ReactNode> = {
   pendaftaran: <UserPlusIcon />,
@@ -43,6 +45,7 @@ function NotifikasiPengelola() {
       markRead={markPengelolaRead}
       markAllRead={markAllPengelolaRead}
       emptyDescription="Pendaftaran baru, pengajuan jadwal, dan keberatan presensi akan muncul di sini."
+      desktopPage
     />
   )
 }
