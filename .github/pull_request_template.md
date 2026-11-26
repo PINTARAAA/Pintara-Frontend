@@ -53,7 +53,7 @@
 - [ ] Branch dibuat dari `develop` dan PR ditujukan ke `develop`
 - [ ] Nama branch dan pesan commit mengikuti konvensi (`feat/...`, `fix(scope): ...`)
 - [ ] `npm run build` berhasil tanpa error TypeScript
-- [ ] `npx eslint .` tidak menghasilkan error
+- [ ] `npm run lint` tidak menghasilkan error
 - [ ] `npm run test` lulus (jika ada test terkait)
 - [ ] Kode sudah diformat dengan Prettier
 - [ ] Import menggunakan path alias / barrel (`index.ts`) sesuai struktur proyek
