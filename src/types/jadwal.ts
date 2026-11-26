@@ -1,6 +1,6 @@
 import type { WaliStudent } from "@/types/dashboard"
 
-export type Tutor = { name: string; shortName: string }
+export type ScheduleTutor = { name: string; shortName: string }
 
 /* Jadwal rutin mingguan satu mata pelajaran */
 export type Routine = {
@@ -11,7 +11,7 @@ export type Routine = {
   /* "HH.mm" */
   startTime: string
   durationMinutes: number
-  tutor: Tutor
+  tutor: ScheduleTutor
   location: string
   since: Date
 }
@@ -27,7 +27,7 @@ export type ChangeRequest = {
   routineId: string
   studentId: string
   subject: string
-  tutor: Tutor
+  tutor: ScheduleTutor
   durationMinutes: number
   from: { weekday: number; startTime: string }
   to: { weekday: number; startTime: string }

@@ -1,8 +1,8 @@
-import type { Tutor } from "@/types/pencocokan"
+import type { MatchingTutor } from "@/types/pencocokan"
 
 /* ---------- Data contoh ---------- */
 
-export const tutors: Tutor[] = [
+export const tutors: MatchingTutor[] = [
   {
     id: "tt-dimas",
     name: "Kak Dimas Arya",

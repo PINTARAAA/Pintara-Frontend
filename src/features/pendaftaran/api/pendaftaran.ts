@@ -12,7 +12,7 @@ import type {
   PendaftaranErrorCode,
   PendaftaranResult,
   Registration,
-  RegistrationStatus,
+  RegistrationStatusResult,
 } from "@/types/pendaftaran"
 
 /*
@@ -117,7 +117,7 @@ export async function submitPendaftaran(
 export async function getRegistrationStatus(
   id?: string,
   example?: string
-): Promise<RegistrationStatus> {
+): Promise<RegistrationStatusResult> {
   assertMockAllowed()
   await delay()
 

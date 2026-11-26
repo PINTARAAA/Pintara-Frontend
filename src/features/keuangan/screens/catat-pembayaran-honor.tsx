@@ -33,7 +33,7 @@ import {
   HonorNotFoundError,
   recordHonorPayment,
 } from "@/features/keuangan/api"
-import type { HonorDetail, PaymentMethod } from "@/types/keuangan"
+import type { HonorDetail, HonorPaymentMethod } from "@/types/keuangan"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   DOC_ACCEPT,
@@ -118,7 +118,7 @@ function PaymentForm({
   const queryClient = useQueryClient()
   const remaining = honor.total - (honor.payment?.amount ?? 0)
 
-  const [method, setMethod] = React.useState<PaymentMethod>(honor.method)
+  const [method, setMethod] = React.useState<HonorPaymentMethod>(honor.method)
   const [paidAt, setPaidAt] = React.useState<Date | null>(new Date())
   const [amount, setAmount] = React.useState(remaining)
   const [doc, setDoc] = React.useState<DocState>(EMPTY_DOC)
@@ -222,7 +222,7 @@ function PaymentForm({
           </legend>
           <RadioGroup
             value={method}
-            onValueChange={(v) => setMethod(v as PaymentMethod)}
+            onValueChange={(v) => setMethod(v as HonorPaymentMethod)}
             className="gap-0 *:min-h-12"
           >
             <RadioGroupItem

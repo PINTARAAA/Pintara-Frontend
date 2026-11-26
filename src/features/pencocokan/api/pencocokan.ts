@@ -12,8 +12,8 @@ import type {
   Candidate,
   Criterion,
   MatchingCandidates,
+  MatchingTutor,
   OfferTutorInfo,
-  Tutor,
 } from "@/types/pencocokan"
 import type { PengelolaRegistration } from "@/types/verifikasi"
 
@@ -49,7 +49,7 @@ export const joinAnd = (items: string[]) =>
 const km = (value: number) =>
   value.toLocaleString("id-ID", { maximumFractionDigits: 1 })
 
-function evaluate(tutor: Tutor, r: PengelolaRegistration): Candidate {
+function evaluate(tutor: MatchingTutor, r: PengelolaRegistration): Candidate {
   const { level } = r.student
   const { subjects, days, startTime } = r.needs
 

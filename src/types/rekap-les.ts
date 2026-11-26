@@ -1,6 +1,6 @@
 import type { StatusOf } from "@/lib/constants/status"
 
-export type SessionStatus = StatusOf<"presensi"> | "tidak_terlaksana"
+export type RecapSessionStatus = StatusOf<"presensi"> | "tidak_terlaksana"
 
 export type RecapSession = {
   id: string
@@ -11,7 +11,7 @@ export type RecapSession = {
   tutorName: string
   studentId: string
   studentName: string
-  status: SessionStatus
+  status: RecapSessionStatus
 }
 
 export type RecapFilter = {

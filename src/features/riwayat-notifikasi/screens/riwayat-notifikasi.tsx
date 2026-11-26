@@ -28,7 +28,7 @@ import {
 import type {
   LogFilter,
   LogStatus,
-  NotificationKind,
+  LogNotificationKind,
   NotificationLog,
   Period,
 } from "@/types/riwayat-notifikasi"
@@ -43,7 +43,7 @@ import { cn } from "@/lib/styles/cn"
  * (Kirim ulang semua; ketuk → detail) → Terkirim. Disimpan di
  * ?status=…&jenis=…&periode=….
  */
-const KINDS = Object.keys(KIND_LABEL) as NotificationKind[]
+const KINDS = Object.keys(KIND_LABEL) as LogNotificationKind[]
 const time = (d: Date) => format(d, "HH.mm")
 
 function periodLabel(period: Period, now = new Date()) {
@@ -60,7 +60,7 @@ function RiwayatNotifikasi() {
   const queryClient = useQueryClient()
   const [params, setParams] = useSearchParams()
   const statusParam = params.get("status")
-  const kindParam = params.get("jenis") as NotificationKind | null
+  const kindParam = params.get("jenis") as LogNotificationKind | null
   const periodParam = params.get("periode") as Period | null
   const filter: LogFilter = {
     status: statusParam === "gagal" || statusParam === "terkirim" ? statusParam : undefined,

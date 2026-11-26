@@ -22,7 +22,7 @@ import type {
   LessonRecap,
   RecapFilter,
   RecapSession,
-  SessionStatus,
+  RecapSessionStatus,
 } from "@/types/rekap-les"
 
 /*
@@ -53,7 +53,7 @@ function buildMonth(month: Date): RecapSession[] {
       const key = `${lesson.studentId}-${lesson.subject}-${format(d, "yyyy-MM-dd")}`
       const h = hash(key)
       const age = differenceInCalendarDays(today, d)
-      const status: SessionStatus =
+      const status: RecapSessionStatus =
         h % 29 === 0
           ? "tidak_terlaksana"
           : age <= 3 && h % 3 === 0

@@ -1,13 +1,13 @@
-import type { StatusOf } from "@/lib/constants/status"
+import type { BillItem, BillStatus } from "@/types/tagihan"
 import type { TutorSession } from "@/types/presensi"
 
 /* ---------- Honor ---------- */
 
-export type PaymentMethod = "tunai" | "transfer"
+export type HonorPaymentMethod = "tunai" | "transfer"
 
 export type HonorPayment = {
   amount: number
-  method: PaymentMethod
+  method: HonorPaymentMethod
   paidAt: Date
   proof: { name: string; size: number }
   recordedAt: Date
@@ -27,7 +27,7 @@ export type TutorHonor = {
   lines: HonorLine[]
   sessions: number
   total: number
-  method: PaymentMethod
+  method: HonorPaymentMethod
   methodNote?: string
   payment?: HonorPayment
 }
@@ -38,7 +38,7 @@ export type TutorProfile = {
   shortName: string
   /* Tarif honor per sesi (Rupiah); null = belum diatur */
   rate: number | null
-  method: PaymentMethod
+  method: HonorPaymentMethod
   methodNote?: string
 }
 
@@ -82,17 +82,13 @@ export type HonorDetail = TutorHonor & {
 }
 
 export type HonorPaymentInput = {
-  method: PaymentMethod
+  method: HonorPaymentMethod
   paidAt: Date
   amount: number
   proof: { name: string; size: number }
 }
 
 /* ---------- Laporan ---------- */
-
-export type BillStatus = StatusOf<"pembayaran">
-
-export type BillItem = { subject: string; sessions: number; unitPrice: number }
 
 export type BillPaymentMethod =
   | "QRIS"

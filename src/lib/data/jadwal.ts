@@ -8,7 +8,7 @@ import {
 } from "date-fns"
 
 import { at } from "@/lib/data/mock"
-import type { ChangeRequest, Routine, Tutor } from "@/types/jadwal"
+import type { ChangeRequest, Routine, ScheduleTutor } from "@/types/jadwal"
 
 /* Nama hari sesuai getDay() date-fns: 0 = Minggu */
 export const WEEKDAYS = [
@@ -58,8 +58,8 @@ export function nextSessionStart(
 
 /* ---------- Data contoh ---------- */
 
-const BUDI: Tutor = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
-const NADIA: Tutor = { name: "Kak Nadia Safitri", shortName: "Kak Nadia" }
+const BUDI: ScheduleTutor = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
+const NADIA: ScheduleTutor = { name: "Kak Nadia Safitri", shortName: "Kak Nadia" }
 
 export const routines: Routine[] = [
   {

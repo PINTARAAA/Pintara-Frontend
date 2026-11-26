@@ -1,7 +1,7 @@
 import type { Level } from "@/types/data-master"
 import type { PengelolaRegistration } from "@/types/verifikasi"
 
-export type Tutor = {
+export type MatchingTutor = {
   id: string
   name: string
   /* Nama sapaan untuk tombol, mis. "Kak Dimas" */

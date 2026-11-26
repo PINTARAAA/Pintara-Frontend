@@ -4,8 +4,8 @@ import { addMonths, format, startOfMonth, subMonths } from "date-fns"
 import { getHonorRecap, monthKey } from "@/features/keuangan/api/honor"
 import { bills } from "@/lib/data/keuangan"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
+import type { BillStatus } from "@/types/tagihan"
 import type {
-  BillStatus,
   FinanceSummary,
   ManualPaymentInput,
   ReportFile,

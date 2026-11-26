@@ -23,7 +23,7 @@ export type Registration = {
 }
 
 /* Kontak Pengelola LBB untuk tautan "Hubungi Pengelola LBB" */
-export type LbbContact = { name: string; whatsapp: string }
+export type RegistrationLbbContact = { name: string; whatsapp: string }
 
 export type PendaftaranErrorCode = "already_registered"
 
@@ -34,8 +34,8 @@ export type PendaftaranResult = {
   studentName: string
 }
 
-export type RegistrationStatus = {
+export type RegistrationStatusResult = {
   /* null = wali belum pernah mendaftarkan siswa */
   registration: Registration | null
-  contact: LbbContact
+  contact: RegistrationLbbContact
 }

@@ -8,7 +8,7 @@ import type {
   HonorDetail,
   HonorPaymentInput,
   HonorRecap,
-  PaymentMethod,
+  HonorPaymentMethod,
   TutorHonor,
 } from "@/types/keuangan"
 import type { TutorSession } from "@/types/presensi"
@@ -28,7 +28,7 @@ import type { TutorSession } from "@/types/presensi"
  * PINTARA hanya mencatat pembayaran — dana dibayar di luar aplikasi.
  */
 
-export const METHOD_LABEL: Record<PaymentMethod, string> = {
+export const METHOD_LABEL: Record<HonorPaymentMethod, string> = {
   tunai: "Tunai di LBB",
   transfer: "Transfer",
 }

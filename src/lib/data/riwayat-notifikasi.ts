@@ -1,6 +1,6 @@
 import { at } from "@/lib/data/mock"
 import type {
-  NotificationKind,
+  LogNotificationKind,
   NotificationLog,
   Recipient,
 } from "@/types/riwayat-notifikasi"
@@ -45,7 +45,7 @@ const sari: Recipient = {
 
 let seq = 0
 const log = (
-  kind: NotificationKind,
+  kind: LogNotificationKind,
   recipients: Recipient[],
   sentAt: Date,
   message: string,

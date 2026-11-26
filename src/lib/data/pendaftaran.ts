@@ -1,7 +1,7 @@
 import { nextWednesday, setHours, startOfDay } from "date-fns"
 
 import { at } from "@/lib/data/mock"
-import type { LbbContact, Registration } from "@/types/pendaftaran"
+import type { Registration, RegistrationLbbContact } from "@/types/pendaftaran"
 
 /* ---------- Data contoh ---------- */
 
@@ -11,7 +11,7 @@ export const PENDAFTARAN_DEFAULTS = {
   parentPhone: "0812-3456-7890",
 }
 
-export const LBB_CONTACT: LbbContact = {
+export const LBB_CONTACT: RegistrationLbbContact = {
   name: "Pengelola LBB Jelajah Ilmu",
   whatsapp: "6281234567890",
 }

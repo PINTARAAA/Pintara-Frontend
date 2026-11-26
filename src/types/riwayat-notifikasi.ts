@@ -2,7 +2,7 @@ import type { Channel } from "@/types/pengaturan-notifikasi"
 
 export type LogStatus = "terkirim" | "gagal"
 
-export type NotificationKind =
+export type LogNotificationKind =
   | "pengingat-jadwal"
   | "pengingat-presensi"
   | "pendaftaran-baru"
@@ -21,7 +21,7 @@ export type Recipient = {
 
 export type NotificationLog = {
   id: string
-  kind: NotificationKind
+  kind: LogNotificationKind
   channel: Channel
   recipients: Recipient[]
   sentAt: Date
@@ -41,7 +41,7 @@ export type Period = "hari-ini" | "7-hari" | "bulan-ini" | "bulan-lalu"
 
 export type LogFilter = {
   status?: LogStatus
-  kind?: NotificationKind
+  kind?: LogNotificationKind
   period: Period
 }
 

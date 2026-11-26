@@ -1,11 +1,11 @@
 import { format, setDate, startOfMonth, subMonths } from "date-fns"
 
 import { at } from "@/lib/data/mock"
+import type { BillItem } from "@/types/tagihan"
 import type {
-  BillItem,
   BillPayment,
   BillPaymentMethod,
-  PaymentMethod,
+  HonorPaymentMethod,
   Recap,
   StudentBill,
   TutorHonor,
@@ -84,7 +84,7 @@ export const recaps = new Map<string, Recap>()
 
 ;(() => {
   const october = subMonths(startOfMonth(new Date()), 1)
-  const seed: [string, Record<string, number>, PaymentMethod, Date][] = [
+  const seed: [string, Record<string, number>, HonorPaymentMethod, Date][] = [
     ["tt-budi", { Matematika: 7, IPA: 6 }, "tunai", at(-24, 10)],
     ["tt-laila", { Matematika: 54 }, "transfer", at(-23, 9)],
     ["tt-dimas", { Fisika: 26, Matematika: 25 }, "transfer", at(-23, 9)],

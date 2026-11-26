@@ -14,7 +14,7 @@ import { logs } from "@/lib/data/riwayat-notifikasi"
 import type {
   LogFilter,
   LogList,
-  NotificationKind,
+  LogNotificationKind,
   NotificationLog,
   Period,
   Recipient,
@@ -35,7 +35,7 @@ import type {
  * kontak penerima diperbarui (Manajemen Akun).
  */
 
-export const KIND_LABEL: Record<NotificationKind, string> = {
+export const KIND_LABEL: Record<LogNotificationKind, string> = {
   "pengingat-jadwal": "Pengingat jadwal les",
   "pengingat-presensi": "Pengingat presensi",
   "pendaftaran-baru": "Pendaftaran baru",

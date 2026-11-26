@@ -19,7 +19,7 @@ import {
 } from "@/components"
 import { registrationStatusQuery } from "@/features/pendaftaran/api"
 import type {
-  LbbContact,
+  RegistrationLbbContact,
   Registration,
   RegistrationStage,
 } from "@/types/pendaftaran"
@@ -60,7 +60,7 @@ const formatLongWeekdayDate = (date: Date) =>
 
 const firstName = (name: string) => name.trim().split(/\s+/)[0]
 
-const whatsappUrl = (contact: LbbContact) =>
+const whatsappUrl = (contact: RegistrationLbbContact) =>
   `https://wa.me/${contact.whatsapp}`
 
 function StatusPendaftaran() {
@@ -130,7 +130,7 @@ function ResultBanner({
   onOpenSchedule,
 }: {
   registration: Registration
-  contact: LbbContact
+  contact: RegistrationLbbContact
   onOpenSchedule: () => void
 }) {
   const { stage, match, firstSession, rejection } = registration
