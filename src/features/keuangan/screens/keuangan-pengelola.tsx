@@ -42,6 +42,7 @@ import type { HonorRecap, TutorHonor } from "@/types/keuangan"
 
 import {
   StudentBillsPanel,
+  StudentBillsPeriodPill,
   UnduhLaporanSheet,
 } from "@/features/keuangan/components"
 
@@ -101,8 +102,18 @@ function KeuanganPengelola() {
     </Button>
   )
   const honorData = honor.data
+  const onBillsMonthChange = (key: string) =>
+    setParam("bulan", key === monthKey(new Date()) ? null : key)
   const desktopActions =
-    tab === "honor" && honorData ? (
+    tab === "tagihan" ? (
+      <>
+        <StudentBillsPeriodPill
+          month={month}
+          onMonthChange={onBillsMonthChange}
+        />
+        {download}
+      </>
+    ) : honorData ? (
       <>
         <HonorPeriodPill data={honorData} onMonthChange={onHonorMonthChange} />
         {honorData.state === "belum_dihitung" ? (
@@ -155,10 +166,8 @@ function KeuanganPengelola() {
         <TabsContent value="tagihan" className="flex flex-col">
           <StudentBillsPanel
             month={month}
-            className="lg:max-w-3xl"
-            onMonthChange={(key) =>
-              setParam("bulan", key === monthKey(new Date()) ? null : key)
-            }
+            desktopPill="header"
+            onMonthChange={onBillsMonthChange}
           />
         </TabsContent>
       </TabScreen>

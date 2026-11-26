@@ -22,6 +22,10 @@ import { formatRupiah, formatDayMonth } from "@/lib/format"
  * Perhitungan tagihan (per mapel: sesi × tarif, total) → Pembayaran (tiap
  * transaksi, sisa tagihan). Bilah aksi: Catat Pembayaran Manual (selama
  * belum lunas).
+ *
+ * Desktop (Figma "… (Desktop)"): Page header "← Tagihan Siswa" dengan tombol
+ * di kanan; kartu judul selebar konten, lalu Perhitungan tagihan dan
+ * Pembayaran berdampingan (dua kolom sama lebar, jarak 24).
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 
@@ -77,6 +81,10 @@ function RincianTagihan() {
   return (
     <DetailScreen
       title="Rincian Tagihan"
+      backLabel="Tagihan Siswa"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       footer={
         bill &&
         status !== "lunas" && (
@@ -84,7 +92,9 @@ function RincianTagihan() {
             variant="secondary"
             nativeButton={false}
             render={
-              <Link to={`/pengelola/laporan-keuangan/tagihan/${billId}/bayar`} />
+              <Link
+                to={`/pengelola/laporan-keuangan/tagihan/${billId}/bayar`}
+              />
             }
           >
             Catat Pembayaran Manual
@@ -131,50 +141,57 @@ function RincianTagihan() {
             </p>
           </section>
 
-          <section className="gap-ns-m flex flex-col">
-            <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
-              Perhitungan tagihan
-            </h2>
-            <div className={card}>
-              <dl className="gap-ns-m flex flex-col">
-                {bill.items.map((item) => (
-                  <Row
-                    key={item.subject}
-                    label={`${item.subject} · ${item.sessions} sesi × ${formatRupiah(item.unitPrice)}`}
-                    value={formatRupiah(item.sessions * item.unitPrice)}
-                  />
-                ))}
-              </dl>
-              <TotalRow label="Total tagihan" value={billTotal(bill)} />
-            </div>
-          </section>
-
-          <section className="gap-ns-m flex flex-col">
-            <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
-              Pembayaran
-            </h2>
-            <div className={card}>
-              {bill.payments.length > 0 ? (
+          {/* Desktop: Perhitungan & Pembayaran berdampingan */}
+          <div className="lg:gap-ns-2xl contents lg:grid lg:grid-cols-2 lg:items-start">
+            <section className="gap-ns-m flex flex-col">
+              <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
+                Perhitungan tagihan
+              </h2>
+              <div className={card}>
                 <dl className="gap-ns-m flex flex-col">
-                  {bill.payments
-                    .slice()
-                    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-                    .map((p) => (
-                      <Row
-                        key={p.id}
-                        label={`${formatDayMonth(p.createdAt)} · ${p.method} · ${p.manual ? "Dicatat manual" : PAYMENT_STATUS[p.status]}`}
-                        value={formatRupiah(p.status === "berhasil" ? p.amount : 0)}
-                      />
-                    ))}
+                  {bill.items.map((item) => (
+                    <Row
+                      key={item.subject}
+                      label={`${item.subject} · ${item.sessions} sesi × ${formatRupiah(item.unitPrice)}`}
+                      value={formatRupiah(item.sessions * item.unitPrice)}
+                    />
+                  ))}
                 </dl>
-              ) : (
-                <p className="text-subtitle text-grayscale-text-caption leading-normal">
-                  Belum ada pembayaran.
-                </p>
-              )}
-              <TotalRow label="Sisa tagihan" value={billRemaining(bill)} />
-            </div>
-          </section>
+                <TotalRow label="Total tagihan" value={billTotal(bill)} />
+              </div>
+            </section>
+
+            <section className="gap-ns-m flex flex-col">
+              <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
+                Pembayaran
+              </h2>
+              <div className={card}>
+                {bill.payments.length > 0 ? (
+                  <dl className="gap-ns-m flex flex-col">
+                    {bill.payments
+                      .slice()
+                      .sort(
+                        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+                      )
+                      .map((p) => (
+                        <Row
+                          key={p.id}
+                          label={`${formatDayMonth(p.createdAt)} · ${p.method} · ${p.manual ? "Dicatat manual" : PAYMENT_STATUS[p.status]}`}
+                          value={formatRupiah(
+                            p.status === "berhasil" ? p.amount : 0
+                          )}
+                        />
+                      ))}
+                  </dl>
+                ) : (
+                  <p className="text-subtitle text-grayscale-text-caption leading-normal">
+                    Belum ada pembayaran.
+                  </p>
+                )}
+                <TotalRow label="Sisa tagihan" value={billRemaining(bill)} />
+              </div>
+            </section>
+          </div>
         </>
       ) : null}
     </DetailScreen>

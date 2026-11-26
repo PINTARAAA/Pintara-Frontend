@@ -35,6 +35,11 @@ import { cn } from "@/lib/styles"
  * Pembayaran honor). Bilah aksi & ikon kanan atas membuka sheet Unduh
  * laporan. Periode tanpa data → kartu "Belum ada data keuangan".
  * Bulan disimpan di ?bulan=YYYY-MM.
+ *
+ * Desktop (Figma "… (Desktop)"): Page header tanpa tautan kembali, pil
+ * periode + Unduh Laporan di kanan (Kosong: pil saja). Kolom kiri: Bagian
+ * lembaga + Perhitungan; kolom kanan 420px: Telusuri rincian (jarak 40).
+ * Sheet unduh tampil sebagai dialog di tengah layar.
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 
@@ -56,17 +61,38 @@ function LaporanKeuangan() {
     setParams(next, { replace: true })
   }
 
+  const periodPill = data && (
+    <FilterPill
+      label="Periode"
+      menuLabel="Pilih periode"
+      value={monthKey(data.month)}
+      options={data.months.map((m) => ({
+        value: monthKey(m),
+        label: monthLabel(m),
+      }))}
+      onValueChange={setMonth}
+    />
+  )
+
   return (
     <DetailScreen
       title="Laporan Keuangan"
+      backLabel={null}
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
+      desktopHeaderActions={periodPill}
       action={
         hasData && (
-          <TopAppBarButton
-            label="Unduh laporan keuangan"
-            onClick={() => setSheetOpen(true)}
-          >
-            <DownloadIcon />
-          </TopAppBarButton>
+          /* Ikon unduh khusus mobile; desktop memakai tombol Unduh Laporan */
+          <span className="lg:hidden">
+            <TopAppBarButton
+              label="Unduh laporan keuangan"
+              onClick={() => setSheetOpen(true)}
+            >
+              <DownloadIcon />
+            </TopAppBarButton>
+          </span>
         )
       }
       footer={
@@ -92,16 +118,8 @@ function LaporanKeuangan() {
             query.isPlaceholderData && "opacity-60"
           )}
         >
-          <FilterPill
-            label="Periode"
-            menuLabel="Pilih periode"
-            value={monthKey(data.month)}
-            options={data.months.map((m) => ({
-              value: monthKey(m),
-              label: monthLabel(m),
-            }))}
-            onValueChange={setMonth}
-          />
+          {/* Desktop: pil periode pindah ke Page header */}
+          <div className="lg:hidden">{periodPill}</div>
 
           {data.state === "kosong" ? (
             <DataState
@@ -127,67 +145,77 @@ function LaporanKeuangan() {
   )
 }
 
-function Summary({ data }: { data: Extract<FinanceSummary, { state: "ada" }> }) {
+function Summary({
+  data,
+}: {
+  data: Extract<FinanceSummary, { state: "ada" }>
+}) {
   const bulan = monthKey(data.month)
   const query = bulan === monthKey(new Date()) ? "" : `?bulan=${bulan}`
 
   return (
-    <>
-      <section
-        aria-label="Bagian lembaga"
-        className="gap-ns-2xs border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal"
-      >
-        <p className="text-caption text-grayscale-text-caption">
-          Bagian lembaga (estimasi)
-        </p>
-        <p className="text-h3 text-grayscale-text-title font-bold">
-          {formatRupiah(data.institutionShare)}
-        </p>
-        <p className="text-caption text-grayscale-text-caption">
-          Tagihan siswa dikurangi honor tutor pada periode ini
-        </p>
-      </section>
+    /* Desktop: Bagian lembaga + Perhitungan di kiri, Telusuri 420px kanan */
+    <div className="lg:gap-x-ns-4xl contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+      <div className="lg:gap-ns-2xl contents lg:flex lg:flex-col">
+        <section
+          aria-label="Bagian lembaga"
+          className="gap-ns-2xs border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal"
+        >
+          <p className="text-caption text-grayscale-text-caption">
+            Bagian lembaga (estimasi)
+          </p>
+          <p className="text-h3 text-grayscale-text-title font-bold">
+            {formatRupiah(data.institutionShare)}
+          </p>
+          <p className="text-caption text-grayscale-text-caption">
+            Tagihan siswa dikurangi honor tutor pada periode ini
+          </p>
+        </section>
 
-      <section className="gap-ns-m flex flex-col">
-        <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
-          Perhitungan
-        </h2>
-        <div className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal">
-          <dl className="gap-ns-m flex flex-col">
+        <section className="gap-ns-m flex flex-col">
+          <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
+            Perhitungan
+          </h2>
+          <div className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal">
+            <dl className="gap-ns-m flex flex-col">
+              <div className="gap-ns-m flex items-center justify-between">
+                <dt className="text-subtitle text-grayscale-text-body">
+                  Total tagihan siswa
+                </dt>
+                <dd className="text-subtitle text-grayscale-text-title font-bold">
+                  {formatRupiah(data.bills.total)}
+                </dd>
+              </div>
+              <div className="gap-ns-m flex items-center justify-between">
+                <dt className="text-subtitle text-grayscale-text-body">
+                  Total honor tutor
+                  {!data.honor.calculated && (
+                    <span className="text-caption text-grayscale-text-caption">
+                      {" "}
+                      · estimasi
+                    </span>
+                  )}
+                </dt>
+                <dd className="text-subtitle text-error font-bold">
+                  −{formatRupiah(data.honor.total)}
+                </dd>
+              </div>
+            </dl>
+            <div
+              aria-hidden="true"
+              className="bg-grayscale-border-disabled h-px"
+            />
             <div className="gap-ns-m flex items-center justify-between">
-              <dt className="text-subtitle text-grayscale-text-body">
-                Total tagihan siswa
-              </dt>
-              <dd className="text-subtitle text-grayscale-text-title font-bold">
-                {formatRupiah(data.bills.total)}
-              </dd>
+              <span className="text-subtitle text-grayscale-text-title font-bold">
+                Bagian lembaga
+              </span>
+              <span className="text-body text-grayscale-text-title font-bold">
+                {formatRupiah(data.institutionShare)}
+              </span>
             </div>
-            <div className="gap-ns-m flex items-center justify-between">
-              <dt className="text-subtitle text-grayscale-text-body">
-                Total honor tutor
-                {!data.honor.calculated && (
-                  <span className="text-caption text-grayscale-text-caption">
-                    {" "}
-                    · estimasi
-                  </span>
-                )}
-              </dt>
-              <dd className="text-subtitle text-error font-bold">
-                −{formatRupiah(data.honor.total)}
-              </dd>
-            </div>
-          </dl>
-          <div aria-hidden="true" className="bg-grayscale-border-disabled h-px" />
-          <div className="gap-ns-m flex items-center justify-between">
-            <span className="text-subtitle text-grayscale-text-title font-bold">
-              Bagian lembaga
-            </span>
-            <span className="text-body text-grayscale-text-title font-bold">
-              {formatRupiah(data.institutionShare)}
-            </span>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <section className="gap-ns-m flex flex-col">
         <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
@@ -228,7 +256,7 @@ function Summary({ data }: { data: Extract<FinanceSummary, { state: "ada" }> }) 
           />
         </DashboardList>
       </section>
-    </>
+    </div>
   )
 }
 
