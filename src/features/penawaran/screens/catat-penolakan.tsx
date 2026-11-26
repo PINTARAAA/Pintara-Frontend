@@ -28,7 +28,7 @@ import {
 import { DECLINE_REASONS } from "@/lib/data/penawaran"
 import type { DeclineReason, Offer } from "@/types/penawaran"
 import { ResultOfferCard } from "@/features/penawaran/components"
-import { firstName } from "@/features/penawaran/lib"
+import { firstName } from "@/lib/format"
 import { NotFoundError } from "@/features/verifikasi/api"
 
 /*

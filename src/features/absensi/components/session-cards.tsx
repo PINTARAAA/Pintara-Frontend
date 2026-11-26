@@ -9,7 +9,7 @@ import {
 } from "@/components"
 import type { AttendanceSession } from "@/types/absensi"
 import { RATING_LABELS } from "@/features/absensi/lib"
-import { formatDateTime } from "@/lib/format/date"
+import { formatDateTime } from "@/lib/format"
 
 /*
  * Kartu bersama Detail Sesi (W5) dan Riwayat Les / Detail sesi (W7):

@@ -9,7 +9,7 @@ import { SummaryRow } from "@/features/pendaftaran/components"
 import { declineLabel } from "@/features/penawaran/api"
 import type { Offer, OfferSummary } from "@/types/penawaran"
 import { formatKm } from "@/features/penawaran/lib"
-import { formatRupiah } from "@/lib/format/currency"
+import { formatRupiah } from "@/lib/format"
 
 /* Kartu "Ringkasan penawaran" (P4 · Buat penawaran & Detail), label 104px */
 function OfferSummaryCard({ offer }: { offer: OfferSummary }) {

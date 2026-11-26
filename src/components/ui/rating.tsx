@@ -1,7 +1,7 @@
 import * as React from "react"
 import { StarIcon } from "lucide-react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Rating · Figma PINTARA → Wali Murid → W5 "Rating & ulasan"

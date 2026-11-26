@@ -18,14 +18,12 @@ import {
   TabsTrigger,
 } from "@/components"
 import { DashboardList } from "@/features/dashboard/components"
-import { parseMonth } from "@/features/keuangan/lib"
-import { firstName } from "@/features/presensi/lib"
+import { firstName, parseMonth, formatShortWeekdayDate } from "@/lib/format"
 import { lessonRecapQuery } from "@/features/rekap-les/api"
 
 import type { LessonRecap, RecapSession } from "@/types/rekap-les"
 import { useExpandable } from "@/hooks"
-import { formatShortWeekdayDate } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * P11 · Rekap & Riwayat Les · Figma "Riwayat Les / Pengelola - Per tutor",

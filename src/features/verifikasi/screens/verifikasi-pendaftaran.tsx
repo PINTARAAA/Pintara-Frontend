@@ -31,8 +31,8 @@ import type {
   PengelolaRegistration,
   RegistrationStatus,
 } from "@/types/verifikasi"
-import { formatDaysAgo } from "@/features/verifikasi/lib"
-import { cn } from "@/lib/styles/cn"
+import { formatDaysAgo } from "@/lib/format"
+import { cn } from "@/lib/styles"
 import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 /*

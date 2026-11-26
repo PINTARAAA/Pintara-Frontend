@@ -40,8 +40,7 @@ import {
   uploadDocumentation,
   validateDocumentation,
 } from "@/features/presensi/api"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDate } from "@/lib/format/date"
+import { formatRupiah, formatDate } from "@/lib/format"
 
 /*
  * P7 · Catat Pembayaran Honor · Figma "Honor / Catat pembayaran" dan

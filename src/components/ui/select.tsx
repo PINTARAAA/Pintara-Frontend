@@ -2,14 +2,13 @@
 
 import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
-import { cn } from "@/lib/styles/cn"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
-
 import {
+  cn,
   fieldControlVariants,
   fieldHeight,
   type FieldSize,
-} from "@/lib/styles/field-variants"
+} from "@/lib/styles"
 
 /*
  * Select · Figma PINTARA → Components → 02 · Form Controls → Select + Dropdown

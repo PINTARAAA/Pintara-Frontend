@@ -1,5 +1,5 @@
 import { InitialsAvatar } from "@/features/dashboard/components"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Kartu profil: avatar inisial, nama, peran · email.

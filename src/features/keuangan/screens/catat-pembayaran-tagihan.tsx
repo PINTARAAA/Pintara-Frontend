@@ -38,7 +38,7 @@ import {
   uploadDocumentation,
   validateDocumentation,
 } from "@/features/presensi/api"
-import { formatRupiah } from "@/lib/format/currency"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * P8 · Catat Pembayaran Manual · Figma "Laporan Keuangan / Catat pembayaran

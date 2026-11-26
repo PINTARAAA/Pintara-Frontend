@@ -17,7 +17,7 @@ import { NotFoundError, routineQuery } from "@/features/jadwal/api"
 import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import { formatChangeTitle } from "@/features/jadwal/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { formatDate } from "@/lib/format/date"
+import { formatDate } from "@/lib/format"
 
 /*
  * W4 · Jadwal Les / Detail · kartu judul (mapel · hari, jam · sejak),

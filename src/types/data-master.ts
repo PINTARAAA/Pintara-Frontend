@@ -1,4 +1,4 @@
-import type { StatusOf } from "@/lib/constants/status"
+import type { StatusOf } from "@/lib/constants"
 
 export type AccountStatus = StatusOf<"akun">
 export type Level = "SD" | "SMP" | "SMA"

@@ -23,7 +23,7 @@ import type {
   AccountRole,
   AccountRow,
 } from "@/types/manajemen-akun"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * P10 · Manajemen Akun · Figma "Manajemen Akun / Daftar".

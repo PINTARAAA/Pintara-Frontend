@@ -2,7 +2,7 @@ import * as React from "react"
 import { QueryClientProvider } from "@tanstack/react-query"
 
 import { Toaster } from "@/components"
-import { queryClient } from "@/lib/api/query-client"
+import { queryClient } from "@/lib/api"
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   return (

@@ -11,8 +11,7 @@ import {
 } from "@/features/dashboard/components"
 import { declineLabel } from "@/features/penawaran/api"
 import type { Offer, OfferList } from "@/types/penawaran"
-import { firstName } from "@/features/penawaran/lib"
-import { formatDayMonth } from "@/lib/format/date"
+import { firstName, formatDayMonth } from "@/lib/format"
 
 /*
  * P4 · Penawaran (tab Les) · Figma "Penawaran / Daftar"

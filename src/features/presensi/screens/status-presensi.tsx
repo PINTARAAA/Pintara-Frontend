@@ -18,9 +18,9 @@ import {
 } from "@/features/dashboard/components"
 import { attendanceStatusQuery } from "@/features/presensi/api"
 import type { AttendanceStatusOverview, TutorSession } from "@/types/presensi"
-import { formatWeekdayShort, sessionTitle } from "@/features/presensi/lib"
-import { formatDayMonth } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { sessionTitle } from "@/features/presensi/lib"
+import { formatDayMonth, formatWeekdayDate, parseMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * T3 · Status Presensi (tutor) · Figma "Status Presensi / Ringkasan" dan
@@ -34,12 +34,6 @@ import { cn } from "@/lib/styles/cn"
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 const VERIFIED_PREVIEW = 2
-
-function parseMonth(value: string | null) {
-  if (!value || !/^\d{4}-\d{2}$/.test(value)) return undefined
-  const [y, m] = value.split("-").map(Number)
-  return new Date(y, m - 1, 1)
-}
 
 function StatusPresensi() {
   const [params, setParams] = useSearchParams()
@@ -139,7 +133,7 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
               <ListItem
                 key={s.id}
                 title={sessionTitle(s)}
-                description={`${formatWeekdayShort(s.start)} · "${shorten(s.record?.objection?.reason ?? "")}"`}
+                description={`${formatWeekdayDate(s.start)} · "${shorten(s.record?.objection?.reason ?? "")}"`}
                 chevron
                 render={detailLink(s)}
               />
@@ -157,8 +151,8 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
                 title={sessionTitle(s)}
                 description={
                   s.record?.held === false
-                    ? `${formatWeekdayShort(s.start)} · tidak terlaksana`
-                    : `${formatWeekdayShort(s.start)} · diisi ${formatDayMonth(s.record!.submittedAt)}, ${format(s.record!.submittedAt, "HH.mm")}`
+                    ? `${formatWeekdayDate(s.start)} · tidak terlaksana`
+                    : `${formatWeekdayDate(s.start)} · diisi ${formatDayMonth(s.record!.submittedAt)}, ${format(s.record!.submittedAt, "HH.mm")}`
                 }
                 chevron
                 render={detailLink(s)}
@@ -175,7 +169,7 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
               <ListItem
                 key={s.id}
                 title={sessionTitle(s)}
-                description={`${formatWeekdayShort(s.start)} · isi sekarang`}
+                description={`${formatWeekdayDate(s.start)} · isi sekarang`}
                 chevron
                 render={<Link to={`/tutor/presensi/${s.id}`} />}
               />
@@ -209,7 +203,7 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
               <ListItem
                 key={s.id}
                 title={sessionTitle(s)}
-                description={formatWeekdayShort(s.start)}
+                description={formatWeekdayDate(s.start)}
                 render={detailLink(s)}
               />
             ))}

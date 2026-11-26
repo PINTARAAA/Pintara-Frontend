@@ -18,7 +18,7 @@ import {
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { formatRupiah } from "@/lib/format/currency"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * T6 · Akun (tutor) · Figma "Akun / Tutor"

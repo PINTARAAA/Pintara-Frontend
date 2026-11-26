@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Label · mengikuti "Label row" pada Input/Textarea Figma PINTARA:

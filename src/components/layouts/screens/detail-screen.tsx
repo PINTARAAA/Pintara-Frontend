@@ -2,7 +2,7 @@ import * as React from "react"
 import { useNavigate } from "react-router"
 
 import { TopAppBar } from "@/components/ui/top-app-bar"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * DetailScreen · kerangka layar turunan (detail, formulir, konfirmasi).

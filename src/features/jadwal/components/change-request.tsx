@@ -10,7 +10,7 @@ import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import type { ChangeRequest } from "@/types/jadwal"
 import { formatScope } from "@/features/jadwal/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { formatDateTime } from "@/lib/format/date"
+import { formatDateTime } from "@/lib/format"
 
 /* Kartu "Ringkasan pengajuan": Dari · Menjadi · Berlaku (label 104px) */
 function ChangeSummaryCard({ request }: { request: ChangeRequest }) {

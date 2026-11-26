@@ -11,10 +11,9 @@ import { id as localeId } from "date-fns/locale"
 
 import { tutorSessionsOn } from "@/features/jadwal/api"
 import { snapshotTutorSessions } from "@/features/presensi/api"
-import { firstName } from "@/features/presensi/lib"
+import { firstName, formatRupiah } from "@/lib/format"
 import { assertMockAllowed, at, delay } from "@/lib/data/mock"
 import { tutorReadIds } from "@/lib/data/notifikasi"
-import { formatRupiah } from "@/lib/format/currency"
 import type {
   NotificationList,
   TutorNotification,

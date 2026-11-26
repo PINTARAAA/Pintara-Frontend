@@ -31,8 +31,7 @@ import {
   statusOf,
 } from "@/features/tagihan/api"
 import { formatPeriod } from "@/features/tagihan/lib"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDate, formatDateTime } from "@/lib/format/date"
+import { formatRupiah, formatDate, formatDateTime } from "@/lib/format"
 import type { Bill, PaymentResult } from "@/types/tagihan"
 
 /*

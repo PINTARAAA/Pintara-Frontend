@@ -36,7 +36,7 @@ import {
   setAccountStatus,
 } from "@/features/manajemen-akun/api"
 import type { AccountDetail } from "@/types/manajemen-akun"
-import { formatRelativeDay } from "@/lib/format/date"
+import { formatRelativeDay } from "@/lib/format"
 
 /*
  * P10 · Detail Akun · Figma "Manajemen Akun / Detail" dan "Konfirmasi reset

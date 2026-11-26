@@ -35,8 +35,8 @@ import {
   statusOf,
 } from "@/features/tagihan/api"
 import { formatDue, formatMonth, formatPeriod } from "@/features/tagihan/lib"
-import { formatRupiah } from "@/lib/format/currency"
-import { cn } from "@/lib/styles/cn"
+import { formatRupiah } from "@/lib/format"
+import { cn } from "@/lib/styles"
 import type {
   Bill,
   BillsOverview,

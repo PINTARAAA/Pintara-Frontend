@@ -1,4 +1,4 @@
-import type { StatusOf } from "@/lib/constants/status"
+import type { StatusOf } from "@/lib/constants"
 
 export type TaskIcon =
   "clipboard" | "alert" | "wallet" | "user-plus" | "users" | "calendar" | "book"

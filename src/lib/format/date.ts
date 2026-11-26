@@ -1,4 +1,5 @@
 import {
+  differenceInCalendarDays,
   differenceInHours,
   differenceInMinutes,
   format,
@@ -101,4 +102,19 @@ export function formatShortWeekdayDate(date: Date) {
 /* "10 Des" — tanggal singkat tanpa tahun */
 export function formatDayMonth(date: Date) {
   return format(date, "d MMM", { locale: localeId })
+}
+
+/* "hari ini" · "kemarin" · "3 hari lalu" */
+export function formatDaysAgo(date: Date, now = new Date()) {
+  const days = differenceInCalendarDays(now, date)
+  if (days <= 0) return "hari ini"
+  if (days === 1) return "kemarin"
+  return `${days} hari lalu`
+}
+
+/* "2026-11" → 1 November 2026; nilai tidak valid → undefined (bulan berjalan) */
+export function parseMonth(value: string | null) {
+  if (!value || !/^\d{4}-\d{2}$/.test(value)) return undefined
+  const [y, m] = value.split("-").map(Number)
+  return new Date(y, m - 1, 1)
 }

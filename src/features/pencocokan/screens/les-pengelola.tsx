@@ -24,7 +24,7 @@ import { OffersPanel } from "@/features/penawaran/components"
 import { matchingQueueQuery } from "@/features/pencocokan/api"
 import { gradeLabel } from "@/features/verifikasi/api"
 import type { PengelolaRegistration } from "@/types/verifikasi"
-import { formatDaysAgo } from "@/features/verifikasi/lib"
+import { formatDaysAgo } from "@/lib/format"
 import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 /*

@@ -7,8 +7,8 @@ import {
   type StatusCategory,
   type StatusOf,
   type StatusTone,
-} from "@/lib/constants/status"
-import { cn } from "@/lib/styles/cn"
+} from "@/lib/constants"
+import { cn } from "@/lib/styles"
 
 /*
  * Badge · Figma PINTARA → Components → 05 · Data Display → Badge

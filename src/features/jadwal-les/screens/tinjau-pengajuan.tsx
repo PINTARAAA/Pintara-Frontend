@@ -27,7 +27,7 @@ import {
 } from "@/features/jadwal-les/api"
 import type { ChangeReview } from "@/types/jadwal-les"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { firstName } from "@/features/penawaran/lib"
+import { firstName } from "@/lib/format"
 
 /*
  * P5 · Tinjau Pengajuan Perubahan · Figma "Atur Jadwal / Tinjau

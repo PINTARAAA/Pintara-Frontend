@@ -32,6 +32,7 @@ import {
 } from "@/features/verifikasi/api"
 import { REJECT_REASONS } from "@/lib/data/verifikasi"
 import type { PengelolaRegistration } from "@/types/verifikasi"
+import { firstName } from "@/lib/format"
 import {
   formatRequestedSchedule,
   formatSubmitted,
@@ -53,7 +54,6 @@ const LIST = "/pengelola/pendaftaran"
 /* "0813-2233-4455" → "6281322334455" (format wa.me) */
 const toWhatsapp = (phone: string) =>
   phone.replace(/\D/g, "").replace(/^0/, "62")
-const firstName = (name: string) => name.trim().split(/\s+/)[0]
 const stamp = (date: Date) =>
   format(date, "d MMM yyyy, HH.mm", { locale: localeId })
 

@@ -14,8 +14,8 @@ import { Link } from "react-router"
 import { ListItem } from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import type { DashboardTask, TaskIcon } from "@/types/dashboard"
-import { formatRupiah } from "@/lib/format/currency"
-import { cn } from "@/lib/styles/cn"
+import { formatRupiah } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 const ICONS: Record<TaskIcon, LucideIcon> = {
   clipboard: ClipboardCheckIcon,

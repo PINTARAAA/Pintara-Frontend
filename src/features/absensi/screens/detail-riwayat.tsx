@@ -18,7 +18,7 @@ import { NotFoundError, sessionQuery } from "@/features/absensi/api"
 import type { Attendance, AttendanceSession } from "@/types/absensi"
 import { NotesCard, ReviewCard } from "@/features/absensi/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { formatTimeRange } from "@/lib/format/date"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * W7 · Riwayat Les / Wali - Detail sesi (hanya baca)

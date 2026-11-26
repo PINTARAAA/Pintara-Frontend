@@ -11,7 +11,7 @@ import {
 } from "@/components"
 import type { PendaftaranResult } from "@/types/pendaftaran"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { formatDate } from "@/lib/format/date"
+import { formatDate } from "@/lib/format"
 
 /*
  * Pendaftaran / Berhasil · kartu Ringkasan, aksi Primary Large "Pantau

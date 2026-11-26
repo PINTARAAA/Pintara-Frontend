@@ -14,8 +14,8 @@ import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import { tutorScheduleQuery } from "@/features/jadwal/api"
 import type { TutorScheduleDay } from "@/types/jadwal"
 import { formatWeekRange, joinDays } from "@/features/jadwal/lib"
-import { formatTimeRange, formatWeekdayDate } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * T5 · Jadwal (tab tutor) · Figma "Jadwal / Tutor".

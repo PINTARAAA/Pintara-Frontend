@@ -23,7 +23,7 @@ import type { AttendanceSession } from "@/types/absensi"
 import { NotesCard, ReviewCard } from "@/features/absensi/components"
 import { formatSessionTitle } from "@/features/absensi/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { formatTimeRange } from "@/lib/format/date"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * W5 · Validasi Absensi / Detail sesi

@@ -22,7 +22,7 @@ import {
 } from "@/features/absensi/api"
 import type { AttendanceSession } from "@/types/absensi"
 import { formatSessionTitle } from "@/features/absensi/lib"
-import { formatTimeRange } from "@/lib/format/date"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * W5 · Validasi Absensi / Ajukan keberatan (+ frame "- Error")

@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Link } from "react-router"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * HeroCard · kartu utama beranda (Figma: "Next session" Wali, "Les

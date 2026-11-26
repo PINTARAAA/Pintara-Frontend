@@ -34,9 +34,8 @@ import {
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import { tutorHistoryQuery } from "@/features/presensi/api"
 import type { TutorHistory, TutorSession } from "@/types/presensi"
-import { firstName } from "@/features/presensi/lib"
-import { formatShortWeekdayDate } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { firstName, parseMonth, formatShortWeekdayDate } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * T4 · Riwayat Les (tab tutor) · Figma "Riwayat Les / Tutor" dan
@@ -51,12 +50,6 @@ import { cn } from "@/lib/styles/cn"
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 const ALL = "semua"
-
-function parseMonth(value: string | null) {
-  if (!value || !/^\d{4}-\d{2}$/.test(value)) return undefined
-  const [y, m] = value.split("-").map(Number)
-  return new Date(y, m - 1, 1)
-}
 
 function RiwayatTutor() {
   const [params, setParams] = useSearchParams()

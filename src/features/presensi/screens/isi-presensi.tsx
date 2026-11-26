@@ -38,12 +38,8 @@ import {
   validateDocumentation,
 } from "@/features/presensi/api"
 import type { AttendanceInput, TutorSession } from "@/types/presensi"
-import {
-  firstName,
-  formatLongDate,
-  sessionTitle,
-} from "@/features/presensi/lib"
-import { formatDateTime, formatTimeRange } from "@/lib/format/date"
+import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
+import { firstName, formatDateTime, formatTimeRange } from "@/lib/format"
 
 /*
  * T2 · Isi Presensi · Figma "Presensi / Form - Terlaksana", "- Tidak

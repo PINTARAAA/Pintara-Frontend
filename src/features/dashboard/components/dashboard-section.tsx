@@ -2,7 +2,7 @@ import * as React from "react"
 import { Link } from "react-router"
 
 import { Button, List } from "@/components"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 function DashboardSection({
   title,

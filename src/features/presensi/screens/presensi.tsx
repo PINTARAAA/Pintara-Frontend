@@ -17,12 +17,8 @@ import {
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import { tutorSessionsQuery } from "@/features/presensi/api"
-import {
-  formatToFill,
-  formatWeekdayShort,
-  sessionTitle,
-} from "@/features/presensi/lib"
-import { formatTimeRange } from "@/lib/format/date"
+import { formatToFill, sessionTitle } from "@/features/presensi/lib"
+import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
 
 /*
  * T2 · Presensi (tab tutor) · Figma "Presensi / Daftar" dan "Presensi / Kosong"
@@ -114,7 +110,7 @@ function Presensi() {
                     key={s.id}
                     icon={<ClipboardCheckIcon />}
                     title={sessionTitle(s)}
-                    description={formatWeekdayShort(s.start)}
+                    description={formatWeekdayDate(s.start)}
                     badge={
                       s.record && (
                         <StatusBadge category="presensi" status={s.record.validation} />

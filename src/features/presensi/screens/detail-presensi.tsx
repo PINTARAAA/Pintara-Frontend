@@ -20,7 +20,7 @@ import { SummaryRow } from "@/features/pendaftaran/components"
 import { NotFoundError, tutorSessionQuery } from "@/features/presensi/api"
 import type { TutorSession } from "@/types/presensi"
 import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
-import { formatTimeRange } from "@/lib/format/date"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * T3 · Detail Presensi · Figma "Status Presensi / Detail - Keberatan" dan

@@ -17,5 +17,3 @@ export const RATING_LABELS = [
   "Baik",
   "Sangat baik",
 ]
-
-export const firstName = (name: string) => name.trim().split(/\s+/)[0]

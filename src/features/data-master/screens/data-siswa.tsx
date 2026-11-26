@@ -17,7 +17,7 @@ import { STUDENT_SUBJECTS } from "@/lib/data/data-master"
 import type { StudentRow } from "@/types/data-master"
 import { MasterFilters } from "@/features/data-master/components"
 import { useMasterFilter } from "@/features/data-master/hooks"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * P9 · Data Siswa · Figma "Data Siswa / Daftar".

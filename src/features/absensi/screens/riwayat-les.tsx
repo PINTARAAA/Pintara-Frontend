@@ -16,8 +16,8 @@ import {
   DashboardList,
   DashboardSection,
 } from "@/features/dashboard/components"
-import { formatShortWeekdayDate } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { formatShortWeekdayDate, parseMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * W7 · Riwayat Les (wali) · Figma "Riwayat Les / Wali"
@@ -29,12 +29,6 @@ import { cn } from "@/lib/styles/cn"
  */
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
-
-function parseMonth(value: string | null) {
-  if (!value || !/^\d{4}-\d{2}$/.test(value)) return undefined
-  const [y, m] = value.split("-").map(Number)
-  return new Date(y, m - 1, 1)
-}
 
 function RiwayatLes() {
   const [params, setParams] = useSearchParams()

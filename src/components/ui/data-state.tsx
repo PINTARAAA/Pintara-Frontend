@@ -3,7 +3,7 @@ import { CircleAlertIcon, InboxIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Data state · Figma PINTARA → Components → 05 · Data Display → Data state

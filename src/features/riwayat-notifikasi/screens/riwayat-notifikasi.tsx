@@ -32,8 +32,8 @@ import type {
   NotificationLog,
   Period,
 } from "@/types/riwayat-notifikasi"
-import { formatDayMonth } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { formatDayMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * P13 · Riwayat Notifikasi · Figma "Riwayat Notifikasi / Daftar",

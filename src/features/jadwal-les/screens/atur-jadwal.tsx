@@ -52,7 +52,7 @@ import type {
   ScheduleSession,
 } from "@/types/jadwal-les"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { firstName } from "@/features/penawaran/lib"
+import { firstName } from "@/lib/format"
 import { NotFoundError } from "@/features/verifikasi/api"
 
 /*

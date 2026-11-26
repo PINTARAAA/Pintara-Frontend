@@ -2,7 +2,7 @@ import * as React from "react"
 import { CheckIcon, XIcon } from "lucide-react"
 
 import { RadioGroupItem } from "@/components/ui/radio-group"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Tutor candidate · Figma PINTARA → Components → 05 · Data Display

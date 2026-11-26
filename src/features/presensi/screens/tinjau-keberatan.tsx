@@ -32,7 +32,7 @@ import {
 import type { TutorSession } from "@/types/presensi"
 
 import { formatLongDate } from "@/features/presensi/lib"
-import { formatTimeRange } from "@/lib/format/date"
+import { formatTimeRange } from "@/lib/format"
 
 /*
  * P6 · Tinjau Keberatan · Figma "Verifikasi Presensi / Tinjau keberatan"

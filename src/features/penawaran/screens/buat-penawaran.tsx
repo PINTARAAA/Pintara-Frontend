@@ -22,7 +22,7 @@ import {
 } from "@/features/penawaran/api"
 import type { OfferDraft } from "@/types/penawaran"
 import { OfferSummaryCard } from "@/features/penawaran/components"
-import { firstName } from "@/features/penawaran/lib"
+import { firstName } from "@/lib/format"
 import { NotFoundError } from "@/features/verifikasi/api"
 
 /*

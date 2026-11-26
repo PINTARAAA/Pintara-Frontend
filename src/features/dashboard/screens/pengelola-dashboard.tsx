@@ -18,8 +18,12 @@ import {
   TaskList,
 } from "@/features/dashboard/components"
 
-import { formatRupiahCompact } from "@/lib/format/currency"
-import { formatDayMonth, formatGreeting, formatWeekdayDate } from "@/lib/format/date"
+import {
+  formatRupiahCompact,
+  formatDayMonth,
+  formatGreeting,
+  formatWeekdayDate,
+} from "@/lib/format"
 import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 function PengelolaDashboard() {

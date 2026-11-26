@@ -19,7 +19,7 @@ import {
   ProfileMenu,
   StatusToggle,
 } from "@/features/data-master/components"
-import { formatRupiah } from "@/lib/format/currency"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * P9 · Profil Tutor · Figma "Data Tutor / Profil" dan "Tidak bisa

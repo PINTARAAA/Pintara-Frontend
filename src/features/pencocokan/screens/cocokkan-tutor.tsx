@@ -38,6 +38,7 @@ import {
   formatRequestedSchedule,
   formatShortAddress,
 } from "@/features/verifikasi/lib"
+import { firstName } from "@/lib/format"
 
 /*
  * P3 · Cocokkan Tutor · Figma "Pencocokan / Kandidat tutor",
@@ -51,7 +52,6 @@ import {
  */
 const LES = "/pengelola/les"
 
-const firstName = (name: string) => name.trim().split(/\s+/)[0]
 /* "0821-4455-6677" → "6282144556677" (format wa.me) */
 const toWhatsapp = (phone: string) =>
   phone.replace(/\D/g, "").replace(/^0/, "62")

@@ -22,8 +22,8 @@ import {
   formatDayMonth,
   formatTimeRange,
   formatWeekdayDate,
-} from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+} from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * W4 · Jadwal Les (tab) · Figma "Jadwal Les / Daftar" dan

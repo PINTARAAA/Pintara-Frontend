@@ -24,9 +24,8 @@ import { monthKey, financeSummaryQuery } from "@/features/keuangan/api"
 import type { FinanceSummary } from "@/types/keuangan"
 
 import { UnduhLaporanSheet } from "@/features/keuangan/components"
-import { parseMonth } from "@/features/keuangan/lib"
-import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
-import { cn } from "@/lib/styles/cn"
+import { parseMonth, formatRupiah, formatRupiahCompact } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * P8 · Laporan Keuangan · Figma "Laporan Keuangan / Ringkasan" dan "Kosong".

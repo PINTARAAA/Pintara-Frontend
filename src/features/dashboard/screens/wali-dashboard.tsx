@@ -33,8 +33,8 @@ import {
   formatTimeRange,
   formatTimeUntil,
   formatWeekdayDate,
-} from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+} from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 function WaliDashboard() {
   const unreadNotifications = useUnreadNotifications()

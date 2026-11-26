@@ -1,4 +1,4 @@
-import type { StatusOf } from "@/lib/constants/status"
+import type { StatusOf } from "@/lib/constants"
 
 export type RecapSessionStatus = StatusOf<"presensi"> | "tidak_terlaksana"
 

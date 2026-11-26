@@ -17,7 +17,7 @@ import { NotFoundError, tutorScheduleSessionQuery } from "@/features/jadwal/api"
 import type { TutorScheduleDetail } from "@/types/jadwal"
 
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { formatTimeRange, formatWeekdayDate } from "@/lib/format/date"
+import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
 
 /*
  * T5 · Detail Jadwal (tutor) · Figma "Jadwal / Tutor - Detail sesi".

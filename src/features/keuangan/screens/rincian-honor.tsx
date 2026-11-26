@@ -20,9 +20,12 @@ import {
   HonorNotFoundError,
 } from "@/features/keuangan/api"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { firstName, formatWeekdayShort } from "@/features/presensi/lib"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDate } from "@/lib/format/date"
+import {
+  firstName,
+  formatWeekdayDate,
+  formatRupiah,
+  formatDate,
+} from "@/lib/format"
 
 /*
  * P7 · Rincian Honor · Figma "Honor / Rincian tutor"
@@ -154,7 +157,7 @@ function RincianHonor() {
                             className="gap-ns-m flex justify-between"
                           >
                             <span>
-                              {formatWeekdayShort(s.start)} · {s.subject} ·{" "}
+                              {formatWeekdayDate(s.start)} · {s.subject} ·{" "}
                               {firstName(s.student.name)}
                             </span>
                             <span className="text-grayscale-text-caption shrink-0">

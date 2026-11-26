@@ -13,8 +13,7 @@ import {
   studentBillQuery,
 } from "@/features/keuangan/api"
 import type { BillPayment } from "@/types/keuangan"
-import { formatRupiah } from "@/lib/format/currency"
-import { formatDayMonth } from "@/lib/format/date"
+import { formatRupiah, formatDayMonth } from "@/lib/format"
 
 /*
  * P8 · Rincian Tagihan · Figma "Laporan Keuangan / Rincian tagihan".

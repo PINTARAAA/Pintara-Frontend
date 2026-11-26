@@ -6,7 +6,7 @@ import { InfoIcon, Trash2Icon, TriangleAlertIcon, XIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useControllableState } from "@/hooks/state/use-controllable-state"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * Confirmation modal · Figma PINTARA → Components → 06 · Feedback & Overlay

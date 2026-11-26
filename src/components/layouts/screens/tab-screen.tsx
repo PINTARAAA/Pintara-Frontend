@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { TopAppBar } from "@/components/ui/top-app-bar"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * TabScreen · kerangka layar tab (di dalam AppShell).

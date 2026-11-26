@@ -4,7 +4,7 @@ import { differenceInCalendarDays, startOfDay } from "date-fns"
 import { addNotification } from "@/features/notifikasi/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { bills, payments } from "@/lib/data/tagihan"
-import { formatRupiah } from "@/lib/format/currency"
+import { formatRupiah } from "@/lib/format"
 import type {
   Bill,
   BillsOverview,

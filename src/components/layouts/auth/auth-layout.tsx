@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import pintaraLogo from "@/assets/pintara-logo.png"
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * AuthLayout · Figma PINTARA → UI Screen → Umum → 00 · Autentikasi

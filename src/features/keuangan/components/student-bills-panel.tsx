@@ -16,9 +16,8 @@ import { DashboardList } from "@/features/dashboard/components"
 import { monthKey, studentBillsQuery } from "@/features/keuangan/api"
 import type { StudentBillList, StudentBillRow } from "@/types/keuangan"
 
-import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
-import { formatDayMonth } from "@/lib/format/date"
-import { cn } from "@/lib/styles/cn"
+import { formatRupiah, formatRupiahCompact, formatDayMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * P8 · Tagihan siswa · Figma "Laporan Keuangan / Tagihan siswa".

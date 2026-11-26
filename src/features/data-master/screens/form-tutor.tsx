@@ -36,7 +36,7 @@ import {
   type TutorFormInput,
 } from "@/features/data-master/schemas"
 import { FormGroup } from "@/features/pendaftaran/components"
-import { formatRupiah } from "@/lib/format/currency"
+import { formatRupiah } from "@/lib/format"
 
 /*
  * P9 · Tambah Tutor / Ubah Profil Tutor · Figma "Data Tutor / Tambah tutor".

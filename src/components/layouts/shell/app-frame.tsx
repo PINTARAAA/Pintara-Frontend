@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 /*
  * AppFrame · bingkai terluar semua layar.

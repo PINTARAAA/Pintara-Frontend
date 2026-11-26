@@ -35,8 +35,8 @@ import {
   finalOverviewQuery,
 } from "@/features/presensi/api"
 import type { FinalOverview } from "@/types/presensi"
-import { firstName, formatWeekdayShort } from "@/features/presensi/lib"
-import { cn } from "@/lib/styles/cn"
+import { firstName, formatWeekdayDate, parseMonth } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /*
  * P6 · Verifikasi Final Presensi · Figma "Verifikasi Presensi / Ringkasan",
@@ -51,12 +51,6 @@ import { cn } from "@/lib/styles/cn"
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 const monthName = (d: Date) => format(d, "MMMM", { locale: localeId })
-
-function parseMonth(value: string | null) {
-  if (!value || !/^\d{4}-\d{2}$/.test(value)) return undefined
-  const [y, m] = value.split("-").map(Number)
-  return new Date(y, m - 1, 1)
-}
 
 function VerifikasiPresensi() {
   const [params, setParams] = useSearchParams()
@@ -152,7 +146,7 @@ function VerifikasiPresensi() {
                         key={s.id}
                         icon={<TriangleAlertIcon />}
                         title={`${s.subject} · ${firstName(s.student.name)} × ${BUDI.shortName}`}
-                        description={`${formatWeekdayShort(s.start)} · “${shortReason(s.record?.objection?.reason)}”`}
+                        description={`${formatWeekdayDate(s.start)} · “${shortReason(s.record?.objection?.reason)}”`}
                         chevron
                         render={
                           <Link to={`/pengelola/presensi/keberatan/${s.id}`} />

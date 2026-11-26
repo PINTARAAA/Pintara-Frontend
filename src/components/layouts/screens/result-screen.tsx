@@ -1,7 +1,7 @@
 import * as React from "react"
 import { CircleCheckIcon, CircleXIcon, TriangleAlertIcon } from "lucide-react"
 
-import { cn } from "@/lib/styles/cn"
+import { cn } from "@/lib/styles"
 
 function ResultScreen({
   title,

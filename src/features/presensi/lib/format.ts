@@ -2,7 +2,7 @@ import { differenceInCalendarDays, format, isToday } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
 import type { TutorSession } from "@/types/presensi"
-import { formatTimeRange } from "@/lib/format/date"
+import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
 
 /* "IPA · Dimas Pratama" */
 export const sessionTitle = (s: Pick<TutorSession, "subject" | "student">) =>
@@ -11,10 +11,6 @@ export const sessionTitle = (s: Pick<TutorSession, "subject" | "student">) =>
 /* "Senin, 23 Nov 2026" */
 export const formatLongDate = (date: Date) =>
   format(date, "EEEE, d MMM yyyy", { locale: localeId })
-
-/* "Senin, 23 Nov" */
-export const formatWeekdayShort = (date: Date) =>
-  format(date, "EEEE, d MMM", { locale: localeId })
 
 /*
  * Keterangan sesi yang perlu diisi:
@@ -25,7 +21,6 @@ export function formatToFill(session: TutorSession, now = new Date()) {
   const range = formatTimeRange(session.start, session.end)
   if (isToday(session.start)) return `Hari ini · ${range}`
   const late = differenceInCalendarDays(now, session.start)
-  return `${formatWeekdayShort(session.start)} · ${range} · terlewat ${late} hari`
+  return `${formatWeekdayDate(session.start)} · ${range} · terlewat ${late} hari`
 }
 
-export const firstName = (name: string) => name.trim().split(/\s+/)[0]

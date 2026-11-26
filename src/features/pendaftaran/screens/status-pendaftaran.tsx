@@ -25,8 +25,8 @@ import type {
 } from "@/types/pendaftaran"
 
 import { SummaryRow } from "@/features/pendaftaran/components"
-import type { StatusOf } from "@/lib/constants/status"
-import { formatDate, formatDateTime } from "@/lib/format/date"
+import type { StatusOf } from "@/lib/constants"
+import { formatDate, formatDateTime, firstName } from "@/lib/format"
 
 /*
  * W3 · Status Pendaftaran · Figma PINTARA → UI Screen → Wali Murid
@@ -57,8 +57,6 @@ function formatRequestedSchedule(days: string[], startTime: string) {
 /* "Rabu, 3 Des 2026" */
 const formatLongWeekdayDate = (date: Date) =>
   format(date, "EEEE, d MMM yyyy", { locale: localeId })
-
-const firstName = (name: string) => name.trim().split(/\s+/)[0]
 
 const whatsappUrl = (contact: RegistrationLbbContact) =>
   `https://wa.me/${contact.whatsapp}`

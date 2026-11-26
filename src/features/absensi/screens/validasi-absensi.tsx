@@ -15,14 +15,17 @@ import {
 } from "@/components"
 import { attendanceQuery } from "@/features/absensi/api"
 import type { AttendanceSession } from "@/types/absensi"
-import { firstName } from "@/features/absensi/lib"
+import {
+  firstName,
+  formatShortWeekdayDate,
+  formatWeekdayDate,
+} from "@/lib/format"
 import {
   DashboardList,
   NotificationButton,
 } from "@/features/dashboard/components"
 
 import { useUnreadNotifications } from "@/features/notifikasi/api"
-import { formatShortWeekdayDate, formatWeekdayDate } from "@/lib/format/date"
 
 /*
  * W5 · Validasi Absensi (tab) · Figma "Validasi Absensi / Daftar sesi" dan

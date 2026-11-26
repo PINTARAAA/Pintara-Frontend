@@ -24,7 +24,7 @@ import {
   formatTimeRange,
   formatTimeUntil,
   formatWeekdayDate,
-} from "@/lib/format/date"
+} from "@/lib/format"
 
 function TutorDashboard() {
   const query = useQuery(tutorDashboardQuery())
