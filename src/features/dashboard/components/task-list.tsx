@@ -13,7 +13,7 @@ import { Link } from "react-router"
 
 import { ListItem } from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import type { DashboardTask, TaskIcon } from "@/features/dashboard/api/types"
+import type { DashboardTask, TaskIcon } from "@/features/dashboard/api"
 import { formatRupiah } from "@/lib/format/currency"
 import { cn } from "@/lib/styles/cn"
 

@@ -1,4 +1,4 @@
-import { VerifikasiPresensi } from "@/features/presensi/screens/verifikasi-presensi"
+import { VerifikasiPresensi } from "@/features/presensi"
 
 export default function VerifikasiPresensiRoute() {
   return <VerifikasiPresensi />

@@ -32,13 +32,13 @@ import {
   tutorQuery,
   type Level,
   type Tutor,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
 import {
   EMPTY_TUTOR,
   tutorSchema,
   type TutorFormInput,
-} from "@/features/data-master/schemas/tutor-schema"
-import { FormGroup } from "@/features/pendaftaran/components/form-group"
+} from "@/features/data-master/schemas"
+import { FormGroup } from "@/features/pendaftaran/components"
 import { formatRupiah } from "@/lib/format/currency"
 
 /*

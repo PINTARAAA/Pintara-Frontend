@@ -1,13 +1,13 @@
 import { queryOptions, useQuery } from "@tanstack/react-query"
 import { format, setDate, startOfMonth } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
-import { listRequestsForReview } from "@/features/jadwal/api/jadwal"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
+import { listRequestsForReview } from "@/features/jadwal/api"
 import type {
   AppNotification,
   NotificationList,
 } from "@/features/notifikasi/api/notifikasi"
-import { snapshotTutorSessions } from "@/features/presensi/api/presensi"
+import { snapshotTutorSessions } from "@/features/presensi/api"
 
 /*
  * Notifikasi Pengelola · Figma PINTARA → UI Screen → Pengelola LBB →

@@ -1,13 +1,13 @@
 import { queryOptions } from "@tanstack/react-query"
 import { addDays, format, getDay, isValid, parse, startOfDay } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, delay } from "@/features/dashboard/api"
 import {
   NotFoundError,
   parseTime,
   WEEKDAYS,
 } from "@/features/jadwal/api/jadwal"
-import { findLastHeldSession } from "@/features/presensi/api/presensi"
+import { findLastHeldSession } from "@/features/presensi/api"
 
 /*
  * Jadwal tutor · Figma PINTARA → UI Screen → Tutor → T5 · Jadwal

@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, delay } from "@/features/dashboard/api"
 import {
   assignTutor,
   needsTutor,
@@ -8,7 +8,7 @@ import {
   snapshotRegistrations,
   type Level,
   type PengelolaRegistration,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/verifikasi/api"
 
 /*
  * Pencocokan Tutor · Figma PINTARA → UI Screen → Pengelola LBB →

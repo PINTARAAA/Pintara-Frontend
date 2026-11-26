@@ -27,8 +27,8 @@ import {
   rejectRegistration,
   type PengelolaRegistration,
   type RejectReason,
-} from "@/features/verifikasi/api/verifikasi"
-import { rejectionTemplate } from "@/features/verifikasi/lib/format"
+} from "@/features/verifikasi/api"
+import { rejectionTemplate } from "@/features/verifikasi/lib"
 
 /*
  * P2 · Tolak Pendaftaran · Figma "Verifikasi Pendaftaran / Tolak"

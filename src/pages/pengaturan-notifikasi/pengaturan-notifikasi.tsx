@@ -1,4 +1,4 @@
-import { PengaturanNotifikasi } from "@/features/pengaturan-notifikasi/screens/pengaturan-notifikasi"
+import { PengaturanNotifikasi } from "@/features/pengaturan-notifikasi"
 
 export default function PengaturanNotifikasiRoute() {
   return <PengaturanNotifikasi />

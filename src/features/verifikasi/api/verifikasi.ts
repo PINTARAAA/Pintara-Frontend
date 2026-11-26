@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 
 /*
  * Verifikasi Pendaftaran (pengelola) · Figma PINTARA → UI Screen →

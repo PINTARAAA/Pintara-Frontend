@@ -1,4 +1,4 @@
-import { AkunTutor } from "@/features/akun/screens/akun-tutor"
+import { AkunTutor } from "@/features/akun"
 
 export default function AkunTutorRoute() {
   return <AkunTutor />

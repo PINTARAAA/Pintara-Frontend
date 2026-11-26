@@ -11,7 +11,7 @@ import type { DashboardTask, Person } from "@/features/dashboard/api/types"
  * TODO(backend): ganti isi getTutorDashboard() dengan
  *   httpClient.get("/tutor/dashboard")
  */
-export type TutorDashboard = {
+export type TutorDashboardData = {
   tutor: { name: string }
   nextSession: {
     id: string
@@ -32,7 +32,7 @@ export type TutorDashboard = {
   }
 }
 
-export async function getTutorDashboard(): Promise<TutorDashboard> {
+export async function getTutorDashboard(): Promise<TutorDashboardData> {
   assertMockAllowed()
   await delay()
 

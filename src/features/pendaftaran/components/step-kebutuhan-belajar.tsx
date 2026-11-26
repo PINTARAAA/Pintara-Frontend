@@ -15,7 +15,7 @@ import {
   FREQUENCY_OPTIONS,
   SUBJECT_OPTIONS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas/pendaftaran-schema"
+} from "@/features/pendaftaran/schemas"
 
 /* Langkah 2 · Kebutuhan Belajar */
 function StepKebutuhanBelajar() {

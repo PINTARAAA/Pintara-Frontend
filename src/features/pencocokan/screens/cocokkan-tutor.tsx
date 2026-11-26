@@ -18,8 +18,8 @@ import {
   toast,
   TutorCandidate,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { DashboardList } from "@/features/dashboard/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   joinAnd,
   matchingCandidatesQuery,
@@ -27,18 +27,18 @@ import {
   selectTutor,
   type Candidate,
   type MatchingCandidates,
-} from "@/features/pencocokan/api/pencocokan"
+} from "@/features/pencocokan/api"
 import {
   AlreadyProcessedError,
   gradeLabel,
   needsTutor,
   NotFoundError,
   type PengelolaRegistration,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/verifikasi/api"
 import {
   formatRequestedSchedule,
   formatShortAddress,
-} from "@/features/verifikasi/lib/format"
+} from "@/features/verifikasi/lib"
 
 /*
  * P3 · Cocokkan Tutor · Figma "Pencocokan / Kandidat tutor",

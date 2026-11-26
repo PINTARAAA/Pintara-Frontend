@@ -17,7 +17,7 @@ import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
   GRADE_OPTIONS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas/pendaftaran-schema"
+} from "@/features/pendaftaran/schemas"
 
 /* Langkah 1 · Data Wali & Siswa */
 function StepDataSiswa() {

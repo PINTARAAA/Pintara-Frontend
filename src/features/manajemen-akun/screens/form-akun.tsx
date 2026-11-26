@@ -34,11 +34,11 @@ import {
   usernameOf,
   type AccountDetail,
   type AccountRole,
-} from "@/features/manajemen-akun/api/akun"
+} from "@/features/manajemen-akun/api"
 import {
   akunSchema,
   type AkunFormInput,
-} from "@/features/manajemen-akun/schemas/akun-schema"
+} from "@/features/manajemen-akun/schemas"
 
 /*
  * P10 · Tambah Akun / Ubah Data Akun · Figma "Manajemen Akun / Tambah akun".

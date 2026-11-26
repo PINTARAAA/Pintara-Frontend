@@ -1,4 +1,4 @@
-import { ProfilSiswa } from "@/features/data-master/screens/profil-siswa"
+import { ProfilSiswa } from "@/features/data-master"
 
 export default function ProfilSiswaRoute() {
   return <ProfilSiswa />

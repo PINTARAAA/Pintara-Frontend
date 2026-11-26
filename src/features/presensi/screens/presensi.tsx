@@ -12,15 +12,16 @@ import {
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
-import { tutorSessionsQuery } from "@/features/presensi/api/presensi"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
+import { tutorSessionsQuery } from "@/features/presensi/api"
 import {
   formatToFill,
   formatWeekdayShort,
   sessionTitle,
-} from "@/features/presensi/lib/format"
+} from "@/features/presensi/lib"
 import { formatTimeRange } from "@/lib/format/date"
 
 /*

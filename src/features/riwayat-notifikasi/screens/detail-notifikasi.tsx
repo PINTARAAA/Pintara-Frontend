@@ -10,7 +10,7 @@ import {
   DataState,
   toast,
 } from "@/components"
-import { InfoCard } from "@/features/data-master/components/profile-parts"
+import { InfoCard } from "@/features/data-master/components"
 import {
   channelContact,
   KIND_LABEL,
@@ -20,7 +20,7 @@ import {
   resendNotification,
   ResendFailedError,
   type NotificationLog,
-} from "@/features/riwayat-notifikasi/api/riwayat-notifikasi"
+} from "@/features/riwayat-notifikasi/api"
 
 /*
  * P13 · Detail Notifikasi · Figma "Riwayat Notifikasi / Detail gagal".

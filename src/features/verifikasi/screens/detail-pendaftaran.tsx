@@ -22,7 +22,7 @@ import {
   toast,
   TopAppBarButton,
 } from "@/components"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   AlreadyProcessedError,
   needsTutor,
@@ -31,11 +31,11 @@ import {
   registrationQuery,
   verifyRegistration,
   type PengelolaRegistration,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/verifikasi/api"
 import {
   formatRequestedSchedule,
   formatSubmitted,
-} from "@/features/verifikasi/lib/format"
+} from "@/features/verifikasi/lib"
 
 /*
  * P2 · Detail Pendaftaran · Figma "Verifikasi Pendaftaran / Detail",

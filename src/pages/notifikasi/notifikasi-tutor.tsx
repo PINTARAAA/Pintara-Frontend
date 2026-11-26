@@ -1,4 +1,4 @@
-import { NotifikasiTutor } from "@/features/notifikasi/screens/notifikasi-tutor"
+import { NotifikasiTutor } from "@/features/notifikasi"
 
 export default function NotifikasiTutorRoute() {
   return <NotifikasiTutor />

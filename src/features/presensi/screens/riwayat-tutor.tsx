@@ -28,15 +28,16 @@ import {
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import {
   tutorHistoryQuery,
   type TutorHistory,
   type TutorSession,
-} from "@/features/presensi/api/presensi"
-import { firstName } from "@/features/presensi/lib/format"
+} from "@/features/presensi/api"
+import { firstName } from "@/features/presensi/lib"
 import { formatShortWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

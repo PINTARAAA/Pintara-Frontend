@@ -11,11 +11,8 @@ import {
   Input,
   PasswordInput,
 } from "@/components"
-import { login, LoginError, type LoginErrorCode } from "@/features/auth/api/login"
-import {
-  loginSchema,
-  type LoginInput,
-} from "@/features/auth/schemas/login-schema"
+import { login, LoginError, type LoginErrorCode } from "@/features/auth/api"
+import { loginSchema, type LoginInput } from "@/features/auth/schemas"
 import type { AuthUser, LoginNotice } from "@/features/auth/types"
 
 /*

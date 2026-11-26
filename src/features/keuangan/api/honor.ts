@@ -1,12 +1,12 @@
 import { queryOptions } from "@tanstack/react-query"
 import { format, startOfMonth, subMonths } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import {
   finalByTutor,
   finalProgress,
-} from "@/features/presensi/api/verifikasi-presensi"
-import type { TutorSession } from "@/features/presensi/api/presensi"
+  type TutorSession,
+} from "@/features/presensi/api"
 
 /*
  * Rekap & Pembayaran Honor · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -306,10 +306,10 @@ export async function calculateHonor(month: Date) {
 
 /* ---------- Rincian honor satu tutor ---------- */
 
-export class NotFoundError extends Error {
+export class HonorNotFoundError extends Error {
   constructor() {
     super("Rincian honor tidak ditemukan.")
-    this.name = "NotFoundError"
+    this.name = "HonorNotFoundError"
   }
 }
 
@@ -322,7 +322,7 @@ export type HonorDetail = TutorHonor & {
 function findHonor(monthParam: string, tutorId: string) {
   const recap = recaps.get(monthParam)
   const honor = recap?.honors.find((h) => h.tutorId === tutorId)
-  if (!recap || !honor) throw new NotFoundError()
+  if (!recap || !honor) throw new HonorNotFoundError()
   return { recap, honor }
 }
 

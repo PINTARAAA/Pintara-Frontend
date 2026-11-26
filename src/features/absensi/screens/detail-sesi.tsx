@@ -19,13 +19,10 @@ import {
   NotFoundError,
   sessionQuery,
   type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import {
-  NotesCard,
-  ReviewCard,
-} from "@/features/absensi/components/session-cards"
-import { formatSessionTitle } from "@/features/absensi/lib/format"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+} from "@/features/absensi/api"
+import { NotesCard, ReviewCard } from "@/features/absensi/components"
+import { formatSessionTitle } from "@/features/absensi/lib"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatTimeRange } from "@/lib/format/date"
 
 /*

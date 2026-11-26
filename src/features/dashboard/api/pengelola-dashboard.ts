@@ -11,7 +11,7 @@ import type { DashboardTask } from "@/features/dashboard/api/types"
  * TODO(backend): ganti isi getPengelolaDashboard() dengan
  *   httpClient.get("/pengelola/dashboard")
  */
-export type PengelolaDashboard = {
+export type PengelolaDashboardData = {
   admin: { name: string }
   today: {
     date: Date
@@ -34,7 +34,7 @@ export type PengelolaDashboard = {
   unreadNotifications: number
 }
 
-export async function getPengelolaDashboard(): Promise<PengelolaDashboard> {
+export async function getPengelolaDashboard(): Promise<PengelolaDashboardData> {
   assertMockAllowed()
   await delay()
 

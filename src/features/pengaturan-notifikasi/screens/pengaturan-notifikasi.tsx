@@ -8,7 +8,7 @@ import {
   notificationSettingsQuery,
   saveNotificationSetting,
   type NotificationSetting,
-} from "@/features/pengaturan-notifikasi/api/pengaturan-notifikasi"
+} from "@/features/pengaturan-notifikasi/api"
 
 /*
  * P12 · Pengaturan Notifikasi · Figma "Pengaturan Notifikasi / Daftar" dan

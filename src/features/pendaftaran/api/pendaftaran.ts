@@ -1,12 +1,12 @@
 import { queryOptions } from "@tanstack/react-query"
 import { nextWednesday, setHours, startOfDay } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import type {
   LbbContact,
   Registration,
 } from "@/features/pendaftaran/api/types"
-import type { PendaftaranInput } from "@/features/pendaftaran/schemas/pendaftaran-schema"
+import type { PendaftaranInput } from "@/features/pendaftaran/schemas"
 
 /*
  * Pendaftaran Siswa · Figma PINTARA → UI Screen → Wali Murid → W2 & W3

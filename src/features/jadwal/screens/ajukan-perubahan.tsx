@@ -36,18 +36,18 @@ import {
   WEEKDAYS,
   type ChangeRequest,
   type RoutineDetail,
-} from "@/features/jadwal/api/jadwal"
+} from "@/features/jadwal/api"
 import {
   ChangeProgressCard,
   ChangeSummaryCard,
-} from "@/features/jadwal/components/change-request"
+} from "@/features/jadwal/components"
 import {
   CHANGE_DAY_OPTIONS,
   REASON_MAX,
   withCurrentSchedule,
   type ScheduleChangeInput,
-} from "@/features/jadwal/schemas/perubahan-jadwal-schema"
-import { FormGroup } from "@/features/pendaftaran/components/form-group"
+} from "@/features/jadwal/schemas"
+import { FormGroup } from "@/features/pendaftaran/components"
 
 /*
  * W4 · Jadwal Les / Ajukan perubahan · frame "Ajukan perubahan",

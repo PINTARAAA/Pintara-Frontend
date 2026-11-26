@@ -18,8 +18,8 @@ import {
   remainingOf,
   statusOf,
   type Bill,
-} from "@/features/tagihan/api/tagihan"
-import { formatDue, formatPeriod } from "@/features/tagihan/lib/format"
+} from "@/features/tagihan/api"
+import { formatDue, formatPeriod } from "@/features/tagihan/lib"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDate } from "@/lib/format/date"
 

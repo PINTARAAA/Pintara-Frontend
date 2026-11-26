@@ -13,7 +13,7 @@ import {
   DAY_OPTIONS,
   SESSION_MINUTES,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas/pendaftaran-schema"
+} from "@/features/pendaftaran/schemas"
 
 /* Langkah 3 · Jadwal Belajar */
 function StepJadwalBelajar() {

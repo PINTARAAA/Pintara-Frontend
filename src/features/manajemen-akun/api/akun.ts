@@ -1,11 +1,11 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import {
   studentDirectory,
   tutorDirectory,
   type AccountStatus,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
 
 /*
  * Manajemen Akun · Figma PINTARA → UI Screen → Pengelola LBB →

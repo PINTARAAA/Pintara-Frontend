@@ -1,8 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
 import { isAfter, isSameMonth, startOfMonth, subMonths } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
-import { addNotification } from "@/features/notifikasi/api/notifikasi"
+import { assertMockAllowed, delay } from "@/features/dashboard/api"
+import { addNotification } from "@/features/notifikasi/api"
 import {
   finalizeReadySessions,
   isReadyForFinal,

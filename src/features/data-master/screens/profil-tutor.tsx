@@ -12,13 +12,13 @@ import {
   SERVICE_RADIUS_KM,
   setTutorStatus,
   tutorQuery,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
 import {
   InfoCard,
   ProfileHeader,
   ProfileMenu,
   StatusToggle,
-} from "@/features/data-master/components/profile-parts"
+} from "@/features/data-master/components"
 import { formatRupiah } from "@/lib/format/currency"
 
 /*

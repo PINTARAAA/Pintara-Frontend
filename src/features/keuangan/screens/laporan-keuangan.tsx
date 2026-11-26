@@ -19,14 +19,15 @@ import {
   ListItem,
   TopAppBarButton,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { monthKey } from "@/features/keuangan/api/honor"
+import { DashboardList } from "@/features/dashboard/components"
 import {
+  monthKey,
   financeSummaryQuery,
   type FinanceSummary,
-} from "@/features/keuangan/api/laporan"
-import { UnduhLaporanSheet } from "@/features/keuangan/components/unduh-laporan-sheet"
-import { parseMonth } from "@/features/keuangan/lib/month"
+} from "@/features/keuangan/api"
+
+import { UnduhLaporanSheet } from "@/features/keuangan/components"
+import { parseMonth } from "@/features/keuangan/lib"
 import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
 import { cn } from "@/lib/styles/cn"
 

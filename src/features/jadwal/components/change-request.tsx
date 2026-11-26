@@ -10,9 +10,9 @@ import {
   formatTimeSlot,
   WEEKDAYS,
   type ChangeRequest,
-} from "@/features/jadwal/api/jadwal"
-import { formatScope } from "@/features/jadwal/lib/format"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+} from "@/features/jadwal/api"
+import { formatScope } from "@/features/jadwal/lib"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatDateTime } from "@/lib/format/date"
 
 /* Kartu "Ringkasan pengajuan": Dari · Menjadi · Berlaku (label 104px) */

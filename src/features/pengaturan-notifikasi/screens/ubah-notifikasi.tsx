@@ -34,7 +34,7 @@ import {
   type Channel,
   type NotificationSetting,
   type Timing,
-} from "@/features/pengaturan-notifikasi/api/pengaturan-notifikasi"
+} from "@/features/pengaturan-notifikasi/api"
 
 /*
  * P12 · Ubah Pengaturan Notifikasi · Figma "Pengaturan Notifikasi / Ubah

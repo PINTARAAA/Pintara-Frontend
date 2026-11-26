@@ -4,18 +4,20 @@ import { BookOpenIcon, CalendarIcon } from "lucide-react"
 import { Link } from "react-router"
 
 import { TabScreen, DataState, ListItem, Skeleton } from "@/components"
-import { tutorDashboardQuery } from "@/features/dashboard/api/tutor-dashboard"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
-import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton"
+import { tutorDashboardQuery } from "@/features/dashboard/api"
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import {
+  DashboardSkeleton,
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { EmptyNote } from "@/features/dashboard/components/empty-note"
-import { HeroCard, HeroCardRow } from "@/features/dashboard/components/hero-card"
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { TaskList } from "@/features/dashboard/components/task-list"
+  EmptyNote,
+  HeroCard,
+  HeroCardRow,
+  InitialsAvatar,
+  NotificationButton,
+  TaskList,
+} from "@/features/dashboard/components"
+
 import {
   formatGreeting,
   formatSessionTime,

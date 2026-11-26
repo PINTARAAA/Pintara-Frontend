@@ -1,4 +1,4 @@
-import type { LoginInput } from "@/features/auth/schemas/login-schema"
+import type { LoginInput } from "@/features/auth/schemas"
 import type { AuthUser } from "@/features/auth/types"
 
 /*

@@ -8,13 +8,13 @@ import {
   NotFoundError,
   setStudentStatus,
   studentQuery,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
 import {
   InfoCard,
   ProfileHeader,
   ProfileMenu,
   StatusToggle,
-} from "@/features/data-master/components/profile-parts"
+} from "@/features/data-master/components"
 
 /*
  * P9 · Profil Siswa · Figma "Data Siswa / Profil".

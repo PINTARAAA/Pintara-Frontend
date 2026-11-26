@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 
 import type { NavItem } from "@/components"
-import type { Role } from "@/features/auth/types"
+import type { Role } from "@/features/auth"
 export type { Role }
 
 export const ROLE_NAV: Record<Role, { main: NavItem[]; utility: NavItem[] }> = {

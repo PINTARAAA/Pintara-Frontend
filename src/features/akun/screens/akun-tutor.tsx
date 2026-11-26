@@ -8,13 +8,16 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import { tutorAccountQuery } from "@/features/akun/api/akun"
-import { AccountHelp } from "@/features/akun/components/account-help"
-import { AccountProfile } from "@/features/akun/components/account-profile"
-import { DashboardSection } from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { tutorAccountQuery } from "@/features/akun/api"
+import { AccountHelp, AccountProfile } from "@/features/akun/components"
+
+import {
+  DashboardSection,
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatRupiah } from "@/lib/format/currency"
 
 /*

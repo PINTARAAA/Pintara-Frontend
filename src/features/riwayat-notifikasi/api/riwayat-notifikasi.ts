@@ -8,11 +8,11 @@ import {
   subMonths,
 } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import {
   CHANNEL_LABEL,
   type Channel,
-} from "@/features/pengaturan-notifikasi/api/pengaturan-notifikasi"
+} from "@/features/pengaturan-notifikasi/api"
 
 /*
  * Riwayat Notifikasi · Figma PINTARA → UI Screen → Pengelola LBB →

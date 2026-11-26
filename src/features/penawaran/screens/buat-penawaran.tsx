@@ -20,10 +20,10 @@ import {
   offerQuery,
   sendOffer,
   type OfferDraft,
-} from "@/features/penawaran/api/penawaran"
-import { OfferSummaryCard } from "@/features/penawaran/components/offer-summary"
-import { firstName } from "@/features/penawaran/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api/verifikasi"
+} from "@/features/penawaran/api"
+import { OfferSummaryCard } from "@/features/penawaran/components"
+import { firstName } from "@/features/penawaran/lib"
+import { NotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Buat Penawaran · Figma "Penawaran / Buat penawaran" dan

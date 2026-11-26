@@ -22,7 +22,7 @@ import {
   RadioGroupItem,
   toast,
 } from "@/components"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   billQuery,
   createPayment,
@@ -31,8 +31,8 @@ import {
   statusOf,
   type Bill,
   type PaymentResult,
-} from "@/features/tagihan/api/tagihan"
-import { formatPeriod } from "@/features/tagihan/lib/format"
+} from "@/features/tagihan/api"
+import { formatPeriod } from "@/features/tagihan/lib"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDate, formatDateTime } from "@/lib/format/date"
 

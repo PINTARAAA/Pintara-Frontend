@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import { addMonths, format, setDate, startOfMonth, subMonths } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, delay } from "@/features/dashboard/api"
 import { getHonorRecap, monthKey } from "@/features/keuangan/api/honor"
 import type { StatusOf } from "@/lib/constants/status"
 
@@ -360,16 +360,16 @@ export const studentBillsQuery = (month?: Date) =>
 
 /* ---------- Rincian satu tagihan ---------- */
 
-export class NotFoundError extends Error {
+export class ReportNotFoundError extends Error {
   constructor() {
     super("Tagihan tidak ditemukan.")
-    this.name = "NotFoundError"
+    this.name = "ReportNotFoundError"
   }
 }
 
 function findBill(id: string) {
   const bill = bills.find((b) => b.id === id)
-  if (!bill) throw new NotFoundError()
+  if (!bill) throw new ReportNotFoundError()
   return bill
 }
 

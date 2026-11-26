@@ -20,11 +20,11 @@ import {
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
+} from "@/features/dashboard/components"
 import type {
   AppNotification,
   NotificationList,
-} from "@/features/notifikasi/api/notifikasi"
+} from "@/features/notifikasi/api"
 
 /*
  * Kerangka layar Notifikasi (W9 · T7)

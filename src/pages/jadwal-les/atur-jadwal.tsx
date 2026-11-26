@@ -1,4 +1,4 @@
-import { AturJadwal } from "@/features/jadwal-les/screens/atur-jadwal"
+import { AturJadwal } from "@/features/jadwal-les"
 
 export default function AturJadwalRoute() {
   return <AturJadwal />

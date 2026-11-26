@@ -8,15 +8,19 @@ import {
   Skeleton,
   StackedProgressBar,
 } from "@/components"
-import { pengelolaDashboardQuery } from "@/features/dashboard/api/pengelola-dashboard"
-import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton"
-import { DashboardSection } from "@/features/dashboard/components/dashboard-section"
-import { HeroCard, HeroCardRow } from "@/features/dashboard/components/hero-card"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { TaskList } from "@/features/dashboard/components/task-list"
+import { pengelolaDashboardQuery } from "@/features/dashboard/api"
+import {
+  DashboardSkeleton,
+  DashboardSection,
+  HeroCard,
+  HeroCardRow,
+  NotificationButton,
+  TaskList,
+} from "@/features/dashboard/components"
+
 import { formatRupiahCompact } from "@/lib/format/currency"
 import { formatDayMonth, formatGreeting, formatWeekdayDate } from "@/lib/format/date"
-import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 function PengelolaDashboard() {
   const query = useQuery(pengelolaDashboardQuery())

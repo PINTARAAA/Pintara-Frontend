@@ -18,9 +18,9 @@ import {
   NotFoundError,
   routineQuery,
   WEEKDAYS,
-} from "@/features/jadwal/api/jadwal"
-import { formatChangeTitle } from "@/features/jadwal/lib/format"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+} from "@/features/jadwal/api"
+import { formatChangeTitle } from "@/features/jadwal/lib"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatDate } from "@/lib/format/date"
 
 /*

@@ -21,18 +21,17 @@ import {
   TimePicker,
   toast,
 } from "@/components"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   AttendanceError,
   NotFoundError,
   type TutorSession,
-} from "@/features/presensi/api/presensi"
-import {
   BUDI,
   objectionQuery,
   reviewObjection,
-} from "@/features/presensi/api/verifikasi-presensi"
-import { formatLongDate } from "@/features/presensi/lib/format"
+} from "@/features/presensi/api"
+
+import { formatLongDate } from "@/features/presensi/lib"
 import { formatTimeRange } from "@/lib/format/date"
 
 /*

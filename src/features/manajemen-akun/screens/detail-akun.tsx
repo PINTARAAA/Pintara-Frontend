@@ -23,12 +23,9 @@ import {
   SheetTitle,
   toast,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { initialsOf } from "@/features/data-master/api/data-master"
-import {
-  InfoCard,
-  ProfileHeader,
-} from "@/features/data-master/components/profile-parts"
+import { DashboardList } from "@/features/dashboard/components"
+import { initialsOf } from "@/features/data-master/api"
+import { InfoCard, ProfileHeader } from "@/features/data-master/components"
 import {
   accountQuery,
   linkableStudentsQuery,
@@ -38,7 +35,7 @@ import {
   ROLE_LABEL,
   setAccountStatus,
   type AccountDetail,
-} from "@/features/manajemen-akun/api/akun"
+} from "@/features/manajemen-akun/api"
 import { formatRelativeDay } from "@/lib/format/date"
 
 /*

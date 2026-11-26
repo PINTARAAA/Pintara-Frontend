@@ -1,4 +1,4 @@
-import { JadwalLes } from "@/features/jadwal/screens/jadwal-les"
+import { JadwalLes } from "@/features/jadwal"
 
 export default function JadwalLesRoute() {
   return <JadwalLes />

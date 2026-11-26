@@ -1,4 +1,4 @@
-import { TagihanSiswa } from "@/features/keuangan/screens/tagihan-siswa"
+import { TagihanSiswa } from "@/features/keuangan"
 
 export default function TagihanSiswaRoute() {
   return <TagihanSiswa />

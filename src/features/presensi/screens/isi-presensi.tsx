@@ -27,7 +27,7 @@ import {
   TimePicker,
   toast,
 } from "@/components"
-import { FormGroup, SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { FormGroup, SummaryRow } from "@/features/pendaftaran/components"
 import {
   AttendanceError,
   DOC_ACCEPT,
@@ -38,12 +38,12 @@ import {
   validateDocumentation,
   type AttendanceInput,
   type TutorSession,
-} from "@/features/presensi/api/presensi"
+} from "@/features/presensi/api"
 import {
   firstName,
   formatLongDate,
   sessionTitle,
-} from "@/features/presensi/lib/format"
+} from "@/features/presensi/lib"
 import { formatDateTime, formatTimeRange } from "@/lib/format/date"
 
 /*

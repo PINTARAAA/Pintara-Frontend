@@ -30,17 +30,17 @@ import {
 import {
   honorDetailQuery,
   METHOD_LABEL,
-  NotFoundError,
+  HonorNotFoundError,
   recordHonorPayment,
   type HonorDetail,
   type PaymentMethod,
-} from "@/features/keuangan/api/honor"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+} from "@/features/keuangan/api"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   DOC_ACCEPT,
   uploadDocumentation,
   validateDocumentation,
-} from "@/features/presensi/api/presensi"
+} from "@/features/presensi/api"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDate } from "@/lib/format/date"
 
@@ -84,7 +84,7 @@ function CatatPembayaranHonor() {
     <DetailScreen title="Catat Pembayaran">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat honor…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !(query.error instanceof HonorNotFoundError) ? (
         <DataState
           state="error"
           title="Honor gagal dimuat"

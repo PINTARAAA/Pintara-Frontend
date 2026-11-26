@@ -29,7 +29,7 @@ import {
   toast,
   TopAppBarButton,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
+import { DashboardList } from "@/features/dashboard/components"
 import {
   calculateHonor,
   honorRecapQuery,
@@ -37,11 +37,15 @@ import {
   monthKey,
   type HonorRecap,
   type TutorHonor,
-} from "@/features/keuangan/api/honor"
-import { availableMonths } from "@/features/keuangan/api/laporan"
-import { StudentBillsPanel } from "@/features/keuangan/components/student-bills-panel"
-import { UnduhLaporanSheet } from "@/features/keuangan/components/unduh-laporan-sheet"
-import { parseMonth } from "@/features/keuangan/lib/month"
+  availableMonths,
+} from "@/features/keuangan/api"
+
+import {
+  StudentBillsPanel,
+  UnduhLaporanSheet,
+} from "@/features/keuangan/components"
+
+import { parseMonth } from "@/features/keuangan/lib"
 import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
 import { formatDayMonth } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"

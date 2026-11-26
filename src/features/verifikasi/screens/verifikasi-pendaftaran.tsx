@@ -20,18 +20,21 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
+import {
+  DashboardList,
+  NotificationButton,
+} from "@/features/dashboard/components"
+
 import {
   gradeLabel,
   registrationsQuery,
   type Level,
   type PengelolaRegistration,
   type RegistrationStatus,
-} from "@/features/verifikasi/api/verifikasi"
-import { formatDaysAgo } from "@/features/verifikasi/lib/format"
+} from "@/features/verifikasi/api"
+import { formatDaysAgo } from "@/features/verifikasi/lib"
 import { cn } from "@/lib/styles/cn"
-import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 /*
  * P2 · Verifikasi Pendaftaran (tab pengelola) · Figma "Verifikasi

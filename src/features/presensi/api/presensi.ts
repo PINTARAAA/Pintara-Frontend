@@ -15,7 +15,7 @@ import {
   startOfDay,
 } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import type { StatusOf } from "@/lib/constants/status"
 
 /*

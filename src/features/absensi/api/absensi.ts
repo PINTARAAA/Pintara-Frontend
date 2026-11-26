@@ -11,9 +11,9 @@ import {
   subWeeks,
 } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
-import { STUDENTS } from "@/features/dashboard/api/wali-dashboard"
-import { countUpcomingSessions } from "@/features/jadwal/api/jadwal"
+import { assertMockAllowed, delay, STUDENTS } from "@/features/dashboard/api"
+
+import { countUpcomingSessions } from "@/features/jadwal/api"
 import type { StatusOf } from "@/lib/constants/status"
 
 /*

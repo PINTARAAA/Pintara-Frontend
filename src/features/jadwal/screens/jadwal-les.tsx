@@ -7,20 +7,19 @@ import { TabScreen, DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { EmptyNote } from "@/features/dashboard/components/empty-note"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
-import { StudentSwitcher } from "@/features/dashboard/components/student-switcher"
+  EmptyNote,
+  NotificationButton,
+  StudentSwitcher,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
+
 import {
   formatTimeSlot,
   waliScheduleQuery,
   WEEKDAYS,
-} from "@/features/jadwal/api/jadwal"
-import {
-  CHANGE_STATUS_LABEL,
-  formatChangeTitle,
-} from "@/features/jadwal/lib/format"
+} from "@/features/jadwal/api"
+import { CHANGE_STATUS_LABEL, formatChangeTitle } from "@/features/jadwal/lib"
 import {
   formatDateRange,
   formatDayMonth,

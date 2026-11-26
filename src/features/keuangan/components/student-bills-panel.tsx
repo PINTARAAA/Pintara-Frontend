@@ -12,13 +12,14 @@ import {
   ListItem,
   StackedProgressBar,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { monthKey } from "@/features/keuangan/api/honor"
+import { DashboardList } from "@/features/dashboard/components"
 import {
+  monthKey,
   studentBillsQuery,
   type StudentBillList,
   type StudentBillRow,
-} from "@/features/keuangan/api/laporan"
+} from "@/features/keuangan/api"
+
 import { formatRupiah, formatRupiahCompact } from "@/lib/format/currency"
 import { formatDayMonth } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"

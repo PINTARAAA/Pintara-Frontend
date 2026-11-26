@@ -7,14 +7,15 @@ import { TabScreen, DataState, FilterPill, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useTutorUnreadNotifications } from "@/features/notifikasi/api/notifikasi-tutor"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import {
   tutorScheduleQuery,
   type TutorScheduleDay,
-} from "@/features/jadwal/api/jadwal-tutor"
-import { formatWeekRange, joinDays } from "@/features/jadwal/lib/format"
+} from "@/features/jadwal/api"
+import { formatWeekRange, joinDays } from "@/features/jadwal/lib"
 import { formatTimeRange, formatWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

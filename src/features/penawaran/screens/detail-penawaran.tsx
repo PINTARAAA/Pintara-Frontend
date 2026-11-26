@@ -24,13 +24,13 @@ import {
   offerQuery,
   recordAccepted,
   type Offer,
-} from "@/features/penawaran/api/penawaran"
+} from "@/features/penawaran/api"
 import {
   OfferSummaryCard,
   ResultOfferCard,
-} from "@/features/penawaran/components/offer-summary"
-import { firstName } from "@/features/penawaran/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api/verifikasi"
+} from "@/features/penawaran/components"
+import { firstName } from "@/features/penawaran/lib"
+import { NotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Detail Penawaran · Figma "Penawaran / Detail - Menunggu" dan

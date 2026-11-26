@@ -16,13 +16,13 @@ import {
   TabsTrigger,
   TopAppBarButton,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
+import { DashboardList } from "@/features/dashboard/components"
 import {
   accountsQuery,
   type AccountList,
   type AccountRole,
   type AccountRow,
-} from "@/features/manajemen-akun/api/akun"
+} from "@/features/manajemen-akun/api"
 import { cn } from "@/lib/styles/cn"
 
 /*

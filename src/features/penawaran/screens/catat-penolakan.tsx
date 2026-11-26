@@ -27,10 +27,10 @@ import {
   recordDeclined,
   type DeclineReason,
   type Offer,
-} from "@/features/penawaran/api/penawaran"
-import { ResultOfferCard } from "@/features/penawaran/components/offer-summary"
-import { firstName } from "@/features/penawaran/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api/verifikasi"
+} from "@/features/penawaran/api"
+import { ResultOfferCard } from "@/features/penawaran/components"
+import { firstName } from "@/features/penawaran/lib"
+import { NotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Catat Penolakan · Figma "Penawaran / Catat ditolak" dan

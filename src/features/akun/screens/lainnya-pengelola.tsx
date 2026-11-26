@@ -11,15 +11,16 @@ import {
 import { Link } from "react-router"
 
 import { TabScreen, DataState, ListItem } from "@/components"
-import { pengelolaMenuQuery } from "@/features/akun/api/akun"
-import { LogoutItem } from "@/features/akun/components/account-help"
-import { AccountProfile } from "@/features/akun/components/account-profile"
+import { pengelolaMenuQuery } from "@/features/akun/api"
+import { LogoutItem, AccountProfile } from "@/features/akun/components"
+
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api/notifikasi-pengelola"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
 /*
  * P1 · Menu Lainnya (pengelola) · Figma "Lainnya / Pengelola"

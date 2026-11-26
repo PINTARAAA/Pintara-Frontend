@@ -16,13 +16,13 @@ import {
   Timeline,
   TimelineItem,
 } from "@/components"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   NotFoundError,
   tutorSessionQuery,
   type TutorSession,
-} from "@/features/presensi/api/presensi"
-import { formatLongDate, sessionTitle } from "@/features/presensi/lib/format"
+} from "@/features/presensi/api"
+import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
 import { formatTimeRange } from "@/lib/format/date"
 
 /*

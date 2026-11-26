@@ -18,14 +18,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { parseMonth } from "@/features/keuangan/lib/month"
-import { firstName } from "@/features/presensi/lib/format"
+import { DashboardList } from "@/features/dashboard/components"
+import { parseMonth } from "@/features/keuangan/lib"
+import { firstName } from "@/features/presensi/lib"
 import {
   lessonRecapQuery,
   type LessonRecap,
   type RecapSession,
-} from "@/features/rekap-les/api/rekap-les"
+} from "@/features/rekap-les/api"
 import { formatShortWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

@@ -1,4 +1,4 @@
-import { RiwayatNotifikasi } from "@/features/riwayat-notifikasi/screens/riwayat-notifikasi"
+import { RiwayatNotifikasi } from "@/features/riwayat-notifikasi"
 
 export default function RiwayatNotifikasiRoute() {
   return <RiwayatNotifikasi />

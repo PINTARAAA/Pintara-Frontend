@@ -20,8 +20,8 @@ import {
   sessionQuery,
   submitObjection,
   type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import { formatSessionTitle } from "@/features/absensi/lib/format"
+} from "@/features/absensi/api"
+import { formatSessionTitle } from "@/features/absensi/lib"
 import { formatTimeRange } from "@/lib/format/date"
 
 /*

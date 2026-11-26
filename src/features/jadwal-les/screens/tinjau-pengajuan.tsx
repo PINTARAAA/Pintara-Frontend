@@ -17,7 +17,7 @@ import {
   DataState,
   toast,
 } from "@/components"
-import { NotFoundError } from "@/features/jadwal/api/jadwal"
+import { NotFoundError } from "@/features/jadwal/api"
 import {
   changeReviewQuery,
   formatRange,
@@ -25,9 +25,9 @@ import {
   ScheduleConflictError,
   suggestFreeSlot,
   type ChangeReview,
-} from "@/features/jadwal-les/api/jadwal-les"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { firstName } from "@/features/penawaran/lib/format"
+} from "@/features/jadwal-les/api"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { firstName } from "@/features/penawaran/lib"
 
 /*
  * P5 · Tinjau Pengajuan Perubahan · Figma "Atur Jadwal / Tinjau

@@ -1,4 +1,4 @@
-import { LaporanKeuangan } from "@/features/keuangan/screens/laporan-keuangan"
+import { LaporanKeuangan } from "@/features/keuangan"
 
 export default function LaporanKeuanganRoute() {
   return <LaporanKeuangan />

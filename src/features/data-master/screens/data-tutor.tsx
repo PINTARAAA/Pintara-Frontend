@@ -9,14 +9,14 @@ import {
   ListItem,
   TopAppBarButton,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
+import { DashboardList } from "@/features/dashboard/components"
 import {
   formatLevels,
   TUTOR_SUBJECTS,
   tutorsQuery,
-} from "@/features/data-master/api/data-master"
-import { MasterFilters } from "@/features/data-master/components/master-filters"
-import { useMasterFilter } from "@/features/data-master/hooks/use-master-filter"
+} from "@/features/data-master/api"
+import { MasterFilters } from "@/features/data-master/components"
+import { useMasterFilter } from "@/features/data-master/hooks"
 import { cn } from "@/lib/styles/cn"
 
 /*

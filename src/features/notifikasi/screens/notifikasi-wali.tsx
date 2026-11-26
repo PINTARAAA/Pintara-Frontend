@@ -13,8 +13,8 @@ import {
   markRead,
   notificationsQuery,
   type NotificationKind,
-} from "@/features/notifikasi/api/notifikasi"
-import { NotificationScreen } from "@/features/notifikasi/components/notification-screen"
+} from "@/features/notifikasi/api"
+import { NotificationScreen } from "@/features/notifikasi/components"
 
 /*
  * W9 · Notifikasi (wali) · Figma "Notifikasi / Wali" dan "- Kosong"

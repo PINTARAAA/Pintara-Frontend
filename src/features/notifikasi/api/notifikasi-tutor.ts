@@ -9,14 +9,14 @@ import {
 } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
-import { tutorSessionsOn } from "@/features/jadwal/api/jadwal-tutor"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
+import { tutorSessionsOn } from "@/features/jadwal/api"
 import type {
   AppNotification,
   NotificationList,
 } from "@/features/notifikasi/api/notifikasi"
-import { snapshotTutorSessions } from "@/features/presensi/api/presensi"
-import { firstName } from "@/features/presensi/lib/format"
+import { snapshotTutorSessions } from "@/features/presensi/api"
+import { firstName } from "@/features/presensi/lib"
 import { formatRupiah } from "@/lib/format/currency"
 
 /*

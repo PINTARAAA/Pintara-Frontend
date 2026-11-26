@@ -4,11 +4,11 @@ import { InfoIcon, LogOutIcon, PhoneIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
 import { ConfirmDialog, ListItem } from "@/components"
-import { logout, type LbbContact } from "@/features/akun/api/akun"
+import { logout, type LbbContact } from "@/features/akun/api"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
+} from "@/features/dashboard/components"
 
 /*
  * Bagian bawah layar Akun (W8 · T6): Bantuan (Hubungi Pengelola LBB via

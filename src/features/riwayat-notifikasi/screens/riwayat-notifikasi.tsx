@@ -17,8 +17,8 @@ import {
   ListItem,
   toast,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { CHANNEL_LABEL } from "@/features/pengaturan-notifikasi/api/pengaturan-notifikasi"
+import { DashboardList } from "@/features/dashboard/components"
+import { CHANNEL_LABEL } from "@/features/pengaturan-notifikasi/api"
 import {
   KIND_LABEL,
   notificationLogsQuery,
@@ -29,7 +29,7 @@ import {
   type NotificationKind,
   type NotificationLog,
   type Period,
-} from "@/features/riwayat-notifikasi/api/riwayat-notifikasi"
+} from "@/features/riwayat-notifikasi/api"
 import { formatDayMonth } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

@@ -11,14 +11,14 @@ import {
   DataState,
   ListItem,
 } from "@/components"
-import { waliAccountQuery } from "@/features/akun/api/akun"
-import { AccountHelp } from "@/features/akun/components/account-help"
-import { AccountProfile } from "@/features/akun/components/account-profile"
+import { waliAccountQuery } from "@/features/akun/api"
+import { AccountHelp, AccountProfile } from "@/features/akun/components"
+
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+} from "@/features/dashboard/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
 
 /*
  * W8 · Akun (wali) · Figma "Akun / Wali" dan "Akun / Wali - Konfirmasi keluar"

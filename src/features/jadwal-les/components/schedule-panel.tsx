@@ -6,13 +6,10 @@ import { DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { formatChangeTitle } from "@/features/jadwal/lib/format"
-import {
-  formatSessions,
-  type ScheduleBoard,
-} from "@/features/jadwal-les/api/jadwal-les"
-import { formatDaysAgo } from "@/features/verifikasi/lib/format"
+} from "@/features/dashboard/components"
+import { formatChangeTitle } from "@/features/jadwal/lib"
+import { formatSessions, type ScheduleBoard } from "@/features/jadwal-les/api"
+import { formatDaysAgo } from "@/features/verifikasi/lib"
 import { formatDayMonth } from "@/lib/format/date"
 
 /*

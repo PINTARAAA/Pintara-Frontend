@@ -1,8 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router"
 
 import { AuthLayout } from "@/components"
-import { LoginForm } from "@/features/auth/components/login-form"
-import type { LoginNotice } from "@/features/auth/types"
+import { LoginForm, type LoginNotice } from "@/features/auth"
 
 /*
  * /masuk · Figma PINTARA → UI Screen → Umum → 00 · Autentikasi

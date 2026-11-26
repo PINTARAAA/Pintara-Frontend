@@ -1,4 +1,4 @@
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
+import { InitialsAvatar } from "@/features/dashboard/components"
 import { cn } from "@/lib/styles/cn"
 
 /*

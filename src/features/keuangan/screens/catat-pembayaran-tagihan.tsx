@@ -28,17 +28,17 @@ import {
   billRemaining,
   billStatus,
   MANUAL_METHODS,
-  NotFoundError,
+  ReportNotFoundError,
   recordManualPayment,
   studentBillQuery,
   type ManualMethod,
   type StudentBill,
-} from "@/features/keuangan/api/laporan"
+} from "@/features/keuangan/api"
 import {
   DOC_ACCEPT,
   uploadDocumentation,
   validateDocumentation,
-} from "@/features/presensi/api/presensi"
+} from "@/features/presensi/api"
 import { formatRupiah } from "@/lib/format/currency"
 
 /*
@@ -80,7 +80,7 @@ function CatatPembayaranTagihan() {
     <DetailScreen title="Catat Pembayaran">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat tagihan…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !(query.error instanceof ReportNotFoundError) ? (
         <DataState
           state="error"
           title="Tagihan gagal dimuat"

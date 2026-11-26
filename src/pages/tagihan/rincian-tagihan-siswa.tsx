@@ -1,4 +1,4 @@
-import { RincianTagihan } from "@/features/keuangan/screens/rincian-tagihan"
+import { RincianTagihan } from "@/features/keuangan"
 
 export default function RincianTagihanRoute() {
   return <RincianTagihan />

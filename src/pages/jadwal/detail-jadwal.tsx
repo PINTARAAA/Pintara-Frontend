@@ -1,4 +1,4 @@
-import { DetailJadwal } from "@/features/jadwal/screens/detail-jadwal"
+import { DetailJadwal } from "@/features/jadwal"
 
 export default function DetailJadwalRoute() {
   return <DetailJadwal />

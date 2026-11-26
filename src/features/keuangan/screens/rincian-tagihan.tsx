@@ -9,10 +9,10 @@ import {
   billRemaining,
   billStatus,
   billTotal,
-  NotFoundError,
+  ReportNotFoundError,
   studentBillQuery,
   type BillPayment,
-} from "@/features/keuangan/api/laporan"
+} from "@/features/keuangan/api"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDayMonth } from "@/lib/format/date"
 
@@ -96,7 +96,7 @@ function RincianTagihan() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat rincian tagihan…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        query.error instanceof ReportNotFoundError ? (
           <DataState
             state="empty"
             title="Tagihan tidak ditemukan"

@@ -16,18 +16,21 @@ import {
   pendaftaranDefaultsQuery,
   submitPendaftaran,
   type PendaftaranResult,
-} from "@/features/pendaftaran/api/pendaftaran"
-import { PendaftaranBerhasil } from "@/features/pendaftaran/components/pendaftaran-berhasil"
-import { StepDataSiswa } from "@/features/pendaftaran/components/step-data-siswa"
-import { StepJadwalBelajar } from "@/features/pendaftaran/components/step-jadwal-belajar"
-import { StepKebutuhanBelajar } from "@/features/pendaftaran/components/step-kebutuhan-belajar"
-import { StepRingkasan } from "@/features/pendaftaran/components/step-ringkasan"
+} from "@/features/pendaftaran/api"
+import {
+  PendaftaranBerhasil,
+  StepDataSiswa,
+  StepJadwalBelajar,
+  StepKebutuhanBelajar,
+  StepRingkasan,
+} from "@/features/pendaftaran/components"
+
 import {
   EMPTY_PENDAFTARAN,
   pendaftaranSchema,
   STEP_FIELDS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas/pendaftaran-schema"
+} from "@/features/pendaftaran/schemas"
 
 /*
  * W2 · Pendaftaran Siswa · Figma PINTARA → UI Screen → Wali Murid

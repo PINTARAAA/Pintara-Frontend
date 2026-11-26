@@ -13,14 +13,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components"
+import { attendanceQuery, type AttendanceSession } from "@/features/absensi/api"
+import { firstName } from "@/features/absensi/lib"
 import {
-  attendanceQuery,
-  type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import { firstName } from "@/features/absensi/lib/format"
-import { DashboardList } from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
+  DashboardList,
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
 import { formatShortWeekdayDate, formatWeekdayDate } from "@/lib/format/date"
 
 /*

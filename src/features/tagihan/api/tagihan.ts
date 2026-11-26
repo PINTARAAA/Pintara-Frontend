@@ -1,8 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
-import { addNotification } from "@/features/notifikasi/api/notifikasi"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
+import { addNotification } from "@/features/notifikasi/api"
 import type { StatusOf } from "@/lib/constants/status"
 import { formatRupiah } from "@/lib/format/currency"
 

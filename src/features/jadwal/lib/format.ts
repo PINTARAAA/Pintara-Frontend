@@ -5,7 +5,7 @@ import {
   WEEKDAYS,
   type ChangeRequest,
   type ChangeRequestStatus,
-} from "@/features/jadwal/api/jadwal"
+} from "@/features/jadwal/api"
 
 /* Format tampilan pengajuan perubahan jadwal (W4) */
 

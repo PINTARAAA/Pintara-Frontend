@@ -10,13 +10,13 @@ import {
   subMonths,
 } from "date-fns"
 
-import { assertMockAllowed, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, delay } from "@/features/dashboard/api"
 import {
   DAYS,
   lessonDirectory,
   studentDirectory,
   tutorDirectory,
-} from "@/features/data-master/api/data-master"
+} from "@/features/data-master/api"
 import type { StatusOf } from "@/lib/constants/status"
 
 /*

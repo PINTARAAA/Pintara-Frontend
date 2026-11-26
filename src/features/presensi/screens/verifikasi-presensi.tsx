@@ -28,14 +28,14 @@ import {
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
+} from "@/features/dashboard/components"
 import {
   BUDI,
   finalizeAttendance,
   finalOverviewQuery,
   type FinalOverview,
-} from "@/features/presensi/api/verifikasi-presensi"
-import { firstName, formatWeekdayShort } from "@/features/presensi/lib/format"
+} from "@/features/presensi/api"
+import { firstName, formatWeekdayShort } from "@/features/presensi/lib"
 import { cn } from "@/lib/styles/cn"
 
 /*

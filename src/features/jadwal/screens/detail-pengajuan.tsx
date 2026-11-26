@@ -9,11 +9,11 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import { changeRequestQuery, NotFoundError } from "@/features/jadwal/api/jadwal"
+import { changeRequestQuery, NotFoundError } from "@/features/jadwal/api"
 import {
   ChangeProgressCard,
   ChangeSummaryCard,
-} from "@/features/jadwal/components/change-request"
+} from "@/features/jadwal/components"
 
 /*
  * W4 · Detail pengajuan perubahan (dibuka dari "Pengajuan perubahan" di

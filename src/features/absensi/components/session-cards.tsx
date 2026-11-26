@@ -7,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components"
-import type { AttendanceSession } from "@/features/absensi/api/absensi"
-import { RATING_LABELS } from "@/features/absensi/lib/format"
+import type { AttendanceSession } from "@/features/absensi/api"
+import { RATING_LABELS } from "@/features/absensi/lib"
 import { formatDateTime } from "@/lib/format/date"
 
 /*

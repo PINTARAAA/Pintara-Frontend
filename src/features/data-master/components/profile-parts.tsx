@@ -22,9 +22,9 @@ import {
 import {
   ActiveScheduleError,
   type AccountStatus,
-} from "@/features/data-master/api/data-master"
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+} from "@/features/data-master/api"
+import { InitialsAvatar } from "@/features/dashboard/components"
+import { SummaryRow } from "@/features/pendaftaran/components"
 
 /*
  * Potongan layar Profil Tutor / Profil Siswa (P9): kartu identitas (avatar

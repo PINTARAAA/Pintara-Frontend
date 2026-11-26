@@ -1,7 +1,7 @@
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import { daysUntilDue, type Bill } from "@/features/tagihan/api/tagihan"
+import { daysUntilDue, type Bill } from "@/features/tagihan/api"
 import { formatDate, formatDayMonth } from "@/lib/format/date"
 
 /* "November 2026" */

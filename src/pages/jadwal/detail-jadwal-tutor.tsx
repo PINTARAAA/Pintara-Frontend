@@ -1,4 +1,4 @@
-import { DetailJadwalTutor } from "@/features/jadwal/screens/detail-jadwal-tutor"
+import { DetailJadwalTutor } from "@/features/jadwal"
 
 export default function DetailJadwalTutorRoute() {
   return <DetailJadwalTutor />

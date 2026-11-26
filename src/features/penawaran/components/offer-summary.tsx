@@ -5,13 +5,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   declineLabel,
   type Offer,
   type OfferSummary,
-} from "@/features/penawaran/api/penawaran"
-import { formatKm } from "@/features/penawaran/lib/format"
+} from "@/features/penawaran/api"
+import { formatKm } from "@/features/penawaran/lib"
 import { formatRupiah } from "@/lib/format/currency"
 
 /* Kartu "Ringkasan penawaran" (P4 · Buat penawaran & Detail), label 104px */

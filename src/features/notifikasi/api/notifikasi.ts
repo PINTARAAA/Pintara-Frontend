@@ -2,8 +2,8 @@ import { queryOptions, useQuery } from "@tanstack/react-query"
 import { format, subHours } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
-import { getAttendance } from "@/features/absensi/api/absensi"
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { getAttendance } from "@/features/absensi/api"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 
 /*
  * Notifikasi Wali Murid · Figma PINTARA → UI Screen → Wali Murid → W9

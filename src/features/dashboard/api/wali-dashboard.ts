@@ -12,7 +12,7 @@ import type { DashboardTask, Person } from "@/features/dashboard/api/types"
  */
 export type WaliStudent = Person & { id: string; grade: string }
 
-export type WaliDashboard = {
+export type WaliDashboardData = {
   parent: { name: string }
   students: WaliStudent[]
   activeStudentId: string
@@ -41,7 +41,7 @@ export const STUDENTS: WaliStudent[] = [
   { id: "s2", name: "Fikri Ramadhan", initials: "FR", grade: "Kelas 5" },
 ]
 
-export async function getWaliDashboard(studentId?: string): Promise<WaliDashboard> {
+export async function getWaliDashboard(studentId?: string): Promise<WaliDashboardData> {
   assertMockAllowed()
   await delay()
 

@@ -17,10 +17,10 @@ import {
 import {
   honorDetailQuery,
   METHOD_LABEL,
-  NotFoundError,
-} from "@/features/keuangan/api/honor"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { firstName, formatWeekdayShort } from "@/features/presensi/lib/format"
+  HonorNotFoundError,
+} from "@/features/keuangan/api"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { firstName, formatWeekdayShort } from "@/features/presensi/lib"
 import { formatRupiah } from "@/lib/format/currency"
 import { formatDate } from "@/lib/format/date"
 
@@ -63,7 +63,7 @@ function RincianHonor() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat rincian honor…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        query.error instanceof HonorNotFoundError ? (
           <DataState
             state="empty"
             title="Rincian honor tidak ditemukan"

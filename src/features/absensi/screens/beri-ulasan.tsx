@@ -22,12 +22,9 @@ import {
   sessionQuery,
   submitReview,
   type AttendanceSession,
-} from "@/features/absensi/api/absensi"
-import {
-  formatSessionTitle,
-  RATING_LABELS,
-} from "@/features/absensi/lib/format"
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
+} from "@/features/absensi/api"
+import { formatSessionTitle, RATING_LABELS } from "@/features/absensi/lib"
+import { InitialsAvatar } from "@/features/dashboard/components"
 
 /*
  * W5 · Validasi Absensi / Rating & ulasan ("Beri Ulasan")

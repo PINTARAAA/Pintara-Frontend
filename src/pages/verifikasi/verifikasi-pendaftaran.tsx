@@ -1,4 +1,4 @@
-import { VerifikasiPendaftaran } from "@/features/verifikasi/screens/verifikasi-pendaftaran"
+import { VerifikasiPendaftaran } from "@/features/verifikasi"
 
 export default function VerifikasiPendaftaranRoute() {
   return <VerifikasiPendaftaran />

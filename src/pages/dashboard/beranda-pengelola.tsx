@@ -1,4 +1,4 @@
-import { PengelolaDashboard } from "@/features/dashboard/screens/pengelola-dashboard"
+import { PengelolaDashboard } from "@/features/dashboard"
 
 export default function BerandaPengelolaRoute() {
   return <PengelolaDashboard />

@@ -23,9 +23,10 @@ import {
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
+  NotificationButton,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
 import {
   billsQuery,
   daysUntilDue,
@@ -36,8 +37,8 @@ import {
   type BillsOverview,
   type Payment,
   type PaymentStatus,
-} from "@/features/tagihan/api/tagihan"
-import { formatDue, formatMonth, formatPeriod } from "@/features/tagihan/lib/format"
+} from "@/features/tagihan/api"
+import { formatDue, formatMonth, formatPeriod } from "@/features/tagihan/lib"
 import { formatRupiah } from "@/lib/format/currency"
 import { cn } from "@/lib/styles/cn"
 

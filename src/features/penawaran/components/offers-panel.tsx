@@ -8,13 +8,13 @@ import { StatusBadge, DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
+} from "@/features/dashboard/components"
 import {
   declineLabel,
   type Offer,
   type OfferList,
-} from "@/features/penawaran/api/penawaran"
-import { firstName } from "@/features/penawaran/lib/format"
+} from "@/features/penawaran/api"
+import { firstName } from "@/features/penawaran/lib"
 import { formatDayMonth } from "@/lib/format/date"
 
 /*

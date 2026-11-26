@@ -4,7 +4,7 @@ import { id as localeId } from "date-fns/locale"
 import type {
   PengelolaRegistration,
   RejectReason,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/verifikasi/api"
 
 /* Format tampilan Verifikasi Pendaftaran (P2) */
 

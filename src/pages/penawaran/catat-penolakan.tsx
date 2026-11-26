@@ -1,4 +1,4 @@
-import { CatatPenolakan } from "@/features/penawaran/screens/catat-penolakan"
+import { CatatPenolakan } from "@/features/penawaran"
 
 export default function CatatPenolakanRoute() {
   return <CatatPenolakan />

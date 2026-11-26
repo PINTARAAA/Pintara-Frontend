@@ -1,4 +1,4 @@
-import { TutorDashboard } from "@/features/dashboard/screens/tutor-dashboard"
+import { TutorDashboard } from "@/features/dashboard"
 
 export default function BerandaTutorRoute() {
   return <TutorDashboard />

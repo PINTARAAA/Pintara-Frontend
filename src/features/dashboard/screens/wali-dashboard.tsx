@@ -10,19 +10,22 @@ import {
   ListItem,
   Skeleton,
 } from "@/components"
-import { waliDashboardQuery } from "@/features/dashboard/api/wali-dashboard"
-import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton"
-import { EmptyNote } from "@/features/dashboard/components/empty-note"
+import { waliDashboardQuery } from "@/features/dashboard/api"
 import {
+  DashboardSkeleton,
+  EmptyNote,
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
-import { HeroCard, HeroCardRow } from "@/features/dashboard/components/hero-card"
-import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
-import { NotificationButton } from "@/features/dashboard/components/notification-button"
-import { useUnreadNotifications } from "@/features/notifikasi/api/notifikasi"
-import { StudentSwitcher } from "@/features/dashboard/components/student-switcher"
-import { TaskList } from "@/features/dashboard/components/task-list"
+  HeroCard,
+  HeroCardRow,
+  InitialsAvatar,
+  NotificationButton,
+  StudentSwitcher,
+  TaskList,
+} from "@/features/dashboard/components"
+
+import { useUnreadNotifications } from "@/features/notifikasi/api"
+
 import {
   formatGreeting,
   formatSessionTime,

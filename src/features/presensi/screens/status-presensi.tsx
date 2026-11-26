@@ -15,13 +15,13 @@ import {
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
+} from "@/features/dashboard/components"
 import {
   attendanceStatusQuery,
   type AttendanceStatusOverview,
   type TutorSession,
-} from "@/features/presensi/api/presensi"
-import { formatWeekdayShort, sessionTitle } from "@/features/presensi/lib/format"
+} from "@/features/presensi/api"
+import { formatWeekdayShort, sessionTitle } from "@/features/presensi/lib"
 import { formatDayMonth } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

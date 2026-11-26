@@ -1,0 +1,1 @@
+export * from "./pendaftaran-schema"

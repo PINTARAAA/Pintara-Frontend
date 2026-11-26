@@ -1,4 +1,4 @@
-import { DetailAkun } from "@/features/manajemen-akun/screens/detail-akun"
+import { DetailAkun } from "@/features/manajemen-akun"
 
 export default function DetailAkunRoute() {
   return <DetailAkun />

@@ -33,7 +33,7 @@ import {
   TimePicker,
   toast,
 } from "@/components"
-import { addMinutesToTime } from "@/features/jadwal/api/jadwal"
+import { addMinutesToTime } from "@/features/jadwal/api"
 import {
   DAYS,
   formatRange,
@@ -48,10 +48,10 @@ import {
   type Pair,
   type ScheduleDraft,
   type ScheduleSession,
-} from "@/features/jadwal-les/api/jadwal-les"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
-import { firstName } from "@/features/penawaran/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api/verifikasi"
+} from "@/features/jadwal-les/api"
+import { SummaryRow } from "@/features/pendaftaran/components"
+import { firstName } from "@/features/penawaran/lib"
+import { NotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P5 · Atur Jadwal Les · Figma "Atur Jadwal / Atur jadwal",

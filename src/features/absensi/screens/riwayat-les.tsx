@@ -10,14 +10,11 @@ import {
   ListItem,
   FilterPill,
 } from "@/components"
-import {
-  lessonHistoryQuery,
-  type LessonHistory,
-} from "@/features/absensi/api/absensi"
+import { lessonHistoryQuery, type LessonHistory } from "@/features/absensi/api"
 import {
   DashboardList,
   DashboardSection,
-} from "@/features/dashboard/components/dashboard-section"
+} from "@/features/dashboard/components"
 import { formatShortWeekdayDate } from "@/lib/format/date"
 import { cn } from "@/lib/styles/cn"
 

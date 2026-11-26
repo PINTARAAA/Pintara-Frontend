@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import { addDays, getDay, isBefore, startOfDay } from "date-fns"
 
-import { assertMockAllowed, at, delay } from "@/features/dashboard/api/mock"
+import { assertMockAllowed, at, delay } from "@/features/dashboard/api"
 import {
   addMinutesToTime,
   decideChangeRequest,
@@ -10,12 +10,9 @@ import {
   parseTime,
   WEEKDAYS,
   type ChangeRequestForReview,
-} from "@/features/jadwal/api/jadwal"
-import { snapshotOffers, type Offer } from "@/features/penawaran/api/penawaran"
-import {
-  NotFoundError,
-  snapshotRegistrations,
-} from "@/features/verifikasi/api/verifikasi"
+} from "@/features/jadwal/api"
+import { snapshotOffers, type Offer } from "@/features/penawaran/api"
+import { NotFoundError, snapshotRegistrations } from "@/features/verifikasi/api"
 
 /*
  * Atur Jadwal Les (pengelola) · Figma PINTARA → UI Screen → Pengelola LBB
