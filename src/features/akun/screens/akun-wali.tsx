@@ -2,10 +2,15 @@ import { useQuery } from "@tanstack/react-query"
 import { UserIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import {
+  TabScreen,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  ListItem,
+} from "@/components"
 import { waliAccountQuery } from "@/features/akun/api/akun"
 import { AccountHelp } from "@/features/akun/components/account-help"
 import { AccountProfile } from "@/features/akun/components/account-profile"

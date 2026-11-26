@@ -15,14 +15,16 @@ import {
 } from "lucide-react"
 import { Link, useNavigate, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { StackedProgressBar } from "@/components/ui/stacked-progress-bar"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  ConfirmDialog,
+  Button,
+  DataState,
+  FilterPill,
+  ListItem,
+  StackedProgressBar,
+  toast,
+} from "@/components"
 import {
   DashboardList,
   DashboardSection,

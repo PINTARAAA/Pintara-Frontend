@@ -1,8 +1,7 @@
 import * as React from "react"
 import { Link } from "react-router"
 
-import { Button } from "@/components/ui/button"
-import { List } from "@/components/ui/list-item"
+import { Button, List } from "@/components"
 import { cn } from "@/lib/styles/cn"
 
 function DashboardSection({

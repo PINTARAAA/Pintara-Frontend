@@ -1,9 +1,14 @@
 import { Link } from "react-router"
 
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  ResultScreen,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components"
 import type { PendaftaranResult } from "@/features/pendaftaran/api/pendaftaran"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import { formatDate } from "@/lib/format/date"

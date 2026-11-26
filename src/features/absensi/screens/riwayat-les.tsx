@@ -3,15 +3,17 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import {
+  DetailScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
+  FilterPill,
+} from "@/components"
 import {
   lessonHistoryQuery,
   type LessonHistory,
 } from "@/features/absensi/api/absensi"
-import { FilterPill } from "@/components/ui/filter-pill"
 import {
   DashboardList,
   DashboardSection,

@@ -1,7 +1,7 @@
 import { SearchXIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
-import { DataState } from "@/components/ui/data-state"
+import { DataState } from "@/components"
 
 /* 404 · URL tidak cocok dengan route mana pun */
 export default function NotFoundRoute() {

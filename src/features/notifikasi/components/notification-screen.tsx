@@ -10,11 +10,13 @@ import { id as localeId } from "date-fns/locale"
 import { CheckIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
-import { toast } from "@/components/ui/toast-api"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
+import {
+  DetailScreen,
+  DataState,
+  ListItem,
+  toast,
+  TopAppBarButton,
+} from "@/components"
 import {
   DashboardList,
   DashboardSection,

@@ -1,9 +1,7 @@
 import { ConstructionIcon } from "lucide-react"
 import { Link, useLocation, useMatches } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
+import { TabScreen, Button, DataState } from "@/components"
 
 /*
  * SEMENTARA · pengganti layar tab yang belum dibangun. Judul diambil dari

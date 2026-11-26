@@ -5,22 +5,26 @@ import { id as localeId } from "date-fns/locale"
 import { ChevronDownIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { ListItem } from "@/components/ui/list-item"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
+  TabScreen,
+  StatusBadge,
+  Button,
+  DataState,
+  Field,
+  FieldLabel,
+  ListItem,
+  RadioGroup,
+  RadioGroupItem,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from "@/components"
 import {
   DashboardList,
   DashboardSection,

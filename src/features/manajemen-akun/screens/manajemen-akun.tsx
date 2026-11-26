@@ -3,19 +3,19 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { PlusIcon, SearchIcon, UserIcon } from "lucide-react"
 import { Link, useNavigate, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { Input } from "@/components/ui/input"
-import { ListItem } from "@/components/ui/list-item"
 import {
+  DetailScreen,
+  StatusBadge,
+  DataState,
+  Input,
+  ListItem,
   Tabs,
   TabsContent,
   TabsCount,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
+  TopAppBarButton,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import {
   accountsQuery,

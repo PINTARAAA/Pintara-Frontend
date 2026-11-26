@@ -9,17 +9,17 @@ import {
 } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
 import {
+  TabScreen,
+  StatusBadge,
+  Button,
+  DataState,
+  ListItem,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
+} from "@/components"
 import {
   DashboardList,
   DashboardSection,

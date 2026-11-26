@@ -3,20 +3,30 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { FileUpload, type UploadStatus } from "@/components/ui/file-upload"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
-import { TimePicker } from "@/components/ui/time-picker"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FileUpload,
+  type UploadStatus,
+  Input,
+  RadioGroup,
+  RadioGroupItem,
+  Textarea,
+  TimePicker,
+  toast,
+} from "@/components"
 import { FormGroup, SummaryRow } from "@/features/pendaftaran/components/form-group"
 import {
   AttendanceError,

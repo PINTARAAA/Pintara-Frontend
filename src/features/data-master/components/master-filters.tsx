@@ -1,8 +1,7 @@
 import * as React from "react"
 import { SearchIcon } from "lucide-react"
 
-import { FilterPill } from "@/components/ui/filter-pill"
-import { Input } from "@/components/ui/input"
+import { FilterPill, Input } from "@/components"
 import {
   DISTRICTS,
   type MasterFilter,

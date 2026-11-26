@@ -9,19 +9,19 @@ import {
 } from "react-hook-form"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DataState } from "@/components/ui/data-state"
 import {
+  DetailScreen,
+  Button,
+  Checkbox,
+  DataState,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { TimePicker } from "@/components/ui/time-picker"
-import { toast } from "@/components/ui/toast-api"
+  Input,
+  TimePicker,
+  toast,
+} from "@/components"
 import {
   DAYS,
   DuplicateEmailError,

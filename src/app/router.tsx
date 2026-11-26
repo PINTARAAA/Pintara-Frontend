@@ -4,8 +4,7 @@ import { createBrowserRouter, Navigate, Outlet, type RouteObject } from "react-r
 import { ROLE_NAV, type Role } from "./navigation"
 import { PageLoader } from "./page-loader"
 import RouteError from "@/pages/error/error"
-import { AppFrame } from "@/components/layouts/app-frame"
-import { AppShell } from "@/components/layouts/app-shell"
+import { AppFrame, AppShell } from "@/components"
 
 /*
  * Daftar route aplikasi.

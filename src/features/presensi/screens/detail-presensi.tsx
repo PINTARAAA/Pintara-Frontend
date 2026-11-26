@@ -3,18 +3,19 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
+  DetailScreen,
+  StatusBadge,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { Timeline, TimelineItem } from "@/components/ui/timeline"
+  DataState,
+  Timeline,
+  TimelineItem,
+} from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import {
   NotFoundError,

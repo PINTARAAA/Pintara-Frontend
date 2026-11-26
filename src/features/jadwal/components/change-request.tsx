@@ -1,5 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Timeline, TimelineItem } from "@/components/ui/timeline"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Timeline,
+  TimelineItem,
+} from "@/components"
 import {
   formatTimeSlot,
   WEEKDAYS,

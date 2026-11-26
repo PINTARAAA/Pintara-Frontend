@@ -2,10 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ChevronRightIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { DataState } from "@/components/ui/data-state"
-import { Switch } from "@/components/ui/switch"
-import { toast } from "@/components/ui/toast-api"
+import { DetailScreen, DataState, Switch, toast } from "@/components"
 import {
   describeSetting,
   notificationSettingsQuery,

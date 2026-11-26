@@ -4,14 +4,19 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DataState } from "@/components/ui/data-state"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  AlertBanner,
+  ConfirmDialog,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  DataState,
+  toast,
+} from "@/components"
 import { NotFoundError } from "@/features/jadwal/api/jadwal"
 import {
   changeReviewQuery,

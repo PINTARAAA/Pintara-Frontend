@@ -4,14 +4,20 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { Timeline, TimelineItem } from "@/components/ui/timeline"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  ResultScreen,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  Timeline,
+  TimelineItem,
+  toast,
+} from "@/components"
 import {
   declineLabel,
   OfferError,

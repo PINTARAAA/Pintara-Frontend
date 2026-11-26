@@ -3,19 +3,22 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { EllipsisIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
+  ConfirmDialog,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { toast } from "@/components/ui/toast-api"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
+  toast,
+  TopAppBarButton,
+} from "@/components"
 import {
   ActiveScheduleError,
   type AccountStatus,

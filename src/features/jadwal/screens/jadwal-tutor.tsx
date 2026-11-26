@@ -3,10 +3,7 @@ import { isToday } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
+import { TabScreen, DataState, FilterPill, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,

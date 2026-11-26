@@ -3,16 +3,21 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { CircleXIcon, PhoneIcon, UsersIcon } from "lucide-react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
-import { RadioGroup } from "@/components/ui/radio-group"
-import { toast } from "@/components/ui/toast-api"
-import { TutorCandidate } from "@/components/ui/tutor-candidate"
+import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  ListItem,
+  RadioGroup,
+  toast,
+  TutorCandidate,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import {

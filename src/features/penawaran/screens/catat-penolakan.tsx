@@ -5,20 +5,21 @@ import { Controller, useForm, useWatch } from "react-hook-form"
 import { Link, useNavigate, useParams } from "react-router"
 import { z } from "zod"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
 import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  Button,
+  DataState,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/toast-api"
+  RadioGroup,
+  RadioGroupItem,
+  Textarea,
+  toast,
+} from "@/components"
 import {
   DECLINE_REASONS,
   OfferError,

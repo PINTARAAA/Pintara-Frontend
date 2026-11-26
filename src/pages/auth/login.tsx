@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router"
 
-import { AuthLayout } from "@/components/layouts/auth-layout"
+import { AuthLayout } from "@/components"
 import { LoginForm } from "@/features/auth/components/login-form"
 import type { LoginNotice } from "@/features/auth/types"
 

@@ -4,11 +4,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FormProvider, useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { ProgressStepper } from "@/components/ui/progress-stepper"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  AlertBanner,
+  Button,
+  ProgressStepper,
+  toast,
+} from "@/components"
 import {
   PendaftaranError,
   pendaftaranDefaultsQuery,

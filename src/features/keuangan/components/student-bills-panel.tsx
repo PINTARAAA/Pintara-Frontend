@@ -5,11 +5,13 @@ import { id as localeId } from "date-fns/locale"
 import { UserIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { StackedProgressBar } from "@/components/ui/stacked-progress-bar"
+import {
+  Button,
+  DataState,
+  FilterPill,
+  ListItem,
+  StackedProgressBar,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { monthKey } from "@/features/keuangan/api/honor"
 import {

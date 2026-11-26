@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components"
 import type { AttendanceSession } from "@/features/absensi/api/absensi"
 import { RATING_LABELS } from "@/features/absensi/lib/format"
 import { formatDateTime } from "@/lib/format/date"

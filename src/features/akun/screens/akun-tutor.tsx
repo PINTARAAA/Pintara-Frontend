@@ -1,8 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
+import {
+  TabScreen,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+} from "@/components"
 import { tutorAccountQuery } from "@/features/akun/api/akun"
 import { AccountHelp } from "@/features/akun/components/account-help"
 import { AccountProfile } from "@/features/akun/components/account-profile"

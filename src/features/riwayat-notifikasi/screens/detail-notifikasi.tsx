@@ -3,11 +3,13 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  StatusBadge,
+  Button,
+  DataState,
+  toast,
+} from "@/components"
 import { InfoCard } from "@/features/data-master/components/profile-parts"
 import {
   channelContact,

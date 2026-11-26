@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 import { Link } from "react-router"
 
-import { ListItem } from "@/components/ui/list-item"
+import { ListItem } from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import type { DashboardTask, TaskIcon } from "@/features/dashboard/api/types"
 import { formatRupiah } from "@/lib/format/currency"

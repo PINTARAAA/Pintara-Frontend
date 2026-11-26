@@ -2,17 +2,17 @@ import { useQuery } from "@tanstack/react-query"
 import { ClipboardCheckIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
 import {
+  TabScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
   Tabs,
   TabsContent,
   TabsCount,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
+} from "@/components"
 import {
   attendanceQuery,
   type AttendanceSession,

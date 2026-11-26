@@ -10,9 +10,7 @@ import {
 } from "lucide-react"
 import { Link } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import { TabScreen, DataState, ListItem } from "@/components"
 import { pengelolaMenuQuery } from "@/features/akun/api/akun"
 import { LogoutItem } from "@/features/akun/components/account-help"
 import { AccountProfile } from "@/features/akun/components/account-profile"

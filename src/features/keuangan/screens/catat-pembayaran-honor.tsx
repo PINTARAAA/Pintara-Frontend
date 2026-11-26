@@ -4,24 +4,29 @@ import { format, isAfter, startOfDay } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
-import { DatePicker } from "@/components/ui/date-picker"
 import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
+  DatePicker,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { FileUpload, type UploadStatus } from "@/components/ui/file-upload"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { toast } from "@/components/ui/toast-api"
+  FileUpload,
+  type UploadStatus,
+  Input,
+  RadioGroup,
+  RadioGroupItem,
+  toast,
+} from "@/components"
 import {
   honorDetailQuery,
   METHOD_LABEL,

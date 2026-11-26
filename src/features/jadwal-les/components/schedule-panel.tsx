@@ -2,8 +2,7 @@ import type { UseQueryResult } from "@tanstack/react-query"
 import { CalendarIcon, RotateCwIcon, UsersIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import { DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,

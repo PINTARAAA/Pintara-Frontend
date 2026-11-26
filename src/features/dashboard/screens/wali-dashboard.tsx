@@ -3,11 +3,13 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { CalendarIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
-import { Skeleton } from "@/components/ui/skeleton"
+import {
+  TabScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
+  Skeleton,
+} from "@/components"
 import { waliDashboardQuery } from "@/features/dashboard/api/wali-dashboard"
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton"
 import { EmptyNote } from "@/features/dashboard/components/empty-note"

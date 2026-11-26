@@ -3,8 +3,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { InfoIcon, LogOutIcon, PhoneIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { ListItem } from "@/components/ui/list-item"
+import { ConfirmDialog, ListItem } from "@/components"
 import { logout, type LbbContact } from "@/features/akun/api/akun"
 import {
   DashboardList,

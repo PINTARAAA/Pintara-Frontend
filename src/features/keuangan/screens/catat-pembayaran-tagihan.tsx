@@ -4,27 +4,26 @@ import { format, isAfter, startOfDay } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { DatePicker } from "@/components/ui/date-picker"
 import {
+  DetailScreen,
+  Button,
+  DataState,
+  DatePicker,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { FileUpload, type UploadStatus } from "@/components/ui/file-upload"
-import { Input } from "@/components/ui/input"
-import {
+  FileUpload,
+  type UploadStatus,
+  Input,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { toast } from "@/components/ui/toast-api"
+  toast,
+} from "@/components"
 import {
   billRemaining,
   billStatus,

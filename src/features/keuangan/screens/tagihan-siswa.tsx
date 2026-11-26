@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
+import { DetailScreen } from "@/components"
 import { monthKey } from "@/features/keuangan/api/honor"
 import { StudentBillsPanel } from "@/features/keuangan/components/student-bills-panel"
 import { parseMonth } from "@/features/keuangan/lib/month"

@@ -3,9 +3,9 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { FilterIcon, SearchIcon, UserIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
 import {
+  TabScreen,
+  DataState,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -13,10 +13,13 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { ListItem } from "@/components/ui/list-item"
-import { Tabs, TabsCount, TabsList, TabsTrigger } from "@/components/ui/tabs"
+  Input,
+  ListItem,
+  Tabs,
+  TabsCount,
+  TabsList,
+  TabsTrigger,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { NotificationButton } from "@/features/dashboard/components/notification-button"
 import {

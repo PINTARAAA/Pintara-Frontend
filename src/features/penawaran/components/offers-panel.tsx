@@ -4,9 +4,7 @@ import { id as localeId } from "date-fns/locale"
 import { SendIcon, UsersIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import { StatusBadge, DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,

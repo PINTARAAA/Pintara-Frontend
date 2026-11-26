@@ -1,9 +1,15 @@
 import { Controller, useFormContext } from "react-hook-form"
 
-import { Checkbox } from "@/components/ui/checkbox"
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {
+  Checkbox,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  Input,
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components"
 import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
   FREQUENCY_OPTIONS,

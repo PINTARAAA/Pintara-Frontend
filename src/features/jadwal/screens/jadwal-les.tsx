@@ -3,9 +3,7 @@ import { isToday, isTomorrow } from "date-fns"
 import { CalendarIcon, ClockIcon, RotateCwIcon } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
+import { TabScreen, DataState, ListItem } from "@/components"
 import {
   DashboardList,
   DashboardSection,

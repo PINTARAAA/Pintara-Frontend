@@ -2,11 +2,13 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { PlusIcon, UserIcon } from "lucide-react"
 import { Link, useNavigate } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { DataState } from "@/components/ui/data-state"
-import { ListItem } from "@/components/ui/list-item"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
+import {
+  DetailScreen,
+  StatusBadge,
+  DataState,
+  ListItem,
+  TopAppBarButton,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import {
   formatLevels,

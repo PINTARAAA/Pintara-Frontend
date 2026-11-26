@@ -4,12 +4,14 @@ import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { StackedProgressBar } from "@/components/ui/stacked-progress-bar"
+import {
+  DetailScreen,
+  Button,
+  DataState,
+  FilterPill,
+  ListItem,
+  StackedProgressBar,
+} from "@/components"
 import {
   DashboardList,
   DashboardSection,

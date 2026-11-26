@@ -6,24 +6,28 @@ import { id as localeId } from "date-fns/locale"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ResultScreen } from "@/components/layouts/result-screen"
-import { AlertBanner } from "@/components/ui/alert-banner"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
+  DetailScreen,
+  ResultScreen,
+  AlertBanner,
+  Button,
+  DataState,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  RadioGroup,
+  RadioGroupItem,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { TimePicker } from "@/components/ui/time-picker"
-import { toast } from "@/components/ui/toast-api"
+  Textarea,
+  TimePicker,
+  toast,
+} from "@/components"
 import {
   formatTimeSlot,
   NotFoundError,

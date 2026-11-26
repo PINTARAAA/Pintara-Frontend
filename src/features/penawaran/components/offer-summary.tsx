@@ -1,5 +1,10 @@
-import { StatusBadge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  StatusBadge,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import {
   declineLabel,

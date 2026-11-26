@@ -11,12 +11,14 @@ import {
 } from "lucide-react"
 import { Link, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
+import {
+  DetailScreen,
+  Button,
+  DataState,
+  FilterPill,
+  ListItem,
+  TopAppBarButton,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { monthKey } from "@/features/keuangan/api/honor"
 import {

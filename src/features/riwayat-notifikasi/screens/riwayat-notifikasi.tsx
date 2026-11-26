@@ -8,13 +8,15 @@ import { format, subMonths } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 import { Link, useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterChip } from "@/components/ui/filter-chip"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  Button,
+  DataState,
+  FilterChip,
+  FilterPill,
+  ListItem,
+  toast,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { CHANNEL_LABEL } from "@/features/pengaturan-notifikasi/api/pengaturan-notifikasi"
 import {

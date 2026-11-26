@@ -1,15 +1,18 @@
 import { Controller, useFormContext } from "react-hook-form"
 
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  Input,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components"
 import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
   GRADE_OPTIONS,

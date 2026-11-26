@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, useRouteError } from "react-router"
 
-import { DataState } from "@/components/ui/data-state"
+import { DataState } from "@/components"
 
 /*
  * Error boundary tingkat route: tampil bila halaman gagal dimuat atau

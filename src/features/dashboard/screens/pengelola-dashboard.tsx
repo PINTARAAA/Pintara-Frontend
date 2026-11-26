@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query"
 import { BellIcon, ChevronRightIcon } from "lucide-react"
 import { Link } from "react-router"
 
-import { TabScreen } from "@/components/layouts/tab-screen"
-import { DataState } from "@/components/ui/data-state"
-import { Skeleton } from "@/components/ui/skeleton"
-import { StackedProgressBar } from "@/components/ui/stacked-progress-bar"
+import {
+  TabScreen,
+  DataState,
+  Skeleton,
+  StackedProgressBar,
+} from "@/components"
 import { pengelolaDashboardQuery } from "@/features/dashboard/api/pengelola-dashboard"
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton"
 import { DashboardSection } from "@/features/dashboard/components/dashboard-section"

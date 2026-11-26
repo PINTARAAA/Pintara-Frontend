@@ -9,7 +9,7 @@ import {
   WalletIcon,
 } from "lucide-react"
 
-import type { NavItem } from "@/components/layouts/app-shell"
+import type { NavItem } from "@/components"
 import type { Role } from "@/features/auth/types"
 export type { Role }
 

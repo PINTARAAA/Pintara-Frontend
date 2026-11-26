@@ -5,14 +5,19 @@ import { id as localeId } from "date-fns/locale"
 import { UserIcon } from "lucide-react"
 import { useSearchParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
-import { FilterChip } from "@/components/ui/filter-chip"
-import { FilterPill } from "@/components/ui/filter-pill"
-import { ListItem } from "@/components/ui/list-item"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  DetailScreen,
+  StatusBadge,
+  Button,
+  DataState,
+  FilterChip,
+  FilterPill,
+  ListItem,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components"
 import { DashboardList } from "@/features/dashboard/components/dashboard-section"
 import { parseMonth } from "@/features/keuangan/lib/month"
 import { firstName } from "@/features/presensi/lib/format"

@@ -5,20 +5,23 @@ import { id as localeId } from "date-fns/locale"
 import { EllipsisIcon, MessageCircleIcon, PencilIcon } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { ConfirmDialog } from "@/components/ui/alert-dialog"
-import { StatusBadge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataState } from "@/components/ui/data-state"
 import {
+  DetailScreen,
+  ConfirmDialog,
+  StatusBadge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataState,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { toast } from "@/components/ui/toast-api"
-import { TopAppBarButton } from "@/components/ui/top-app-bar"
+  toast,
+  TopAppBarButton,
+} from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components/form-group"
 import {
   AlreadyProcessedError,

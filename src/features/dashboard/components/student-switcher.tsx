@@ -8,7 +8,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components"
 import type { WaliStudent } from "@/features/dashboard/api/wali-dashboard"
 import { InitialsAvatar } from "@/features/dashboard/components/initials-avatar"
 

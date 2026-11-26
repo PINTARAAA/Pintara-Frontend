@@ -4,18 +4,19 @@ import { Controller, useForm, useWatch } from "react-hook-form"
 import { useNavigate, useParams, useSearchParams } from "react-router"
 import { z } from "zod"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { DataState } from "@/components/ui/data-state"
 import {
+  DetailScreen,
+  Button,
+  DataState,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/toast-api"
+  RadioGroup,
+  RadioGroupItem,
+  Textarea,
+  toast,
+} from "@/components"
 import {
   AlreadyProcessedError,
   canReject,

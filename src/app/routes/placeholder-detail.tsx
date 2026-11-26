@@ -1,9 +1,14 @@
 import { useMatches } from "react-router"
 
-import { DetailScreen } from "@/components/layouts/detail-screen"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from "@/components/ui/toast-api"
+import {
+  DetailScreen,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  toast,
+} from "@/components"
 
 /*
  * SEMENTARA · contoh layar detail untuk mencoba DetailScreen (tanpa bottom
