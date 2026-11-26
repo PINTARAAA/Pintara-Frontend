@@ -20,6 +20,7 @@ export default function LoginRoute() {
     <AuthLayout
       title="Masuk ke akun Anda"
       description="Gunakan email atau username dan password yang terdaftar."
+      note="Belum punya akun? Akun dibuat oleh Pengelola LBB setelah pendaftaran diverifikasi."
     >
       <LoginForm
         notice={notice}
