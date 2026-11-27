@@ -35,12 +35,12 @@ import type {
  * menandainya dibaca lalu membuka layar terkait. Tombol centang di top app
  * bar menandai semua dibaca (tampil bila ada yang baru).
  *
- * `desktopPage` (W9 · wali dan P14 · pengelola, Figma "Notifikasi / …
+ * `desktopPage` (W9 · wali, T7 · tutor, P14 · pengelola, Figma "Notifikasi / …
  * (Desktop)"): Page header tanpa tautan kembali (Notifikasi ada di sidebar),
  * "Tandai semua dibaca" sebagai tombol teks di kanan header, daftar selebar
  * 768px. Kosong ("- Kosong (Desktop)"): kartu Data state 480px di tengah
  * area konten, horizontal dan vertikal.
- * Tanpa `desktopPage` (tutor) tampilan desktop tidak berubah.
+ * Tanpa `desktopPage` tampilan desktop memakai Top app bar.
  */
 
 /* "2 jam lalu" · "12 menit lalu" · "08.00" (hari ini) · "8 Okt" */
