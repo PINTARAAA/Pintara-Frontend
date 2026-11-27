@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SidebarNavItem } from "@/components/ui/sidebar"
+import { TopAppBarButton } from "@/components/ui/top-app-bar"
 import { useTheme, type Theme } from "@/app/theme-context"
 import {
   DashboardList,
@@ -23,8 +24,12 @@ import {
  * di localStorage ("pintara-theme"), lihat src/app/theme.tsx.
  *
  * ThemeSetting      : seksi "Tampilan" di layar Akun (W8 · T6), di atas Bantuan.
- * SidebarThemeItem  : item "Tema" di grup bawah sidebar Pengelola, di atas
- *                     Keluar (Pengelola tidak punya layar Akun sendiri).
+ * SidebarThemeItem  : shortcut di grup bawah sidebar desktop (wali & tutor
+ *                     di atas Notifikasi, pengelola di atas Keluar).
+ * ThemeButton       : shortcut ikon di top app bar Beranda (mobile), di
+ *                     samping notifikasi. Ikon mengikuti tema aktif.
+ * Semua membuka menu 3 pilihan yang sama (bukan sakelar terang/gelap) agar
+ * "Ikuti sistem" selalu bisa dipilih kembali.
  */
 const OPTIONS = [
   { value: "light", label: "Terang", icon: SunIcon },
@@ -59,6 +64,7 @@ function ThemeMenuContent({
               key={option.value}
               value={option.value}
               className="min-h-12"
+              closeOnClick
             >
               {option.label}
             </DropdownMenuRadioItem>
@@ -117,4 +123,29 @@ function SidebarThemeItem() {
   )
 }
 
-export { ThemeSetting, SidebarThemeItem }
+function ThemeButton({ className }: { className?: string }) {
+  const { active, setTheme } = useThemeOption()
+  const Icon = active.icon
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <TopAppBarButton
+            label={`Tema: ${active.label}. Ganti`}
+            className={className}
+          />
+        }
+      >
+        <Icon />
+      </DropdownMenuTrigger>
+      <ThemeMenuContent
+        align="end"
+        value={active.value}
+        onValueChange={setTheme}
+      />
+    </DropdownMenu>
+  )
+}
+
+export { ThemeSetting, SidebarThemeItem, ThemeButton }

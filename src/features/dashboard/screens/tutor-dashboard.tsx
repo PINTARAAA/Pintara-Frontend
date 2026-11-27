@@ -19,6 +19,7 @@ import {
   TaskActionList,
   TaskList,
 } from "@/features/dashboard/components"
+import { ThemeButton } from "@/features/akun/components"
 import type { TutorDashboardData } from "@/types/dashboard"
 
 import {
@@ -51,7 +52,13 @@ function TutorDashboard() {
     <TabScreen
       subtitle={formatGreeting()}
       title={data?.tutor.name ?? <Skeleton className="h-6 w-48" />}
-      action={<NotificationButton to="/tutor/notifikasi" unread={unread} />}
+      /* Mobile: shortcut tema di samping notifikasi (desktop: di sidebar) */
+      action={
+        <div className="flex items-center gap-ns-s">
+          <ThemeButton />
+          <NotificationButton to="/tutor/notifikasi" unread={unread} />
+        </div>
+      }
       desktopHeader="page"
       desktopHeaderActions={
         <NotificationButton

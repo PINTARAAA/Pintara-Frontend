@@ -27,6 +27,7 @@ import {
   TaskActionList,
   TaskList,
 } from "@/features/dashboard/components"
+import { ThemeButton } from "@/features/akun/components"
 import type { WaliDashboardData } from "@/types/dashboard"
 import { ongoingRegistrationsQuery } from "@/features/pendaftaran/api"
 import type { Registration } from "@/types/pendaftaran"
@@ -74,11 +75,15 @@ function WaliDashboard() {
     <TabScreen
       subtitle={formatGreeting()}
       title={data?.parent.name ?? <Skeleton className="h-6 w-48" />}
+      /* Mobile: shortcut tema di samping notifikasi (desktop: di sidebar) */
       action={
-        <NotificationButton
-          to="/wali/notifikasi"
-          unread={unreadNotifications}
-        />
+        <div className="flex items-center gap-ns-s">
+          <ThemeButton />
+          <NotificationButton
+            to="/wali/notifikasi"
+            unread={unreadNotifications}
+          />
+        </div>
       }
       desktopHeader="page"
       desktopHeaderActions={
