@@ -23,7 +23,8 @@ import { SummaryRow } from "@/features/pendaftaran/components"
 /*
  * W8 · Akun (wali) · Figma "Akun / Wali" dan "Akun / Wali - Konfirmasi keluar"
  *
- * Profil (avatar 56px, nama, peran · email) → Siswa tertaut → Data akun
+ * Profil (avatar 56px, nama, peran · email) → Siswa tertaut (+ tautan
+ * "Daftarkan anak lain" ke W2, tambahan di luar Figma) → Data akun
  * (Kontak & login, hanya baca) → Bantuan (Hubungi Pengelola LBB, Tentang
  * PINTARA) → Keluar (Confirmation modal, lalu ke /masuk?alasan=keluar).
  */
@@ -52,7 +53,10 @@ function AkunWali() {
               email={account.email}
             />
 
-            <DashboardSection title="Siswa tertaut">
+            <DashboardSection
+              title="Siswa tertaut"
+              action={{ label: "Daftarkan anak lain", to: "/wali/pendaftaran" }}
+            >
               <DashboardList>
                 {account.students.map((student) => (
                   <ListItem

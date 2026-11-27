@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { id as localeId } from "date-fns/locale";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { useQuery } from "@tanstack/react-query"
+import { format } from "date-fns"
+import { id as localeId } from "date-fns/locale"
+import { Link, useNavigate, useSearchParams } from "react-router"
 
 import {
   DetailScreen,
@@ -16,17 +16,17 @@ import {
   DataState,
   Timeline,
   TimelineItem,
-} from "@/components";
-import { registrationStatusQuery } from "@/features/pendaftaran/api";
+} from "@/components"
+import { registrationStatusQuery } from "@/features/pendaftaran/api"
 import type {
   RegistrationLbbContact,
   Registration,
   RegistrationStage,
-} from "@/types/pendaftaran";
+} from "@/types/pendaftaran"
 
-import { SummaryRow } from "@/features/pendaftaran/components";
-import type { StatusOf } from "@/lib/constants";
-import { formatDate, formatDateTime, firstName } from "@/lib/format";
+import { SummaryRow } from "@/features/pendaftaran/components"
+import type { StatusOf } from "@/lib/constants"
+import { formatDate, formatDateTime, firstName } from "@/lib/format"
 
 /*
  * W3 · Status Pendaftaran · Figma PINTARA → UI Screen → Wali Murid
@@ -48,35 +48,35 @@ const BADGE: Record<RegistrationStage, StatusOf<"pendaftaran">> = {
   pencocokan_tutor: "terverifikasi",
   selesai: "terverifikasi",
   ditolak: "ditolak",
-};
+}
 
 /* "Rabu & Jumat, 16.00" · "Senin, Rabu & Jumat, 16.00" */
 function formatRequestedSchedule(days: string[], startTime: string) {
   const list =
     days.length > 1
       ? `${days.slice(0, -1).join(", ")} & ${days.at(-1)}`
-      : (days[0] ?? "-");
-  return `${list}, ${startTime}`;
+      : (days[0] ?? "-")
+  return `${list}, ${startTime}`
 }
 
 /* "Rabu, 3 Des 2026" */
 const formatLongWeekdayDate = (date: Date) =>
-  format(date, "EEEE, d MMM yyyy", { locale: localeId });
+  format(date, "EEEE, d MMM yyyy", { locale: localeId })
 
 const whatsappUrl = (contact: RegistrationLbbContact) =>
-  `https://wa.me/${contact.whatsapp}`;
+  `https://wa.me/${contact.whatsapp}`
 
 function StatusPendaftaran() {
-  const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const id = params.get("id") ?? undefined;
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const id = params.get("id") ?? undefined
   /* Hanya development: ?contoh=… menampilkan contoh frame Figma */
   const example = import.meta.env.DEV
     ? (params.get("contoh") ?? undefined)
-    : undefined;
+    : undefined
 
-  const query = useQuery(registrationStatusQuery(id, example));
-  const registration = query.data?.registration;
+  const query = useQuery(registrationStatusQuery(id, example))
+  const registration = query.data?.registration
 
   return (
     <DetailScreen
@@ -155,7 +155,7 @@ function StatusPendaftaran() {
         </>
       )}
     </DetailScreen>
-  );
+  )
 }
 
 /* Banner hasil akhir: Selesai (success) atau Ditolak (error) */
@@ -164,11 +164,11 @@ function ResultBanner({
   contact,
   onOpenSchedule,
 }: {
-  registration: Registration;
-  contact: RegistrationLbbContact;
-  onOpenSchedule: () => void;
+  registration: Registration
+  contact: RegistrationLbbContact
+  onOpenSchedule: () => void
 }) {
-  const { stage, match, firstSession, rejection } = registration;
+  const { stage, match, firstSession, rejection } = registration
 
   if (stage === "selesai" && match && firstSession) {
     return (
@@ -178,7 +178,7 @@ function ResultBanner({
         description={`${firstName(registration.studentName)} akan belajar bersama ${match.tutorName} mulai ${formatLongWeekdayDate(firstSession.start)}.`}
         action={{ label: "Lihat jadwal les", onClick: onOpenSchedule }}
       />
-    );
+    )
   }
 
   if (stage === "ditolak" && rejection) {
@@ -193,10 +193,10 @@ function ResultBanner({
             window.open(whatsappUrl(contact), "_blank", "noopener,noreferrer"),
         }}
       />
-    );
+    )
   }
 
-  return null;
+  return null
 }
 
 /* Kartu siswa: nama, no. pendaftaran · tanggal kirim, badge, ringkasan */
@@ -204,8 +204,8 @@ function StudentCard({
   registration,
   className,
 }: {
-  registration: Registration;
-  className?: string;
+  registration: Registration
+  className?: string
 }) {
   return (
     <Card size="compact" className={className}>
@@ -230,7 +230,7 @@ function StudentCard({
         </dl>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /* Kartu "Progres Pendaftaran": langkah Timeline sesuai tahap */
@@ -238,8 +238,8 @@ function ProgressCard({
   registration,
   className,
 }: {
-  registration: Registration;
-  className?: string;
+  registration: Registration
+  className?: string
 }) {
   const {
     stage,
@@ -249,9 +249,9 @@ function ProgressCard({
     firstSession,
     rejection,
     subjects,
-  } = registration;
-  const verified = stage !== "menunggu_verifikasi";
-  const matched = stage === "selesai";
+  } = registration
+  const verified = stage !== "menunggu_verifikasi"
+  const matched = stage === "selesai"
 
   return (
     <Card size="compact" className={className}>
@@ -315,7 +315,7 @@ function ProgressCard({
         </Timeline>
       </CardContent>
     </Card>
-  );
+  )
 }
 
-export { StatusPendaftaran };
+export { StatusPendaftaran }

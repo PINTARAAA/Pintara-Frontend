@@ -1,4 +1,4 @@
-import { Controller, useFormContext, useWatch } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form"
 
 import {
   AlertBanner,
@@ -7,19 +7,19 @@ import {
   FieldError,
   FieldLabel,
   TimePicker,
-} from "@/components";
-import { FormGroup } from "@/features/pendaftaran/components/form-group";
+} from "@/components"
+import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
   DAY_OPTIONS,
   SESSION_MINUTES,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas";
+} from "@/features/pendaftaran/schemas"
 
 /* Langkah 3 · Jadwal Belajar */
 function StepJadwalBelajar() {
-  const { control, formState } = useFormContext<PendaftaranInput>();
-  const { errors } = formState;
-  const frequency = useWatch({ control, name: "frequency" });
+  const { control, formState } = useFormContext<PendaftaranInput>()
+  const { errors } = formState
+  const frequency = useWatch({ control, name: "frequency" })
 
   return (
     <>
@@ -44,11 +44,11 @@ function StepJadwalBelajar() {
                     field.onChange(
                       checked
                         ? DAY_OPTIONS.filter(
-                            (d) => d === day || field.value.includes(d),
+                            (d) => d === day || field.value.includes(d)
                           )
-                        : field.value.filter((d) => d !== day),
-                    );
-                    field.onBlur();
+                        : field.value.filter((d) => d !== day)
+                    )
+                    field.onBlur()
                   }}
                 />
               ))}
@@ -80,8 +80,8 @@ function StepJadwalBelajar() {
                 placeholder="Pilih jam mulai"
                 value={field.value || null}
                 onValueChange={(v) => {
-                  field.onChange(v ?? "");
-                  field.onBlur();
+                  field.onChange(v ?? "")
+                  field.onBlur()
                 }}
                 invalid={!!errors.startTime}
               />
@@ -101,7 +101,7 @@ function StepJadwalBelajar() {
         description="Jadwal akan dikonfirmasi Pengelola LBB setelah tutor yang sesuai ditemukan."
       />
     </>
-  );
+  )
 }
 
-export { StepJadwalBelajar };
+export { StepJadwalBelajar }

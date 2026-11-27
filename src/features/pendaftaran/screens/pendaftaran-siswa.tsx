@@ -1,8 +1,8 @@
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import * as React from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { FormProvider, useForm } from "react-hook-form"
+import { useNavigate } from "react-router"
 
 import {
   DetailScreen,
@@ -12,27 +12,27 @@ import {
   Timeline,
   TimelineItem,
   toast,
-} from "@/components";
+} from "@/components"
 import {
   PendaftaranError,
   pendaftaranDefaultsQuery,
   submitPendaftaran,
-} from "@/features/pendaftaran/api";
-import type { PendaftaranResult } from "@/types/pendaftaran";
+} from "@/features/pendaftaran/api"
+import type { PendaftaranResult } from "@/types/pendaftaran"
 import {
   PendaftaranBerhasil,
   StepDataSiswa,
   StepJadwalBelajar,
   StepKebutuhanBelajar,
   StepRingkasan,
-} from "@/features/pendaftaran/components";
+} from "@/features/pendaftaran/components"
 
 import {
   EMPTY_PENDAFTARAN,
   pendaftaranSchema,
   STEP_FIELDS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas";
+} from "@/features/pendaftaran/schemas"
 
 /*
  * W2 · Pendaftaran Siswa · Figma PINTARA → UI Screen → Wali Murid
@@ -58,7 +58,7 @@ const STEP_NAMES = [
   "Kebutuhan Belajar",
   "Jadwal Belajar",
   "Ringkasan",
-] as const;
+] as const
 
 /* Keterangan tiap langkah di timeline "Langkah pendaftaran" (desktop) */
 const STEP_DESCRIPTIONS = [
@@ -66,22 +66,22 @@ const STEP_DESCRIPTIONS = [
   "Mata pelajaran dan frekuensi les",
   "Hari dan jam yang diinginkan",
   "Periksa data, lalu kirim",
-] as const;
+] as const
 
-const LAST_STEP = STEP_NAMES.length - 1;
+const LAST_STEP = STEP_NAMES.length - 1
 
 function PendaftaranSiswa() {
-  const navigate = useNavigate();
-  const [step, setStep] = React.useState(0);
+  const navigate = useNavigate()
+  const [step, setStep] = React.useState(0)
   /* Langkah yang sudah dicoba dilanjutkan, untuk menampilkan banner error */
-  const [attempted, setAttempted] = React.useState<Set<number>>(new Set());
+  const [attempted, setAttempted] = React.useState<Set<number>>(new Set())
   /* Diisi ID pendaftaran aktif yang sudah ada (error "Siswa sudah terdaftar") */
-  const [existingId, setExistingId] = React.useState<string | null>(null);
-  const alreadyRegistered = existingId != null;
-  const [result, setResult] = React.useState<PendaftaranResult | null>(null);
+  const [existingId, setExistingId] = React.useState<string | null>(null)
+  const alreadyRegistered = existingId != null
+  const [result, setResult] = React.useState<PendaftaranResult | null>(null)
 
-  const queryClient = useQueryClient();
-  const defaults = useQuery(pendaftaranDefaultsQuery());
+  const queryClient = useQueryClient()
+  const defaults = useQuery(pendaftaranDefaultsQuery())
 
   const form = useForm<PendaftaranInput>({
     resolver: zodResolver(pendaftaranSchema),
@@ -92,8 +92,8 @@ function PendaftaranSiswa() {
       ? { ...EMPTY_PENDAFTARAN, ...defaults.data }
       : undefined,
     resetOptions: { keepDirtyValues: true },
-  });
-  const { errors } = form.formState;
+  })
+  const { errors } = form.formState
 
   const submit = useMutation({
     mutationFn: submitPendaftaran,
@@ -102,53 +102,53 @@ function PendaftaranSiswa() {
     onSuccess: (data) => {
       void queryClient.invalidateQueries({
         queryKey: ["pendaftaran", "status"],
-      });
-      setResult(data);
-      window.scrollTo({ top: 0 });
+      })
+      setResult(data)
+      window.scrollTo({ top: 0 })
     },
     onError: (error) => {
       if (error instanceof PendaftaranError) {
-        setExistingId(error.registrationId ?? "");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        setExistingId(error.registrationId ?? "")
+        window.scrollTo({ top: 0, behavior: "smooth" })
       } else {
         toast.error("Pendaftaran gagal dikirim", {
           description:
             "Data Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
-        });
+        })
       }
     },
-  });
+  })
 
   const goTo = (next: number) => {
-    setStep(next);
-    window.scrollTo({ top: 0 });
-  };
+    setStep(next)
+    window.scrollTo({ top: 0 })
+  }
 
   const handleNext = async () => {
-    setAttempted((prev) => new Set(prev).add(step));
+    setAttempted((prev) => new Set(prev).add(step))
     const valid = await form.trigger([...STEP_FIELDS[step]], {
       shouldFocus: true,
-    });
-    if (valid) goTo(step + 1);
-  };
+    })
+    if (valid) goTo(step + 1)
+  }
 
   const handleBack = () => {
-    if (step === 0) navigate(-1);
+    if (step === 0) navigate(-1)
     else {
-      setExistingId(null);
-      goTo(step - 1);
+      setExistingId(null)
+      goTo(step - 1)
     }
-  };
+  }
 
   const handleSubmit = form.handleSubmit((values) => {
-    setExistingId(null);
-    submit.mutate(values);
-  });
+    setExistingId(null)
+    submit.mutate(values)
+  })
 
-  if (result) return <PendaftaranBerhasil result={result} />;
+  if (result) return <PendaftaranBerhasil result={result} />
 
-  const missingCount = STEP_FIELDS[step].filter((name) => errors[name]).length;
-  const showMissingBanner = attempted.has(step) && missingCount > 0;
+  const missingCount = STEP_FIELDS[step].filter((name) => errors[name]).length
+  const showMissingBanner = attempted.has(step) && missingCount > 0
 
   /* `key` agar fokus/hover tombol tidak terbawa ke tombol lain saat berganti langkah */
   const footer = (
@@ -175,7 +175,7 @@ function PendaftaranSiswa() {
         </Button>
       )}
     </>
-  );
+  )
 
   return (
     <DetailScreen
@@ -236,7 +236,7 @@ function PendaftaranSiswa() {
                     navigate(
                       existingId
                         ? `/wali/pendaftaran/status?id=${encodeURIComponent(existingId)}`
-                        : "/wali/pendaftaran/status",
+                        : "/wali/pendaftaran/status"
                     ),
                 }}
               />
@@ -276,7 +276,7 @@ function PendaftaranSiswa() {
         </aside>
       </div>
     </DetailScreen>
-  );
+  )
 }
 
-export { PendaftaranSiswa };
+export { PendaftaranSiswa }

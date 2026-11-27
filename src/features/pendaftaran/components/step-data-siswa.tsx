@@ -1,4 +1,4 @@
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form"
 
 import {
   Field,
@@ -13,27 +13,27 @@ import {
   SelectTrigger,
   SelectValue,
   PhoneInput,
-} from "@/components";
-import { FormGroup } from "@/features/pendaftaran/components/form-group";
+} from "@/components"
+import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
   GRADE_OPTIONS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas";
+} from "@/features/pendaftaran/schemas"
 
 /* Langkah 1 · Data Wali & Siswa */
 function StepDataSiswa() {
-  const { register, control, formState } = useFormContext<PendaftaranInput>();
-  const { errors } = formState;
+  const { register, control, formState } = useFormContext<PendaftaranInput>()
+  const { errors } = formState
 
   const invalid = (name: keyof PendaftaranInput) =>
     errors[name]
       ? { "aria-invalid": true as const, "aria-describedby": `${name}-error` }
-      : {};
+      : {}
 
   const error = (name: keyof PendaftaranInput) =>
     errors[name] && (
       <FieldError id={`${name}-error`}>{errors[name]?.message}</FieldError>
-    );
+    )
 
   return (
     <>
@@ -96,8 +96,8 @@ function StepDataSiswa() {
                 <Select
                   value={field.value || null}
                   onValueChange={(v) => {
-                    field.onChange((v as string | null) ?? "");
-                    field.onBlur();
+                    field.onChange((v as string | null) ?? "")
+                    field.onBlur()
                   }}
                 >
                   <SelectTrigger
@@ -154,7 +154,7 @@ function StepDataSiswa() {
         </Field>
       </FormGroup>
     </>
-  );
+  )
 }
 
-export { StepDataSiswa };
+export { StepDataSiswa }

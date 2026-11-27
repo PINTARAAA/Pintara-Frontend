@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router"
 
 import {
   ResultScreen,
@@ -8,10 +8,10 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components";
-import type { PendaftaranResult } from "@/types/pendaftaran";
-import { SummaryRow } from "@/features/pendaftaran/components/form-group";
-import { formatDate } from "@/lib/format";
+} from "@/components"
+import type { PendaftaranResult } from "@/types/pendaftaran"
+import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { formatDate } from "@/lib/format"
 
 /*
  * Pendaftaran / Berhasil · kartu Ringkasan, aksi Primary Large "Pantau
@@ -20,7 +20,7 @@ import { formatDate } from "@/lib/format";
  * tengah, tombol berdampingan (Tertiary kiri, Primary Large kanan).
  */
 function PendaftaranBerhasil({ result }: { result: PendaftaranResult }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   return (
     <ResultScreen
       pageTitle="Daftar Siswa Baru"
@@ -76,7 +76,7 @@ function PendaftaranBerhasil({ result }: { result: PendaftaranResult }) {
         </CardContent>
       </Card>
     </ResultScreen>
-  );
+  )
 }
 
-export { PendaftaranBerhasil };
+export { PendaftaranBerhasil }

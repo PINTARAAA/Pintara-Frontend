@@ -1,4 +1,4 @@
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form"
 
 import {
   Checkbox,
@@ -9,18 +9,18 @@ import {
   Input,
   RadioGroup,
   RadioGroupItem,
-} from "@/components";
-import { FormGroup } from "@/features/pendaftaran/components/form-group";
+} from "@/components"
+import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
   FREQUENCY_OPTIONS,
   SUBJECT_OPTIONS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas";
+} from "@/features/pendaftaran/schemas"
 
 /* Langkah 2 · Kebutuhan Belajar */
 function StepKebutuhanBelajar() {
-  const { register, control, formState } = useFormContext<PendaftaranInput>();
-  const { errors } = formState;
+  const { register, control, formState } = useFormContext<PendaftaranInput>()
+  const { errors } = formState
 
   return (
     <>
@@ -46,11 +46,11 @@ function StepKebutuhanBelajar() {
                     field.onChange(
                       checked
                         ? SUBJECT_OPTIONS.filter(
-                            (s) => s === subject || field.value.includes(s),
+                            (s) => s === subject || field.value.includes(s)
                           )
-                        : field.value.filter((s) => s !== subject),
-                    );
-                    field.onBlur();
+                        : field.value.filter((s) => s !== subject)
+                    )
+                    field.onBlur()
                   }}
                 />
               ))}
@@ -77,8 +77,8 @@ function StepKebutuhanBelajar() {
               }
               value={field.value || null}
               onValueChange={(v) => {
-                field.onChange(v as string);
-                field.onBlur();
+                field.onChange(v as string)
+                field.onBlur()
               }}
               className="gap-ns-l lg:grid lg:grid-cols-3 lg:gap-x-ns-2xl"
             >
@@ -121,7 +121,7 @@ function StepKebutuhanBelajar() {
         </Field>
       </FormGroup>
     </>
-  );
+  )
 }
 
-export { StepKebutuhanBelajar };
+export { StepKebutuhanBelajar }

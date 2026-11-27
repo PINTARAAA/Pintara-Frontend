@@ -2,7 +2,7 @@ import * as React from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { format, isToday, isTomorrow } from "date-fns"
 import { id as localeId } from "date-fns/locale"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, UserPlusIcon } from "lucide-react"
 import { Link } from "react-router"
 
 import {
@@ -28,6 +28,8 @@ import {
   TaskList,
 } from "@/features/dashboard/components"
 import type { WaliDashboardData } from "@/types/dashboard"
+import { ongoingRegistrationsQuery } from "@/features/pendaftaran/api"
+import type { Registration } from "@/types/pendaftaran"
 
 import { useUnreadNotifications } from "@/features/notifikasi/api"
 
@@ -53,6 +55,11 @@ import { cn } from "@/lib/styles"
  *   di atas) dan Agenda minggu ini (les berikutnya disorot). Kolom samping
  *   340px bergaris kiri: Riwayat sesi. Kedua versi dirender terpisah agar
  *   tampilan mobile tidak berubah.
+ *
+ * Tambahan di luar Figma (jalan masuk W2/W3 untuk wali yang sudah punya
+ * akun): item "Daftarkan anak" di Student switcher, dan bagian "Pendaftaran
+ * berjalan" (hanya bila ada) yang menautkan ke Status Pendaftaran — mobile
+ * setelah Perlu tindakan, desktop di atas Riwayat sesi.
  */
 function WaliDashboard() {
   const unreadNotifications = useUnreadNotifications()
@@ -68,7 +75,10 @@ function WaliDashboard() {
       subtitle={formatGreeting()}
       title={data?.parent.name ?? <Skeleton className="h-6 w-48" />}
       action={
-        <NotificationButton to="/wali/notifikasi" unread={unreadNotifications} />
+        <NotificationButton
+          to="/wali/notifikasi"
+          unread={unreadNotifications}
+        />
       }
       desktopHeader="page"
       desktopHeaderActions={
@@ -79,6 +89,7 @@ function WaliDashboard() {
               value={data.activeStudentId}
               onValueChange={setStudentId}
               align="end"
+              addStudentTo="/wali/pendaftaran"
             />
           )}
           <NotificationButton
@@ -128,6 +139,7 @@ function MobileDashboard({
         students={data.students}
         value={data.activeStudentId}
         onValueChange={onStudentChange}
+        addStudentTo="/wali/pendaftaran"
       />
 
       {data.nextSession ? (
@@ -137,11 +149,17 @@ function MobileDashboard({
           eyebrow="Les berikutnya"
           badge={formatTimeUntil(data.nextSession.start)}
           title={data.nextSession.subject}
-          subtitle={formatSessionTime(data.nextSession.start, data.nextSession.end)}
+          subtitle={formatSessionTime(
+            data.nextSession.start,
+            data.nextSession.end
+          )}
           footer={
             <HeroCardRow
               leading={
-                <InitialsAvatar initials={data.nextSession.tutor.initials} tone="inverse" />
+                <InitialsAvatar
+                  initials={data.nextSession.tutor.initials}
+                  tone="inverse"
+                />
               }
               title={data.nextSession.tutor.name}
               description={data.nextSession.tutor.specialty}
@@ -159,6 +177,8 @@ function MobileDashboard({
       <DashboardSection title="Perlu tindakan">
         <TaskList tasks={data.tasks} />
       </DashboardSection>
+
+      <OngoingRegistrations variant="list" />
 
       <DashboardSection
         title="Jadwal minggu ini"
@@ -238,7 +258,8 @@ function DesktopDashboard({ data }: { data: WaliDashboardData }) {
         </DashboardSection>
       </div>
 
-      <aside className="border-l border-grayscale-border-default pl-ns-4xl">
+      <aside className="flex flex-col gap-12 border-l border-grayscale-border-default pl-ns-4xl">
+        <OngoingRegistrations variant="rows" />
         <DashboardSection
           title="Riwayat sesi"
           headingClassName="text-headline"
@@ -276,6 +297,86 @@ function DesktopDashboard({ data }: { data: WaliDashboardData }) {
   )
 }
 
+/* Label tahap pendaftaran yang masih berjalan */
+const ONGOING_STAGE: Record<
+  "menunggu_verifikasi" | "pencocokan_tutor",
+  { description: string; badge: "menunggu_verifikasi" | "terverifikasi" }
+> = {
+  menunggu_verifikasi: {
+    description: "Menunggu verifikasi Pengelola LBB",
+    badge: "menunggu_verifikasi",
+  },
+  pencocokan_tutor: {
+    description: "Sedang dicarikan tutor",
+    badge: "terverifikasi",
+  },
+}
+
+/*
+ * Pendaftaran berjalan · daftar pendaftaran yang belum selesai, tiap baris
+ * ke Status Pendaftaran (W3). Tidak dirender bila kosong/gagal dimuat agar
+ * Beranda wali yang tidak sedang mendaftar tetap sesuai Figma.
+ *   variant="list" : mobile, kotak daftar seperti bagian lain
+ *   variant="rows" : desktop kolom samping, baris bergaris seperti Riwayat sesi
+ */
+function OngoingRegistrations({ variant }: { variant: "list" | "rows" }) {
+  const query = useQuery(ongoingRegistrationsQuery())
+  const items = query.data ?? []
+  if (items.length === 0) return null
+
+  const to = (r: Registration) =>
+    `/wali/pendaftaran/status?id=${encodeURIComponent(r.id)}`
+  const stage = (r: Registration) =>
+    ONGOING_STAGE[r.stage as keyof typeof ONGOING_STAGE]
+
+  return (
+    <DashboardSection
+      title="Pendaftaran berjalan"
+      headingClassName={variant === "rows" ? "text-headline" : undefined}
+      className={variant === "rows" ? "gap-ns-l" : undefined}
+    >
+      {variant === "list" ? (
+        <DashboardList>
+          {items.map((r) => (
+            <ListItem
+              key={r.id}
+              icon={<UserPlusIcon />}
+              title={r.studentName}
+              description={stage(r).description}
+              badge={
+                <StatusBadge category="pendaftaran" status={stage(r).badge} />
+              }
+              render={<Link to={to(r)} />}
+            />
+          ))}
+        </DashboardList>
+      ) : (
+        <ul>
+          {items.map((r) => (
+            <li
+              key={r.id}
+              className="border-b border-grayscale-border-default last:border-b-0"
+            >
+              <Link
+                to={to(r)}
+                className="group flex flex-col items-start gap-ns-2xs py-ns-l leading-normal outline-none focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
+              >
+                <span className="text-body font-bold text-grayscale-text-title group-hover:underline">
+                  {r.studentName}
+                </span>
+                <span className="text-subtitle text-grayscale-text-subtitle">
+                  {stage(r).description}
+                </span>
+                <StatusBadge category="pendaftaran" status={stage(r).badge} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </DashboardSection>
+  )
+}
+
 /* Kotak tanggal agenda 64×72: hari singkat kapital ("RAB") di atas tanggal H4 */
 function AgendaDate({ date, className }: { date: Date; className?: string }) {
   return (
@@ -289,7 +390,9 @@ function AgendaDate({ date, className }: { date: Date; className?: string }) {
       <span className="text-caption leading-normal text-primary-text-primary uppercase">
         {format(date, "EEE", { locale: localeId })}
       </span>
-      <span className="text-h4 text-grayscale-text-title">{format(date, "d")}</span>
+      <span className="text-h4 text-grayscale-text-title">
+        {format(date, "d")}
+      </span>
     </span>
   )
 }
@@ -315,7 +418,10 @@ function AgendaList({ data }: { data: WaliDashboardData }) {
     <ul className="flex flex-col gap-ns-s">
       {next && (
         <li className="flex items-center gap-ns-xl rounded-(--comp-radius-lg) bg-primary-surface-subtitle p-ns-xl">
-          <AgendaDate date={next.start} className="bg-grayscale-surface-default" />
+          <AgendaDate
+            date={next.start}
+            className="bg-grayscale-surface-default"
+          />
           <div className="flex min-w-0 flex-1 flex-col items-start gap-ns-xs">
             <div className="flex flex-wrap items-center gap-2.5">
               <Link
@@ -358,7 +464,10 @@ function AgendaList({ data }: { data: WaliDashboardData }) {
             to={`/wali/jadwal/${item.routineId}`}
             className="flex items-center gap-ns-xl rounded-(--comp-radius-lg) px-ns-xl py-ns-m outline-none transition-colors hover:bg-grayscale-surface-subtitle focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
           >
-            <AgendaDate date={item.start} className="bg-grayscale-surface-subtitle" />
+            <AgendaDate
+              date={item.start}
+              className="bg-grayscale-surface-subtitle"
+            />
             <div className="flex min-w-0 flex-1 flex-col gap-ns-2xs leading-normal">
               <span className="text-body font-bold text-grayscale-text-title">
                 {item.subject}
