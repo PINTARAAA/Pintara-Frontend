@@ -1,4 +1,3 @@
-import type * as React from "react"
 import { useQuery } from "@tanstack/react-query"
 import { ClipboardCheckIcon, ClockIcon } from "lucide-react"
 import { Link } from "react-router"
@@ -11,13 +10,12 @@ import {
   ListItem,
 } from "@/components"
 import {
-  DashboardList,
   DashboardSection,
+  ExpandableList,
   NotificationButton,
 } from "@/features/dashboard/components"
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
-import { useExpandable } from "@/hooks"
 import { tutorSessionsQuery } from "@/features/presensi/api"
 import { formatToFill, sessionTitle } from "@/features/presensi/lib"
 import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
@@ -81,7 +79,8 @@ function Presensi() {
             <div className="flex flex-col gap-ns-2xl lg:gap-ns-3xl">
               {data.toFill.length > 0 && (
                 <DashboardSection title="Perlu diisi">
-                  <PreviewList
+                  <ExpandableList
+                    preview={PREVIEW}
                     items={data.toFill}
                     renderItem={(s) => (
                       <ListItem
@@ -98,7 +97,8 @@ function Presensi() {
               )}
               {data.laterToday.length > 0 && (
                 <DashboardSection title="Nanti hari ini">
-                  <PreviewList
+                  <ExpandableList
+                    preview={PREVIEW}
                     items={data.laterToday}
                     renderItem={(s) => (
                       <ListItem
@@ -117,9 +117,13 @@ function Presensi() {
           {data.filled.length > 0 && (
             <DashboardSection
               title="Sudah diisi"
-              action={{ label: "Status presensi", to: "/tutor/presensi/status" }}
+              action={{
+                label: "Status presensi",
+                to: "/tutor/presensi/status",
+              }}
             >
-              <PreviewList
+              <ExpandableList
+                preview={PREVIEW}
                 items={data.filled}
                 renderItem={(s) => (
                   <ListItem
@@ -129,7 +133,10 @@ function Presensi() {
                     description={formatWeekdayDate(s.start)}
                     badge={
                       s.record && (
-                        <StatusBadge category="presensi" status={s.record.validation} />
+                        <StatusBadge
+                          category="presensi"
+                          status={s.record.validation}
+                        />
                       )
                     }
                     render={<Link to={`/tutor/presensi/status/${s.id}`} />}
@@ -141,36 +148,6 @@ function Presensi() {
         </div>
       ) : null}
     </TabScreen>
-  )
-}
-
-/* Daftar ringkas: PREVIEW baris pertama + tombol "Lihat selengkapnya" */
-function PreviewList<T>({
-  items,
-  renderItem,
-}: {
-  items: T[]
-  renderItem: (item: T) => React.ReactNode
-}) {
-  const list = useExpandable(items, PREVIEW)
-
-  return (
-    <>
-      <DashboardList>{list.visible.map(renderItem)}</DashboardList>
-      {list.hidden > 0 && (
-        <Button
-          variant="tertiary"
-          size="sm"
-          className="-mt-ns-2xs w-fit self-center"
-          aria-expanded={list.expanded}
-          onClick={list.toggle}
-        >
-          {list.expanded
-            ? "Ringkas"
-            : `Lihat selengkapnya (${list.hidden} lainnya)`}
-        </Button>
-      )}
-    </>
   )
 }
 
