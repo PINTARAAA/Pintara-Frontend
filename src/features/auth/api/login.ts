@@ -1,7 +1,9 @@
-import { httpClient, isApiError, setAccessToken } from "@/lib/api"
+import { httpClient, isApiError, queryClient, setAccessToken } from "@/lib/api"
 import type { AuthUser, LoginErrorCode, Role } from "@/types/auth"
 
 import type { LoginInput } from "@/features/auth/schemas"
+
+import { sessionQuery } from "./session"
 
 type LoginResponse = {
   id: string
@@ -38,7 +40,9 @@ export async function login(input: LoginInput): Promise<AuthUser> {
       password: input.password,
     })
     setAccessToken(data.token)
-    return { name: data.name, role: data.role }
+    const user: AuthUser = { name: data.name, role: data.role }
+    queryClient.setQueryData(sessionQuery().queryKey, user)
+    return user
   } catch (error) {
     if (isApiError(error) && isLoginErrorCode(error.serverCode)) {
       throw new LoginError(error.serverCode, error.message)

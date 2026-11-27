@@ -5,6 +5,7 @@ import { ROLE_NAV, ROLE_SIDEBAR, type Role } from "./navigation"
 import { SidebarLogoutItem } from "@/features/akun/components/account-help"
 import { SidebarThemeItem } from "@/features/akun/components/theme-setting"
 import { PageLoader } from "./page-loader"
+import { redirectIfAuthenticated, requireRole } from "./auth-guards"
 import RouteError from "@/pages/error/error"
 import { AppFrame, AppShell } from "@/components"
 
@@ -384,6 +385,7 @@ function roleRoutes(role: Role): RouteObject {
   const extras = EXTRA_ROUTES[role] ?? []
   return {
     path: role,
+    loader: () => requireRole(role),
     element: (
       <AppShell
         items={main}
@@ -435,6 +437,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/masuk" replace /> },
       {
         path: "masuk",
+        loader: redirectIfAuthenticated,
         lazy: () => import("@/pages/auth/login").then(toRoute),
       },
       roleRoutes("wali"),

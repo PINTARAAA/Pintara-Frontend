@@ -6,6 +6,7 @@ import {
   WALI_ACCOUNT,
 } from "@/lib/data/akun"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { clearAccessToken, httpClient } from "@/lib/api"
 import type {
   PengelolaMenu,
   TutorAccount,
@@ -63,6 +64,11 @@ export const pengelolaMenuQuery = () =>
   })
 
 export async function logout() {
-  /* TODO(backend): panggil endpoint logout */
-  await delay(300)
+  try {
+    await httpClient.post("/auth/logout")
+  } catch {
+    /* token tetap dihapus walau server tidak terjangkau */
+  } finally {
+    clearAccessToken()
+  }
 }
