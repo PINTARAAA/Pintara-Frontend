@@ -92,7 +92,8 @@ function TaskActionList({
             <div
               className={cn(
                 "flex min-w-0 flex-1 flex-col leading-normal",
-                wali ? "gap-ns-3xs" : "gap-ns-s"
+                /* Wali: Figma 2px, dilonggarkan ke 4px agar judul tidak menempel */
+                wali ? "gap-ns-2xs" : "gap-ns-s"
               )}
             >
               <p className="text-body font-bold text-grayscale-text-title">{task.title}</p>
