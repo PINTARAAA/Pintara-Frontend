@@ -52,11 +52,13 @@ function NotesCard({
 /* Ulasan yang sudah dikirim wali */
 function ReviewCard({
   review,
+  className,
 }: {
   review: NonNullable<AttendanceSession["review"]>
+  className?: string
 }) {
   return (
-    <Card size="compact">
+    <Card size="compact" className={className}>
       <CardHeader>
         <CardTitle>Ulasan Anda</CardTitle>
         <CardDescription>

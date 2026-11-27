@@ -26,6 +26,11 @@ import { formatTimeRange } from "@/lib/format"
  * Kartu sesi (judul hari lengkap, jam · tutor, badge, Kehadiran · Materi,
  * label 104px) · "Catatan tutor" · "Ulasan Anda" bila ada. Sesi yang belum
  * divalidasi menampilkan banner dengan tautan ke layar validasi (W5).
+ *
+ * Desktop (≥ lg, frame "Riwayat Les / Wali - Detail sesi (Desktop)"):
+ * halaman putih, Page header (kembali "Riwayat Les", judul "Detail Sesi");
+ * kartu sesi + "Catatan tutor" di kolom utama (gap 24), "Ulasan Anda" 380px
+ * di kanan (jarak 32).
  */
 const attendanceText = (who: string, value: Attendance) =>
   `${who} ${value === "Tidak hadir" ? "tidak hadir" : value.toLowerCase()}`
@@ -37,7 +42,13 @@ function DetailRiwayat() {
   const session = query.data
 
   return (
-    <DetailScreen title="Detail Sesi">
+    <DetailScreen
+      title="Detail Sesi"
+      desktopHeader="page"
+      backLabel="Riwayat Les"
+      desktopWidth="wide"
+      className="lg:pt-ns-3xl"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
       ) : query.isError ? (
@@ -72,20 +83,40 @@ function DetailRiwayat() {
               }}
             />
           )}
-          <SessionSummary session={session} />
-          {!session.cancelReason && (
-            <NotesCard session={session} title="Catatan tutor" />
-          )}
-          {session.review && <ReviewCard review={session.review} />}
+          <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_23.75rem] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-ns-3xl lg:gap-y-ns-2xl">
+            <SessionSummary
+              session={session}
+              className="lg:col-start-1 lg:row-start-1"
+            />
+            {!session.cancelReason && (
+              <NotesCard
+                session={session}
+                title="Catatan tutor"
+                className="lg:col-start-1 lg:row-start-2"
+              />
+            )}
+            {session.review && (
+              <ReviewCard
+                review={session.review}
+                className="lg:col-start-2 lg:row-span-2 lg:row-start-1"
+              />
+            )}
+          </div>
         </>
       ) : null}
     </DetailScreen>
   )
 }
 
-function SessionSummary({ session }: { session: AttendanceSession }) {
+function SessionSummary({
+  session,
+  className,
+}: {
+  session: AttendanceSession
+  className?: string
+}) {
   return (
-    <Card size="compact">
+    <Card size="compact" className={className}>
       <CardHeader>
         <CardTitle>
           {session.subject} ·{" "}
