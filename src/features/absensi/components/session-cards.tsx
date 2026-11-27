@@ -18,12 +18,14 @@ import { formatDateTime } from "@/lib/format"
 function NotesCard({
   session,
   title = "Catatan & Dokumentasi",
+  className,
 }: {
   session: AttendanceSession
   title?: string
+  className?: string
 }) {
   return (
-    <Card size="compact">
+    <Card size="compact" className={className}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
@@ -57,7 +59,9 @@ function ReviewCard({
     <Card size="compact">
       <CardHeader>
         <CardTitle>Ulasan Anda</CardTitle>
-        <CardDescription>Dikirim {formatDateTime(review.submittedAt)}</CardDescription>
+        <CardDescription>
+          Dikirim {formatDateTime(review.submittedAt)}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-ns-s">

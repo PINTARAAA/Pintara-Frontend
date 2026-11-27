@@ -30,6 +30,9 @@ import { formatTimeRange } from "@/lib/format"
  * Ringkasan sesi (latar Grayscale/Surface/subtitle) · penjelasan ·
  * Textarea "Alasan keberatan" (wajib, maks. 500). Bilah aksi: Batal ·
  * Kirim Keberatan. Setelah terkirim kembali ke Detail Sesi + toast.
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): Page header (kembali "Detail Sesi"),
+ * kolom 720px gap 24; tombol rata kanan di bawah garis pada akhir kolom.
  */
 const REASON_MAX = 500
 
@@ -52,7 +55,12 @@ function AjukanKeberatan() {
   }
 
   return (
-    <DetailScreen title="Ajukan Keberatan">
+    <DetailScreen
+      title="Ajukan Keberatan"
+      desktopHeader="page"
+      backLabel="Detail Sesi"
+      desktopWidth="wide"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
       ) : query.isError && !(query.error instanceof NotFoundError) ? (
@@ -65,7 +73,9 @@ function AjukanKeberatan() {
       ) : (
         <DataState
           state="empty"
-          title={query.isError ? "Sesi tidak ditemukan" : "Sesi sudah divalidasi"}
+          title={
+            query.isError ? "Sesi tidak ditemukan" : "Sesi sudah divalidasi"
+          }
           description="Keberatan hanya bisa diajukan untuk sesi yang belum divalidasi."
           action={{
             label: "Kembali ke Absensi",
@@ -110,68 +120,80 @@ function ObjectionForm({ session }: { session: AttendanceSession }) {
 
   const counter = `${reason.length}/${REASON_MAX}`
 
+  const actions = (
+    <>
+      <Button variant="secondary" onClick={() => navigate(-1)}>
+        Batal
+      </Button>
+      <Button
+        onClick={form.handleSubmit((values) => submit.mutate(values))}
+        disabled={submit.isPending}
+      >
+        {submit.isPending ? "Mengirim…" : "Kirim Keberatan"}
+      </Button>
+    </>
+  )
+
   return (
     <DetailScreen
       title="Ajukan Keberatan"
       surface="default"
-      className="gap-ns-2xl"
-      footer={
-        <>
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            Batal
-          </Button>
-          <Button
-            onClick={form.handleSubmit((values) => submit.mutate(values))}
-            disabled={submit.isPending}
-          >
-            {submit.isPending ? "Mengirim…" : "Kirim Keberatan"}
-          </Button>
-        </>
-      }
+      desktopHeader="page"
+      backLabel="Detail Sesi"
+      desktopWidth="wide"
+      desktopActions="none"
+      className="gap-ns-2xl lg:pt-ns-3xl"
+      footer={actions}
     >
-      <div className="flex flex-col gap-ns-2xs rounded-(--comp-radius-md) bg-grayscale-surface-subtitle px-ns-l py-ns-m leading-normal">
-        <p className="text-subtitle font-bold text-grayscale-text-title">
-          {formatSessionTitle(session.subject, session.start)}
+      <div className="contents lg:flex lg:max-w-180 lg:flex-col lg:gap-ns-2xl">
+        <div className="flex flex-col gap-ns-2xs rounded-(--comp-radius-md) bg-grayscale-surface-subtitle px-ns-l py-ns-m leading-normal">
+          <p className="text-subtitle font-bold text-grayscale-text-title">
+            {formatSessionTitle(session.subject, session.start)}
+          </p>
+          <p className="text-caption text-grayscale-text-caption">
+            {formatTimeRange(session.start, session.end)} · {session.tutor.name}{" "}
+            · Tercatat: {session.studentAttendance}
+          </p>
+        </div>
+
+        <p className="text-subtitle leading-normal text-grayscale-text-body">
+          Jelaskan bagian data kehadiran yang tidak sesuai. Pengelola LBB akan
+          meninjau keberatan Anda sebelum presensi diverifikasi.
         </p>
-        <p className="text-caption text-grayscale-text-caption">
-          {formatTimeRange(session.start, session.end)} · {session.tutor.name} ·
-          Tercatat: {session.studentAttendance}
-        </p>
+
+        <form
+          noValidate
+          aria-label="Formulir keberatan presensi"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <Field>
+            <FieldLabel htmlFor="reason" required>
+              Alasan keberatan
+            </FieldLabel>
+            <Textarea
+              id="reason"
+              maxLength={REASON_MAX}
+              placeholder="Contoh: tutor datang terlambat 30 menit"
+              aria-invalid={errors.reason ? true : undefined}
+              aria-describedby={errors.reason ? "reason-error" : undefined}
+              {...form.register("reason")}
+            />
+            {errors.reason ? (
+              <FieldError id="reason-error" counter={counter}>
+                {errors.reason.message}
+              </FieldError>
+            ) : (
+              <FieldDescription counter={counter}>
+                Wajib diisi. Tulis sejelas mungkin.
+              </FieldDescription>
+            )}
+          </Field>
+        </form>
+
+        <div className="hidden justify-end gap-ns-m border-t border-grayscale-border-default pt-ns-2xl lg:flex">
+          {actions}
+        </div>
       </div>
-
-      <p className="text-subtitle leading-normal text-grayscale-text-body">
-        Jelaskan bagian data kehadiran yang tidak sesuai. Pengelola LBB akan
-        meninjau keberatan Anda sebelum presensi diverifikasi.
-      </p>
-
-      <form
-        noValidate
-        aria-label="Formulir keberatan presensi"
-        onSubmit={(e) => e.preventDefault()}
-      >
-        <Field>
-          <FieldLabel htmlFor="reason" required>
-            Alasan keberatan
-          </FieldLabel>
-          <Textarea
-            id="reason"
-            maxLength={REASON_MAX}
-            placeholder="Contoh: tutor datang terlambat 30 menit"
-            aria-invalid={errors.reason ? true : undefined}
-            aria-describedby={errors.reason ? "reason-error" : undefined}
-            {...form.register("reason")}
-          />
-          {errors.reason ? (
-            <FieldError id="reason-error" counter={counter}>
-              {errors.reason.message}
-            </FieldError>
-          ) : (
-            <FieldDescription counter={counter}>
-              Wajib diisi. Tulis sejelas mungkin.
-            </FieldDescription>
-          )}
-        </Field>
-      </form>
     </DetailScreen>
   )
 }

@@ -34,6 +34,10 @@ import { formatTimeRange } from "@/lib/format"
  *   belum_divalidasi → Ajukan Keberatan (Secondary) · Setujui Kehadiran
  *   sudah_divalidasi tanpa ulasan → Beri Ulasan (Secondary)
  *   keberatan → tanpa aksi, banner "Keberatan sedang ditinjau"
+ *
+ * Desktop (≥ lg, frame "Detail sesi (Desktop)"): Page header (kembali
+ * "Validasi Absensi", judul "Detail Sesi") dengan tombol aksi di kanan;
+ * kartu sesi dan "Catatan & Dokumentasi" berdampingan (gap 24, sama tinggi).
  */
 function DetailSesi() {
   const { sessionId = "" } = useParams()
@@ -83,7 +87,15 @@ function DetailSesi() {
     ) : undefined
 
   return (
-    <DetailScreen title="Detail Sesi" footer={footer}>
+    <DetailScreen
+      title="Detail Sesi"
+      footer={footer}
+      desktopHeader="page"
+      backLabel="Validasi Absensi"
+      desktopWidth="wide"
+      desktopActions="header"
+      className="lg:pt-ns-3xl"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
       ) : query.isError ? (
@@ -114,9 +126,11 @@ function DetailSesi() {
               description={`Pengelola LBB akan meninjau keberatan Anda sebelum presensi diverifikasi. Alasan: ${session.objection.reason}`}
             />
           )}
-          <SessionCard session={session} />
-          <NotesCard session={session} />
-          {session.review && <ReviewCard review={session.review} />}
+          <div className="contents lg:grid lg:grid-cols-2 lg:gap-ns-2xl">
+            <SessionCard session={session} />
+            <NotesCard session={session} />
+            {session.review && <ReviewCard review={session.review} />}
+          </div>
         </>
       ) : null}
     </DetailScreen>
@@ -127,7 +141,9 @@ function SessionCard({ session }: { session: AttendanceSession }) {
   return (
     <Card size="compact">
       <CardHeader>
-        <CardTitle>{formatSessionTitle(session.subject, session.start)}</CardTitle>
+        <CardTitle>
+          {formatSessionTitle(session.subject, session.start)}
+        </CardTitle>
         <CardDescription>
           {formatTimeRange(session.start, session.end)}
         </CardDescription>
