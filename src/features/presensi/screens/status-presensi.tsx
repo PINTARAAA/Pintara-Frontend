@@ -30,6 +30,11 @@ import { cn } from "@/lib/styles"
  * Stacked progress bar + legenda) → Dikeberatan wali · Menunggu validasi
  * wali · Belum dikumpulkan (ketuk → isi presensi) · Terverifikasi (2
  * terbaru, "Lihat semua n" untuk membuka sisanya). Bulan di ?bulan=YYYY-MM.
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): halaman putih, Page header (kembali
+ * "Presensi", judul) dengan pil bulan di kanan. Dikeberatan · Menunggu ·
+ * Belum dikumpulkan di kolom utama; ringkasan + Terverifikasi 420px di kanan
+ * (jarak 40, gap 24). Kosong: kartu Data state di tengah halaman.
  */
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
@@ -43,9 +48,31 @@ function StatusPresensi() {
     placeholderData: keepPreviousData,
   })
   const data = query.data
+  const isEmpty = data?.total === 0
+
+  const periodPill = data && (
+    <FilterPill
+      label="Periode"
+      menuLabel="Pilih bulan"
+      value={monthKey(data.month)}
+      options={data.months.map((m) => ({
+        value: monthKey(m),
+        label: monthLabel(m),
+      }))}
+      onValueChange={(v) => setParams({ bulan: v }, { replace: true })}
+    />
+  )
 
   return (
-    <DetailScreen title="Status Presensi" className="gap-ns-2xl">
+    <DetailScreen
+      title="Status Presensi"
+      desktopHeader="page"
+      backLabel="Presensi"
+      desktopWidth="wide"
+      desktopHeaderActions={periodPill}
+      /* Kosong: isi mengisi sisa halaman agar kartu tepat di tengah */
+      className={cn("gap-ns-2xl lg:pt-ns-3xl", isEmpty && "lg:flex-1")}
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat status presensi…" />
       ) : query.isError ? (
@@ -59,27 +86,21 @@ function StatusPresensi() {
         <div
           aria-busy={query.isPlaceholderData}
           className={cn(
-            "flex flex-col gap-ns-2xl transition-opacity",
+            "flex flex-1 flex-col gap-ns-2xl transition-opacity",
             query.isPlaceholderData && "opacity-60"
           )}
         >
-          <FilterPill
-            label="Periode"
-            menuLabel="Pilih bulan"
-            value={monthKey(data.month)}
-            options={data.months.map((m) => ({
-              value: monthKey(m),
-              label: monthLabel(m),
-            }))}
-            onValueChange={(v) => setParams({ bulan: v }, { replace: true })}
-          />
+          {/* Desktop: pil bulan pindah ke Page header */}
+          <div className="flex lg:hidden">{periodPill}</div>
 
-          {data.total === 0 ? (
-            <DataState
-              state="empty"
-              title="Belum ada presensi"
-              description={`Presensi ${monthLabel(data.month)} akan muncul setelah Anda mengisi sesi pertama.`}
-            />
+          {isEmpty ? (
+            <div className="flex flex-col lg:flex-1 lg:justify-center">
+              <DataState
+                state="empty"
+                title="Belum ada presensi"
+                description={`Presensi ${monthLabel(data.month)} akan muncul setelah Anda mengisi sesi pertama.`}
+              />
+            </div>
           ) : (
             <StatusContent data={data} />
           )}
@@ -101,10 +122,15 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
   )
 
   return (
-    <>
+    /*
+     * Mobile: urutan DOM (ringkasan · keberatan · menunggu · belum ·
+     * terverifikasi). Desktop: grid, tiga daftar di kolom kiri membentang dua
+     * baris; ringkasan + Terverifikasi di kanan.
+     */
+    <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-ns-4xl lg:gap-y-ns-2xl">
       <section
         aria-label="Ringkasan presensi"
-        className="flex flex-col gap-ns-m rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default p-ns-l"
+        className="flex flex-col gap-ns-m rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default p-ns-l lg:col-start-2 lg:row-start-1"
       >
         <div className="flex flex-col gap-ns-s leading-normal">
           <p className="text-body font-bold text-grayscale-text-title">
@@ -119,67 +145,77 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
           showLegend
           remainderLabel="Belum dikumpulkan"
           segments={[
-            { label: "Terverifikasi", value: data.verified.length, tone: "success" },
-            { label: "Menunggu wali", value: data.waiting.length, tone: "warning" },
+            {
+              label: "Terverifikasi",
+              value: data.verified.length,
+              tone: "success",
+            },
+            {
+              label: "Menunggu wali",
+              value: data.waiting.length,
+              tone: "warning",
+            },
             { label: "Keberatan", value: data.disputed.length, tone: "error" },
           ]}
         />
       </section>
 
-      {data.disputed.length > 0 && (
-        <DashboardSection title="Dikeberatan wali">
-          <DashboardList>
-            {data.disputed.map((s) => (
-              <ListItem
-                key={s.id}
-                title={sessionTitle(s)}
-                description={`${formatWeekdayDate(s.start)} · "${shorten(s.record?.objection?.reason ?? "")}"`}
-                chevron
-                render={detailLink(s)}
-              />
-            ))}
-          </DashboardList>
-        </DashboardSection>
-      )}
+      <div className="contents lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-ns-2xl">
+        {data.disputed.length > 0 && (
+          <DashboardSection title="Dikeberatan wali">
+            <DashboardList>
+              {data.disputed.map((s) => (
+                <ListItem
+                  key={s.id}
+                  title={sessionTitle(s)}
+                  description={`${formatWeekdayDate(s.start)} · "${shorten(s.record?.objection?.reason ?? "")}"`}
+                  chevron
+                  render={detailLink(s)}
+                />
+              ))}
+            </DashboardList>
+          </DashboardSection>
+        )}
 
-      {data.waiting.length > 0 && (
-        <DashboardSection title="Menunggu validasi wali">
-          <DashboardList>
-            {data.waiting.map((s) => (
-              <ListItem
-                key={s.id}
-                title={sessionTitle(s)}
-                description={
-                  s.record?.held === false
-                    ? `${formatWeekdayDate(s.start)} · tidak terlaksana`
-                    : `${formatWeekdayDate(s.start)} · diisi ${formatDayMonth(s.record!.submittedAt)}, ${format(s.record!.submittedAt, "HH.mm")}`
-                }
-                chevron
-                render={detailLink(s)}
-              />
-            ))}
-          </DashboardList>
-        </DashboardSection>
-      )}
+        {data.waiting.length > 0 && (
+          <DashboardSection title="Menunggu validasi wali">
+            <DashboardList>
+              {data.waiting.map((s) => (
+                <ListItem
+                  key={s.id}
+                  title={sessionTitle(s)}
+                  description={
+                    s.record?.held === false
+                      ? `${formatWeekdayDate(s.start)} · tidak terlaksana`
+                      : `${formatWeekdayDate(s.start)} · diisi ${formatDayMonth(s.record!.submittedAt)}, ${format(s.record!.submittedAt, "HH.mm")}`
+                  }
+                  chevron
+                  render={detailLink(s)}
+                />
+              ))}
+            </DashboardList>
+          </DashboardSection>
+        )}
 
-      {data.notCollected.length > 0 && (
-        <DashboardSection title="Belum dikumpulkan">
-          <DashboardList>
-            {data.notCollected.map((s) => (
-              <ListItem
-                key={s.id}
-                title={sessionTitle(s)}
-                description={`${formatWeekdayDate(s.start)} · isi sekarang`}
-                chevron
-                render={<Link to={`/tutor/presensi/${s.id}`} />}
-              />
-            ))}
-          </DashboardList>
-        </DashboardSection>
-      )}
+        {data.notCollected.length > 0 && (
+          <DashboardSection title="Belum dikumpulkan">
+            <DashboardList>
+              {data.notCollected.map((s) => (
+                <ListItem
+                  key={s.id}
+                  title={sessionTitle(s)}
+                  description={`${formatWeekdayDate(s.start)} · isi sekarang`}
+                  chevron
+                  render={<Link to={`/tutor/presensi/${s.id}`} />}
+                />
+              ))}
+            </DashboardList>
+          </DashboardSection>
+        )}
+      </div>
 
       {data.verified.length > 0 && (
-        <section className="flex flex-col gap-ns-m">
+        <section className="flex flex-col gap-ns-m lg:col-start-2 lg:row-start-2">
           <div className="flex items-center justify-between gap-ns-s">
             <h2 className="text-body leading-normal font-bold text-grayscale-text-title">
               Terverifikasi
@@ -210,7 +246,7 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
           </DashboardList>
         </section>
       )}
-    </>
+    </div>
   )
 }
 
@@ -218,7 +254,10 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
 function shorten(text: string, words = 5) {
   const parts = text.replace(/[.”"]+$/, "").split(/\s+/)
   return parts.length > words
-    ? `${parts.slice(0, words).join(" ").replace(/[,;:]$/, "")}…`
+    ? `${parts
+        .slice(0, words)
+        .join(" ")
+        .replace(/[,;:]$/, "")}…`
     : parts.join(" ")
 }
 

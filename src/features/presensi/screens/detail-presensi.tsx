@@ -29,6 +29,11 @@ import { formatTimeRange } from "@/lib/format"
  * Kartu judul (sesi, tanggal · jadwal, badge) · [Keberatan dari wali] ·
  * Progres presensi (Timeline) · Data yang Anda isi · catatan. Bila ada
  * keberatan: bilah aksi "Hubungi Pengelola LBB" (WhatsApp).
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): halaman putih, Page header (kembali
+ * "Status Presensi", judul) dengan "Hubungi Pengelola LBB" di kanan. Kartu
+ * judul · keberatan · data · catatan di kolom utama (gap 24), Progres
+ * presensi 420px di kanan (jarak 40).
  */
 const LBB_WHATSAPP = "6281200001122"
 
@@ -45,6 +50,11 @@ function DetailPresensi() {
   return (
     <DetailScreen
       title="Detail Presensi"
+      desktopHeader="page"
+      backLabel="Status Presensi"
+      desktopWidth="wide"
+      desktopActions="header"
+      className="lg:pt-ns-3xl"
       footer={
         record?.validation === "keberatan" && (
           <Button
@@ -73,7 +83,8 @@ function DetailPresensi() {
             description="Sesi ini mungkin sudah dihapus dari jadwal."
             action={{
               label: "Kembali ke Status Presensi",
-              onClick: () => navigate("/tutor/presensi/status", { replace: true }),
+              onClick: () =>
+                navigate("/tutor/presensi/status", { replace: true }),
             }}
           />
         ) : (
@@ -91,60 +102,71 @@ function DetailPresensi() {
           description="Isi presensi sesi ini terlebih dahulu."
           action={{
             label: "Isi Presensi",
-            onClick: () => navigate(`/tutor/presensi/${session.id}`, { replace: true }),
+            onClick: () =>
+              navigate(`/tutor/presensi/${session.id}`, { replace: true }),
           }}
         />
       ) : session && record ? (
-        <>
-          <Card size="compact">
-            <CardHeader>
-              <CardTitle>{sessionTitle(session)}</CardTitle>
-              <p className="text-caption leading-normal text-grayscale-text-caption">
-                {formatLongDate(session.start)} ·{" "}
-                {formatTimeRange(session.start, session.end)}
-              </p>
-            </CardHeader>
-            <CardContent>
-              <StatusBadge category="presensi" status={record.validation} />
-            </CardContent>
-          </Card>
-
-          {record.objection && (
+        <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-x-ns-4xl">
+          <div className="contents lg:flex lg:flex-col lg:gap-ns-2xl">
             <Card size="compact">
               <CardHeader>
-                <CardTitle>Keberatan dari wali</CardTitle>
-                <CardDescription>
-                  {session.student.parentSalutation} {session.student.parentName} ·{" "}
-                  {stamp(record.objection.at)}
-                </CardDescription>
+                <CardTitle>{sessionTitle(session)}</CardTitle>
+                <p className="text-caption leading-normal text-grayscale-text-caption">
+                  {formatLongDate(session.start)} ·{" "}
+                  {formatTimeRange(session.start, session.end)}
+                </p>
               </CardHeader>
               <CardContent>
-                <blockquote>“{record.objection.reason}”</blockquote>
+                <StatusBadge category="presensi" status={record.validation} />
               </CardContent>
             </Card>
-          )}
 
-          <ProgressCard session={session} />
-          <FilledDataCard session={session} />
+            {record.objection && (
+              <Card size="compact">
+                <CardHeader>
+                  <CardTitle>Keberatan dari wali</CardTitle>
+                  <CardDescription>
+                    {session.student.parentSalutation}{" "}
+                    {session.student.parentName} · {stamp(record.objection.at)}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <blockquote>“{record.objection.reason}”</blockquote>
+                </CardContent>
+              </Card>
+            )}
 
-          {record.validation === "keberatan" && (
-            <p className="text-caption leading-normal text-grayscale-text-caption">
-              Anda tidak perlu mengubah presensi. Hubungi Pengelola LBB bila
-              ingin memberi klarifikasi.
-            </p>
-          )}
-        </>
+            {/* Mobile: setelah keberatan; desktop: kolom kanan */}
+            <ProgressCard session={session} className="lg:hidden" />
+            <FilledDataCard session={session} />
+
+            {record.validation === "keberatan" && (
+              <p className="text-caption leading-normal text-grayscale-text-caption">
+                Anda tidak perlu mengubah presensi. Hubungi Pengelola LBB bila
+                ingin memberi klarifikasi.
+              </p>
+            )}
+          </div>
+          <ProgressCard session={session} className="hidden lg:flex" />
+        </div>
       ) : null}
     </DetailScreen>
   )
 }
 
-function ProgressCard({ session }: { session: TutorSession }) {
+function ProgressCard({
+  session,
+  className,
+}: {
+  session: TutorSession
+  className?: string
+}) {
   const record = session.record!
   const parent = `${session.student.parentSalutation} ${session.student.parentName}`
 
   return (
-    <Card size="compact">
+    <Card size="compact" className={className}>
       <CardHeader>
         <CardTitle>Progres presensi</CardTitle>
       </CardHeader>
@@ -199,7 +221,9 @@ function ProgressCard({ session }: { session: TutorSession }) {
             </>
           )}
           <TimelineItem
-            state={record.validation === "sudah_divalidasi" ? "done" : "upcoming"}
+            state={
+              record.validation === "sudah_divalidasi" ? "done" : "upcoming"
+            }
             title="Masuk rekap honor"
             description={
               !record.held
@@ -233,9 +257,13 @@ function FilledDataCard({ session }: { session: TutorSession }) {
                 {record.studentPresent ? "Hadir" : "Tidak hadir"}
               </SummaryRow>
               <SummaryRow label="Materi">{record.topic}</SummaryRow>
-              {record.notes && <SummaryRow label="Catatan">{record.notes}</SummaryRow>}
+              {record.notes && (
+                <SummaryRow label="Catatan">{record.notes}</SummaryRow>
+              )}
               {record.attachment && (
-                <SummaryRow label="Dokumentasi">{record.attachment.name}</SummaryRow>
+                <SummaryRow label="Dokumentasi">
+                  {record.attachment.name}
+                </SummaryRow>
               )}
             </>
           ) : (
