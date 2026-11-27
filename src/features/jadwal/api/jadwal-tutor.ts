@@ -6,6 +6,7 @@ import { findLastHeldSession } from "@/features/presensi/api"
 import { parseTime, WEEKDAYS } from "@/lib/data/jadwal"
 import { routines, WEEK_COUNT } from "@/lib/data/jadwal-tutor"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { normalizePhone } from "@/lib/format"
 import type {
   TutorRoutine,
   TutorSchedule,
@@ -46,8 +47,6 @@ function toSession(routine: TutorRoutine, day: Date): TutorScheduleSession {
   }
 }
 
-/* "0813-5566-7788" → "6281355667788" (format wa.me) */
-const toWhatsapp = (phone: string) => phone.replace(/\D/g, "").replace(/^0/, "62")
 
 function weekRange(week: number, now = new Date()) {
   const from = addDays(startOfDay(now), week * 7)
@@ -112,7 +111,11 @@ export async function getTutorScheduleSession(
   const last = findLastHeldSession(routine.student.name, session.start)
   return {
     ...session,
-    parent: { ...routine.parent, whatsapp: toWhatsapp(routine.parent.phone) },
+    parent: {
+      ...routine.parent,
+      /* "0813-5566-7788" → "6281355667788" (nomor kanonis untuk wa.me) */
+      whatsapp: normalizePhone(routine.parent.phone) ?? "",
+    },
     previous: last && {
       date: last.start,
       subject: last.subject,

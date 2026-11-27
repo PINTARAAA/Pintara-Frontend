@@ -21,6 +21,7 @@ import {
   Input,
   TimePicker,
   toast,
+  PhoneInput,
 } from "@/components"
 import {
   DuplicateEmailError,
@@ -36,7 +37,7 @@ import {
   type TutorFormInput,
 } from "@/features/data-master/schemas"
 import { FormGroup } from "@/features/pendaftaran/components"
-import { formatRupiah } from "@/lib/format"
+import { formatPhone, formatRupiah } from "@/lib/format"
 
 /*
  * P9 · Tambah Tutor / Ubah Profil Tutor · Figma "Data Tutor / Tambah tutor".
@@ -50,7 +51,7 @@ const digitsOnly = (value: string) => Number(value.replace(/\D/g, "")) || 0
 
 const toForm = (t: Tutor): TutorFormInput => ({
   name: t.name.replace(/^Kak\s+/, ""),
-  phone: t.phone,
+  phone: formatPhone(t.phone),
   email: t.email,
   education: t.education,
   subjects: t.subjects,
@@ -207,11 +208,8 @@ function TutorForm({ tutor }: { tutor?: Tutor }) {
               <FieldLabel htmlFor="phone" required>
                 No. WhatsApp
               </FieldLabel>
-              <Input
+              <PhoneInput
                 id="phone"
-                type="tel"
-                inputMode="tel"
-                placeholder="Contoh: 0812xxxxxxxx"
                 aria-invalid={errors.phone ? true : undefined}
                 aria-describedby={errors.phone ? "phone-error" : undefined}
                 {...register("phone")}

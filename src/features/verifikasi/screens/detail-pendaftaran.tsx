@@ -32,7 +32,7 @@ import {
 } from "@/features/verifikasi/api"
 import { REJECT_REASONS } from "@/lib/data/verifikasi"
 import type { PengelolaRegistration } from "@/types/verifikasi"
-import { firstName } from "@/lib/format"
+import { firstName, toWhatsAppUrl } from "@/lib/format"
 import {
   formatRequestedSchedule,
   formatSubmitted,
@@ -56,9 +56,6 @@ import {
  */
 const LIST = "/pengelola/pendaftaran"
 
-/* "0813-2233-4455" → "6281322334455" (format wa.me) */
-const toWhatsapp = (phone: string) =>
-  phone.replace(/\D/g, "").replace(/^0/, "62")
 const stamp = (date: Date) =>
   format(date, "d MMM yyyy, HH.mm", { locale: localeId })
 
@@ -222,7 +219,7 @@ function MoreMenu({ registration }: { registration: PengelolaRegistration }) {
           className="min-h-12"
           render={
             <a
-              href={`https://wa.me/${toWhatsapp(registration.parent.whatsapp)}`}
+              href={toWhatsAppUrl(registration.parent.whatsapp) ?? undefined}
               target="_blank"
               rel="noopener noreferrer"
             />

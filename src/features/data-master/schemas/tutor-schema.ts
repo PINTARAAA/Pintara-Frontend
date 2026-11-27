@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { isValidPhone } from "@/lib/format"
+
 /*
  * Validasi formulir Tambah / Ubah Tutor · Figma "Data Tutor / Tambah tutor".
  */
@@ -12,9 +14,9 @@ const minutes = (t: string) => {
 export const tutorSchema = z
   .object({
     name: required("Nama lengkap wajib diisi."),
-    phone: required("No. WhatsApp wajib diisi.").regex(
-      /^(\+62|62|0)8[\d\s-]{7,14}$/,
-      "Format No. WhatsApp tidak valid. Contoh: 0812xxxxxxxx"
+    phone: required("No. WhatsApp wajib diisi.").refine(
+      isValidPhone,
+      "Format No. WhatsApp tidak valid. Contoh: 0812-3456-7890"
     ),
     email: required("Email wajib diisi.").email(
       "Format email tidak valid. Contoh: nama@email.com"

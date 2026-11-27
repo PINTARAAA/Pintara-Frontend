@@ -39,7 +39,7 @@ import {
   formatRequestedSchedule,
   formatShortAddress,
 } from "@/features/verifikasi/lib"
-import { firstName } from "@/lib/format"
+import { firstName, toWhatsAppUrl } from "@/lib/format"
 
 /*
  * P3 · Cocokkan Tutor · Figma "Pencocokan / Kandidat tutor",
@@ -57,10 +57,6 @@ import { firstName } from "@/lib/format"
  * tautan kembali, hasil di tengah (560px), tombol berdampingan.
  */
 const LES = "/pengelola/les"
-
-/* "0821-4455-6677" → "6282144556677" (format wa.me) */
-const toWhatsapp = (phone: string) =>
-  phone.replace(/\D/g, "").replace(/^0/, "62")
 
 function CocokkanTutor() {
   const { registrationId = "" } = useParams()
@@ -308,7 +304,7 @@ function NoCandidate({
             chevron
             render={
               <a
-                href={`https://wa.me/${toWhatsapp(r.parent.whatsapp)}`}
+                href={toWhatsAppUrl(r.parent.whatsapp) ?? undefined}
                 target="_blank"
                 rel="noopener noreferrer"
               />

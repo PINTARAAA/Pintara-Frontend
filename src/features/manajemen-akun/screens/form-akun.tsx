@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
   toast,
+  PhoneInput,
 } from "@/components"
 import {
   accountQuery,
@@ -34,6 +35,7 @@ import {
   usernameOf,
 } from "@/features/manajemen-akun/api"
 import type { AccountDetail, AccountRole } from "@/types/manajemen-akun"
+import { formatPhone } from "@/lib/format"
 import { cn } from "@/lib/styles"
 import {
   akunSchema,
@@ -106,7 +108,7 @@ function AkunForm({ account }: { account?: AccountDetail }) {
           name: account.name,
           email: account.email,
           username: account.username,
-          phone: account.phone,
+          phone: formatPhone(account.phone),
           studentIds: account.studentIds,
         }
       : {
@@ -328,11 +330,8 @@ function AkunForm({ account }: { account?: AccountDetail }) {
             <FieldLabel htmlFor="phone" required>
               No. WhatsApp
             </FieldLabel>
-            <Input
+            <PhoneInput
               id="phone"
-              type="tel"
-              inputMode="tel"
-              placeholder="Contoh: 0812xxxxxxxx"
               aria-invalid={errors.phone ? true : undefined}
               aria-describedby={errors.phone ? "phone-error" : undefined}
               {...register("phone")}

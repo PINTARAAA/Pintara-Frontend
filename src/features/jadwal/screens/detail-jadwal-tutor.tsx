@@ -17,7 +17,11 @@ import { NotFoundError, tutorScheduleSessionQuery } from "@/features/jadwal/api"
 import type { TutorScheduleDetail } from "@/types/jadwal"
 
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
+import {
+  formatTimeRange,
+  formatWeekdayDate,
+  toWhatsAppUrl,
+} from "@/lib/format"
 
 /*
  * T5 · Detail Jadwal (tutor) · Figma "Jadwal / Tutor - Detail sesi".
@@ -51,7 +55,7 @@ function DetailJadwalTutor() {
             nativeButton={false}
             render={
               <a
-                href={`https://wa.me/${session.parent.whatsapp}`}
+                href={toWhatsAppUrl(session.parent.whatsapp) ?? undefined}
                 target="_blank"
                 rel="noopener noreferrer"
               />
