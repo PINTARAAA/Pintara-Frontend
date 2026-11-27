@@ -23,7 +23,7 @@ function Label({
     >
       {children}
       {required && (
-        <span aria-hidden="true" className="font-normal text-error">
+        <span aria-hidden="true" className="font-normal text-grayscale-text-negative">
           *
         </span>
       )}

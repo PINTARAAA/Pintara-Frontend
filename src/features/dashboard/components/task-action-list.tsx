@@ -84,7 +84,7 @@ function TaskActionList({
               className={cn(
                 "flex size-10 shrink-0 items-center justify-center rounded-full",
                 task.urgent
-                  ? "bg-error-subtle text-error"
+                  ? "bg-error-subtle text-grayscale-text-negative"
                   : task.icon === "alert"
                     ? "bg-warning-subtle text-warning"
                     : wali
@@ -107,7 +107,7 @@ function TaskActionList({
                 {task.highlight && (
                   <>
                     {" · "}
-                    <strong className="font-bold text-error">{task.highlight}</strong>
+                    <strong className="font-bold text-grayscale-text-negative">{task.highlight}</strong>
                   </>
                 )}
               </p>

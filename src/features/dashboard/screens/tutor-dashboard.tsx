@@ -177,7 +177,7 @@ function DesktopDashboard({ data }: { data: TutorDashboardData }) {
             <>
               Perlu tindakan
               {taskCount > 0 && (
-                <span className="rounded-full bg-error-subtle px-ns-s py-ns-3xs text-caption leading-normal font-bold text-error">
+                <span className="rounded-full bg-error-subtle px-ns-s py-ns-3xs text-caption leading-normal font-bold text-grayscale-text-negative">
                   <span className="sr-only">(</span>
                   {taskCount}
                   <span className="sr-only"> tugas)</span>

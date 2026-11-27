@@ -64,6 +64,13 @@
 
   --color-primary-text-label: var(--color-neutral-white);
   --color-primary-text-primary: var(--color-primary-700);
+  /*
+   * Di luar Figma: teks/ikon aksi berwarna primary di atas permukaan
+   * (tombol Secondary/Tertiary/Link). Light = Primary/Surface/default seperti
+   * Figma; dipisah agar mode gelap bisa lebih terang tanpa mengubah latar
+   * tombol Primary.
+   */
+  --color-primary-text-link: var(--color-primary-500);
 
   --color-secondary-surface-subtitle: var(--color-secondary-100);
   --color-secondary-surface-lighter: var(--color-secondary-400);
@@ -136,4 +143,65 @@
   --comp-icon-sm: 20px;
   --comp-icon-md: 24px;
   --comp-icon-lg: 32px;
+}
+
+/*
+ * Mode gelap (di luar Figma: variabel Figma baru punya satu mode).
+ * Aktif lewat kelas `.dark` pada <html> (lihat src/app/theme.tsx).
+ * Hanya Style Tokens (semantik) yang ditimpa; Primitive tetap. Permukaan
+ * memakai navy keabuan yang senada dengan neutral PINTARA: halaman
+ * (surface/subtitle) paling gelap, kartu (surface/default) sedikit lebih
+ * terang. Kontras teks utama ≥ 7:1, caption ≥ 7:1, teks primary ≥ 6:1,
+ * label putih di tombol Primary ≥ 5:1.
+ */
+.dark {
+  color-scheme: dark;
+
+  --color-grayscale-text-title: #f3f6fb;
+  --color-grayscale-text-body: #e3e9f3;
+  --color-grayscale-text-subtitle: #9db1d1;
+  --color-grayscale-text-caption: #9db1d1;
+  --color-grayscale-text-negative: #f87171;
+  --color-grayscale-text-disabled: #62789c;
+
+  --color-grayscale-surface-default: #131c2e;
+  --color-grayscale-surface-subtitle: #0b1221;
+  --color-grayscale-surface-disabled: #1e2a40;
+
+  --color-grayscale-border-default: #3f5682;
+  --color-grayscale-border-darker: #6280b0;
+  --color-grayscale-border-disabled: #263450;
+
+  --color-primary-surface-subtitle: #1f2f66;
+  --color-primary-surface-lighter: #2c4396;
+  --color-primary-surface-default: #3d63e6;
+  --color-primary-surface-darker: #2f55d9;
+
+  --color-primary-border-lighter: #3552b0;
+  --color-primary-border-default: #7d95f6;
+  --color-primary-border-darker: #a9b8fa;
+
+  --color-primary-text-label: #ffffff;
+  --color-primary-text-primary: #a9b8fa;
+  --color-primary-text-link: #7d95f6;
+
+  --color-secondary-surface-subtitle: #3a2a10;
+  --color-secondary-surface-lighter: var(--color-secondary-600);
+  --color-secondary-surface-default: var(--color-secondary-500);
+  --color-secondary-surface-darker: var(--color-secondary-400);
+
+  --color-secondary-border-lighter: var(--color-secondary-700);
+  --color-secondary-border-default: #5a4218;
+  --color-secondary-border-darker: var(--color-secondary-300);
+  /* Satu-satunya pemakaian: teks di atas Secondary/Surface/subtitle */
+  --color-secondary-text-label: var(--color-secondary-200);
+
+  --color-error-subtle: #3a1a1f;
+  --color-info-subtle: #0d2a3d;
+  --color-success-subtle: #0c2a1d;
+  --color-warning-subtle: #3a2c0e;
+}
+
+:root:not(.dark) {
+  color-scheme: light;
 }

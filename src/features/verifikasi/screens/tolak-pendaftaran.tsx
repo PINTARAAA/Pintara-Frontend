@@ -225,7 +225,7 @@ function RejectFormScreen({
           aria-describedby={errors.reason ? "reason-error" : undefined}
         >
           <legend className="mb-ns-m text-body text-grayscale-text-title leading-normal font-bold">
-            Alasan penolakan <span className="text-error">*</span>
+            Alasan penolakan <span className="text-grayscale-text-negative">*</span>
           </legend>
           <Controller
             control={form.control}

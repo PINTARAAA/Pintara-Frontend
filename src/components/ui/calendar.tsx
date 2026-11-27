@@ -59,11 +59,11 @@ function Calendar({
           defaultClassNames.nav
         ),
         button_previous: cn(
-          "flex size-6 items-center justify-center rounded-sm text-primary-surface-default outline-none select-none hover:bg-primary-surface-subtitle focus-visible:ring-2 focus-visible:ring-primary-border-lighter aria-disabled:pointer-events-none aria-disabled:text-grayscale-text-disabled",
+          "flex size-6 items-center justify-center rounded-sm text-primary-text-link outline-none select-none hover:bg-primary-surface-subtitle focus-visible:ring-2 focus-visible:ring-primary-border-lighter aria-disabled:pointer-events-none aria-disabled:text-grayscale-text-disabled",
           defaultClassNames.button_previous
         ),
         button_next: cn(
-          "flex size-6 items-center justify-center rounded-sm text-primary-surface-default outline-none select-none hover:bg-primary-surface-subtitle focus-visible:ring-2 focus-visible:ring-primary-border-lighter aria-disabled:pointer-events-none aria-disabled:text-grayscale-text-disabled",
+          "flex size-6 items-center justify-center rounded-sm text-primary-text-link outline-none select-none hover:bg-primary-surface-subtitle focus-visible:ring-2 focus-visible:ring-primary-border-lighter aria-disabled:pointer-events-none aria-disabled:text-grayscale-text-disabled",
           defaultClassNames.button_next
         ),
         month_caption: cn(

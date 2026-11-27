@@ -196,7 +196,7 @@ function Summary({
                     </span>
                   )}
                 </dt>
-                <dd className="text-subtitle text-error font-bold">
+                <dd className="text-subtitle text-grayscale-text-negative font-bold">
                   −{formatRupiah(data.honor.total)}
                 </dd>
               </div>

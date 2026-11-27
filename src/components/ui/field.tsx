@@ -77,7 +77,7 @@ function FieldError({
       data-slot="field-error"
       className="flex w-full items-start gap-ns-s text-caption leading-normal"
     >
-      <p role="alert" className={cn("min-w-0 flex-1 text-error", className)} {...props}>
+      <p role="alert" className={cn("min-w-0 flex-1 text-grayscale-text-negative", className)} {...props}>
         {children}
       </p>
       {counter != null && (
