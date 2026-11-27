@@ -25,6 +25,7 @@ function ResultScreen({
   footer,
   footerVariant = "plain",
   pageTitle,
+  pageBack,
   children,
 }: {
   title: React.ReactNode
@@ -41,6 +42,8 @@ function ResultScreen({
   footerVariant?: "plain" | "bar"
   /* Judul Page header desktop, mis. "Cocokkan Tutor" */
   pageTitle?: React.ReactNode
+  /* Tautan kembali di atas `pageTitle`, mis. { label: "Beranda", onClick } */
+  pageBack?: { label: string; onClick: () => void }
   children?: React.ReactNode
 }) {
   const page = pageTitle != null
@@ -51,6 +54,7 @@ function ResultScreen({
         <PageHeader
           className="px-ns-4xl pt-ns-3xl hidden lg:flex"
           title={pageTitle}
+          back={pageBack}
         />
       )}
       <div

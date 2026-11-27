@@ -1,17 +1,20 @@
-import { useFormContext } from "react-hook-form"
+import { useFormContext } from "react-hook-form";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components"
-import { SummaryRow } from "@/features/pendaftaran/components/form-group"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components";
+import { SummaryRow } from "@/features/pendaftaran/components/form-group";
 import {
   FREQUENCY_OPTIONS,
   SESSION_MINUTES,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas"
+} from "@/features/pendaftaran/schemas";
 
-/* Langkah 4 · Ringkasan: kartu Compact per bagian, baris label/nilai */
+/*
+ * Langkah 4 · Ringkasan: kartu Compact per bagian, baris label/nilai.
+ * Desktop: kartu dalam grid 2 kolom (gap 24 / 16), tinggi sebaris sama.
+ */
 function StepRingkasan({ showIntro = true }: { showIntro?: boolean }) {
-  const values = useFormContext<PendaftaranInput>().getValues()
-  const frequency = FREQUENCY_OPTIONS.find((f) => f.value === values.frequency)
+  const values = useFormContext<PendaftaranInput>().getValues();
+  const frequency = FREQUENCY_OPTIONS.find((f) => f.value === values.frequency);
 
   const sections: { title: string; rows: [string, string][] }[] = [
     {
@@ -45,7 +48,7 @@ function StepRingkasan({ showIntro = true }: { showIntro?: boolean }) {
         ["Jam mulai", `${values.startTime} (${SESSION_MINUTES} menit)`],
       ],
     },
-  ]
+  ];
 
   return (
     <>
@@ -54,24 +57,26 @@ function StepRingkasan({ showIntro = true }: { showIntro?: boolean }) {
           Periksa kembali data pendaftaran sebelum dikirim.
         </p>
       )}
-      {sections.map((section) => (
-        <Card key={section.title} size="compact">
-          <CardHeader>
-            <CardTitle>{section.title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="flex flex-col gap-ns-m">
-              {section.rows.map(([label, value]) => (
-                <SummaryRow key={label} label={label}>
-                  {value}
-                </SummaryRow>
-              ))}
-            </dl>
-          </CardContent>
-        </Card>
-      ))}
+      <div className="contents lg:grid lg:grid-cols-2 lg:gap-x-ns-2xl lg:gap-y-ns-l">
+        {sections.map((section) => (
+          <Card key={section.title} size="compact">
+            <CardHeader>
+              <CardTitle>{section.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <dl className="flex flex-col gap-ns-m">
+                {section.rows.map(([label, value]) => (
+                  <SummaryRow key={label} label={label}>
+                    {value}
+                  </SummaryRow>
+                ))}
+              </dl>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </>
-  )
+  );
 }
 
-export { StepRingkasan }
+export { StepRingkasan };

@@ -1,4 +1,4 @@
-import { Controller, useFormContext, useWatch } from "react-hook-form"
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 
 import {
   AlertBanner,
@@ -7,19 +7,19 @@ import {
   FieldError,
   FieldLabel,
   TimePicker,
-} from "@/components"
-import { FormGroup } from "@/features/pendaftaran/components/form-group"
+} from "@/components";
+import { FormGroup } from "@/features/pendaftaran/components/form-group";
 import {
   DAY_OPTIONS,
   SESSION_MINUTES,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas"
+} from "@/features/pendaftaran/schemas";
 
 /* Langkah 3 · Jadwal Belajar */
 function StepJadwalBelajar() {
-  const { control, formState } = useFormContext<PendaftaranInput>()
-  const { errors } = formState
-  const frequency = useWatch({ control, name: "frequency" })
+  const { control, formState } = useFormContext<PendaftaranInput>();
+  const { errors } = formState;
+  const frequency = useWatch({ control, name: "frequency" });
 
   return (
     <>
@@ -32,7 +32,7 @@ function StepJadwalBelajar() {
           control={control}
           name="days"
           render={({ field }) => (
-            <div className="grid grid-cols-2 gap-x-ns-m gap-y-ns-l">
+            <div className="grid grid-cols-2 gap-x-ns-m gap-y-ns-l lg:grid-cols-6 lg:gap-x-ns-2xl">
               {DAY_OPTIONS.map((day, i) => (
                 <Checkbox
                   key={day}
@@ -44,11 +44,11 @@ function StepJadwalBelajar() {
                     field.onChange(
                       checked
                         ? DAY_OPTIONS.filter(
-                            (d) => d === day || field.value.includes(d)
+                            (d) => d === day || field.value.includes(d),
                           )
-                        : field.value.filter((d) => d !== day)
-                    )
-                    field.onBlur()
+                        : field.value.filter((d) => d !== day),
+                    );
+                    field.onBlur();
                   }}
                 />
               ))}
@@ -64,7 +64,8 @@ function StepJadwalBelajar() {
         title="Waktu belajar *"
         description={`Jam mulai yang diinginkan. Durasi standar ${SESSION_MINUTES} menit per sesi.`}
       >
-        <Field>
+        {/* Desktop: setengah lebar kolom (Figma: Jam mulai + Spacer) */}
+        <Field className="lg:w-[calc(50%-var(--spacing-ns-m))]">
           <FieldLabel htmlFor="startTime" required>
             Jam mulai
           </FieldLabel>
@@ -79,15 +80,17 @@ function StepJadwalBelajar() {
                 placeholder="Pilih jam mulai"
                 value={field.value || null}
                 onValueChange={(v) => {
-                  field.onChange(v ?? "")
-                  field.onBlur()
+                  field.onChange(v ?? "");
+                  field.onBlur();
                 }}
                 invalid={!!errors.startTime}
               />
             )}
           />
           {errors.startTime && (
-            <FieldError id="startTime-error">{errors.startTime.message}</FieldError>
+            <FieldError id="startTime-error">
+              {errors.startTime.message}
+            </FieldError>
           )}
         </Field>
       </FormGroup>
@@ -98,7 +101,7 @@ function StepJadwalBelajar() {
         description="Jadwal akan dikonfirmasi Pengelola LBB setelah tutor yang sesuai ditemukan."
       />
     </>
-  )
+  );
 }
 
-export { StepJadwalBelajar }
+export { StepJadwalBelajar };

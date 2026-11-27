@@ -70,8 +70,12 @@ function DetailScreen({
   surface?: "muted" | "default"
   /* bar = Top app bar juga di desktop, page = Page header desktop */
   desktopHeader?: "bar" | "page"
-  /* Khusus desktopHeader="page": letak tombol `footer` di desktop */
-  desktopActions?: "footer" | "header"
+  /*
+   * Khusus desktopHeader="page": letak tombol `footer` di desktop;
+   * none = `footer` hanya untuk bilah aksi mobile (layar merender sendiri
+   * tombol desktopnya, mis. di dalam kolom formulir)
+   */
+  desktopActions?: "footer" | "header" | "none"
   desktopWidth?: keyof typeof WIDTHS
   /*
    * Khusus desktopHeader="page": elemen tambahan di kanan Page header

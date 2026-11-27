@@ -1,10 +1,11 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/styles"
+import { cn } from "@/lib/styles";
 
 /*
  * FormGroup · "Group / …" pada frame W2 Pendaftaran Siswa.
  * Header: judul Body/Bold + deskripsi Caption (gap 4); isi berjarak 16.
+ * Desktop (≥ lg): garis atas Grayscale/Border/default dengan padding 24.
  * Dirender sebagai <fieldset> agar grup checkbox/radio punya nama aksesibel.
  */
 function FormGroup({
@@ -14,12 +15,15 @@ function FormGroup({
   children,
   ...props
 }: Omit<React.ComponentProps<"fieldset">, "title"> & {
-  title: React.ReactNode
-  description?: React.ReactNode
+  title: React.ReactNode;
+  description?: React.ReactNode;
 }) {
   return (
     <fieldset
-      className={cn("flex min-w-0 flex-col gap-ns-l", className)}
+      className={cn(
+        "flex min-w-0 flex-col gap-ns-l lg:border-t lg:border-grayscale-border-default lg:pt-ns-2xl",
+        className,
+      )}
       {...props}
     >
       <div className="flex flex-col gap-ns-2xs leading-normal">
@@ -34,7 +38,7 @@ function FormGroup({
       </div>
       {children}
     </fieldset>
-  )
+  );
 }
 
 /*
@@ -48,24 +52,24 @@ function SummaryRow({
   labelClassName,
   children,
 }: {
-  label: React.ReactNode
-  align?: "start" | "between"
+  label: React.ReactNode;
+  align?: "start" | "between";
   /* Lebar label default 110px (Ringkasan W2); W3 memakai 100px */
-  labelClassName?: string
-  children: React.ReactNode
+  labelClassName?: string;
+  children: React.ReactNode;
 }) {
   return (
     <div
       className={cn(
         "flex gap-ns-m leading-normal",
-        align === "between" ? "items-center justify-between" : "items-start"
+        align === "between" ? "items-center justify-between" : "items-start",
       )}
     >
       <dt
         className={cn(
           "text-caption text-grayscale-text-caption",
           align === "start" && "w-[110px] shrink-0",
-          labelClassName
+          labelClassName,
         )}
       >
         {label}
@@ -73,13 +77,13 @@ function SummaryRow({
       <dd
         className={cn(
           "min-w-0 text-subtitle font-bold text-grayscale-text-title",
-          align === "start" ? "flex-1" : "text-right"
+          align === "start" ? "flex-1" : "text-right",
         )}
       >
         {children}
       </dd>
     </div>
-  )
+  );
 }
 
-export { FormGroup, SummaryRow }
+export { FormGroup, SummaryRow };

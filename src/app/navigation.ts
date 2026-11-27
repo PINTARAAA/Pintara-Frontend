@@ -20,7 +20,20 @@ import type { NavItem, SidebarGroup } from "@/components"
 import type { Role } from "@/types/auth"
 export type { Role }
 
-export const ROLE_NAV: Record<Role, { main: NavItem[]; utility: NavItem[] }> = {
+/*
+ * Menu tiap peran: `main` + `utility` = bottom navigation mobile dan sidebar
+ * desktop, sekaligus sumber route tab. Opsional `sidebarExtra` = menu yang
+ * hanya tampil di sidebar desktop (route-nya didaftarkan terpisah), disisipkan
+ * di akhir grup masing-masing.
+ */
+export const ROLE_NAV: Record<
+  Role,
+  {
+    main: NavItem[]
+    utility: NavItem[]
+    sidebarExtra?: { main?: NavItem[]; utility?: NavItem[] }
+  }
+> = {
   wali: {
     main: [
       { label: "Beranda", to: "/wali", icon: HouseIcon, end: true },
@@ -29,6 +42,11 @@ export const ROLE_NAV: Record<Role, { main: NavItem[]; utility: NavItem[] }> = {
       { label: "Tagihan", to: "/wali/tagihan", icon: WalletIcon },
     ],
     utility: [{ label: "Akun", to: "/wali/akun", icon: UserIcon }],
+    /* Figma → Sidebar (Wali / Beranda (Desktop)): Riwayat les + Notifikasi */
+    sidebarExtra: {
+      main: [{ label: "Riwayat les", to: "/wali/riwayat", icon: BookOpenIcon }],
+      utility: [{ label: "Notifikasi", to: "/wali/notifikasi", icon: BellIcon }],
+    },
   },
   tutor: {
     main: [

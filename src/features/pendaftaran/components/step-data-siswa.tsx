@@ -1,4 +1,4 @@
-import { Controller, useFormContext } from "react-hook-form"
+import { Controller, useFormContext } from "react-hook-form";
 
 import {
   Field,
@@ -13,27 +13,27 @@ import {
   SelectTrigger,
   SelectValue,
   PhoneInput,
-} from "@/components"
-import { FormGroup } from "@/features/pendaftaran/components/form-group"
+} from "@/components";
+import { FormGroup } from "@/features/pendaftaran/components/form-group";
 import {
   GRADE_OPTIONS,
   type PendaftaranInput,
-} from "@/features/pendaftaran/schemas"
+} from "@/features/pendaftaran/schemas";
 
 /* Langkah 1 · Data Wali & Siswa */
 function StepDataSiswa() {
-  const { register, control, formState } = useFormContext<PendaftaranInput>()
-  const { errors } = formState
+  const { register, control, formState } = useFormContext<PendaftaranInput>();
+  const { errors } = formState;
 
   const invalid = (name: keyof PendaftaranInput) =>
     errors[name]
       ? { "aria-invalid": true as const, "aria-describedby": `${name}-error` }
-      : {}
+      : {};
 
   const error = (name: keyof PendaftaranInput) =>
     errors[name] && (
       <FieldError id={`${name}-error`}>{errors[name]?.message}</FieldError>
-    )
+    );
 
   return (
     <>
@@ -41,82 +41,88 @@ function StepDataSiswa() {
         title="Data Wali"
         description="Diambil dari akun Anda. Ubah jika nomor WhatsApp berbeda."
       >
-        <Field>
-          <FieldLabel htmlFor="parentName" required>
-            Nama wali
-          </FieldLabel>
-          <Input
-            id="parentName"
-            autoComplete="name"
-            placeholder="Masukkan nama wali"
-            {...invalid("parentName")}
-            {...register("parentName")}
-          />
-          {error("parentName")}
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="parentPhone" required>
-            No. WhatsApp wali
-          </FieldLabel>
-          <PhoneInput
-            id="parentPhone"
-            {...invalid("parentPhone")}
-            {...register("parentPhone")}
-          />
-          {error("parentPhone")}
-        </Field>
+        {/* Desktop: dua kolom sejajar (Figma "Row") */}
+        <div className="contents lg:grid lg:grid-cols-2 lg:items-start lg:gap-ns-2xl">
+          <Field>
+            <FieldLabel htmlFor="parentName" required>
+              Nama wali
+            </FieldLabel>
+            <Input
+              id="parentName"
+              autoComplete="name"
+              placeholder="Masukkan nama wali"
+              {...invalid("parentName")}
+              {...register("parentName")}
+            />
+            {error("parentName")}
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="parentPhone" required>
+              No. WhatsApp wali
+            </FieldLabel>
+            <PhoneInput
+              id="parentPhone"
+              {...invalid("parentPhone")}
+              {...register("parentPhone")}
+            />
+            {error("parentPhone")}
+          </Field>
+        </div>
       </FormGroup>
 
       <FormGroup title="Data Siswa">
-        <Field>
-          <FieldLabel htmlFor="studentName" required>
-            Nama lengkap siswa
-          </FieldLabel>
-          <Input
-            id="studentName"
-            placeholder="Masukkan nama lengkap siswa"
-            {...invalid("studentName")}
-            {...register("studentName")}
-          />
-          {error("studentName")}
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="grade" required>
-            Kelas
-          </FieldLabel>
-          <Controller
-            control={control}
-            name="grade"
-            render={({ field }) => (
-              <Select
-                value={field.value || null}
-                onValueChange={(v) => {
-                  field.onChange((v as string | null) ?? "")
-                  field.onBlur()
-                }}
-              >
-                <SelectTrigger
-                  id="grade"
-                  ref={field.ref}
-                  onBlur={field.onBlur}
-                  {...invalid("grade")}
+        {/* Desktop: nama (2 bagian) + kelas (1 bagian) dalam satu baris */}
+        <div className="contents lg:grid lg:grid-cols-[2fr_1fr] lg:items-start lg:gap-ns-2xl">
+          <Field>
+            <FieldLabel htmlFor="studentName" required>
+              Nama lengkap siswa
+            </FieldLabel>
+            <Input
+              id="studentName"
+              placeholder="Masukkan nama lengkap siswa"
+              {...invalid("studentName")}
+              {...register("studentName")}
+            />
+            {error("studentName")}
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="grade" required>
+              Kelas
+            </FieldLabel>
+            <Controller
+              control={control}
+              name="grade"
+              render={({ field }) => (
+                <Select
+                  value={field.value || null}
+                  onValueChange={(v) => {
+                    field.onChange((v as string | null) ?? "");
+                    field.onBlur();
+                  }}
                 >
-                  <SelectValue placeholder="Pilih kelas" />
-                </SelectTrigger>
-                <SelectContent className="max-h-80">
-                  <SelectGroup className="p-0">
-                    {GRADE_OPTIONS.map((grade) => (
-                      <SelectItem key={grade} value={grade}>
-                        {grade}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {error("grade")}
-        </Field>
+                  <SelectTrigger
+                    id="grade"
+                    ref={field.ref}
+                    onBlur={field.onBlur}
+                    {...invalid("grade")}
+                  >
+                    <SelectValue placeholder="Pilih kelas" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    <SelectGroup className="p-0">
+                      {GRADE_OPTIONS.map((grade) => (
+                        <SelectItem key={grade} value={grade}>
+                          {grade}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {error("grade")}
+          </Field>
+        </div>
         <Field>
           <FieldLabel htmlFor="school" required>
             Nama sekolah
@@ -148,7 +154,7 @@ function StepDataSiswa() {
         </Field>
       </FormGroup>
     </>
-  )
+  );
 }
 
-export { StepDataSiswa }
+export { StepDataSiswa };
