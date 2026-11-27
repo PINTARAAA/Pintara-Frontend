@@ -18,6 +18,7 @@ import {
   TimelineItem,
 } from "@/components"
 import { registrationStatusQuery } from "@/features/pendaftaran/api"
+import { getErrorMessage } from "@/lib/api"
 import type {
   RegistrationLbbContact,
   Registration,
@@ -70,12 +71,8 @@ function StatusPendaftaran() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const id = params.get("id") ?? undefined
-  /* Hanya development: ?contoh=… menampilkan contoh frame Figma */
-  const example = import.meta.env.DEV
-    ? (params.get("contoh") ?? undefined)
-    : undefined
 
-  const query = useQuery(registrationStatusQuery(id, example))
+  const query = useQuery(registrationStatusQuery(id))
   const registration = query.data?.registration
 
   return (
@@ -92,7 +89,7 @@ function StatusPendaftaran() {
         <DataState
           state="error"
           title="Status gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : !registration ? (
