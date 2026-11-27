@@ -11,14 +11,21 @@ import type { ChangeRequest } from "@/types/jadwal"
 import { formatScope } from "@/features/jadwal/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import { formatDateTime } from "@/lib/format"
+import { cn } from "@/lib/styles"
 
 /* Kartu "Ringkasan pengajuan": Dari · Menjadi · Berlaku (label 104px) */
-function ChangeSummaryCard({ request }: { request: ChangeRequest }) {
+function ChangeSummaryCard({
+  request,
+  className,
+}: {
+  request: ChangeRequest
+  className?: string
+}) {
   const slot = (weekday: number, time: string) =>
     `${WEEKDAYS[weekday]}, ${formatTimeSlot(time, request.durationMinutes)}`
 
   return (
-    <Card size="compact" className="w-full text-left">
+    <Card size="compact" className={cn("w-full text-left", className)}>
       <CardHeader>
         <CardTitle>Ringkasan pengajuan</CardTitle>
       </CardHeader>
@@ -43,7 +50,13 @@ function ChangeSummaryCard({ request }: { request: ChangeRequest }) {
  * Kartu "Progres pengajuan": Pengajuan dikirim → Ditinjau Pengelola LBB →
  * Konfirmasi tutor → Jadwal baru berlaku (atau → Pengajuan ditolak).
  */
-function ChangeProgressCard({ request }: { request: ChangeRequest }) {
+function ChangeProgressCard({
+  request,
+  className,
+}: {
+  request: ChangeRequest
+  className?: string
+}) {
   const { status } = request
   const step = {
     ditinjau_pengelola: 1,
@@ -55,7 +68,7 @@ function ChangeProgressCard({ request }: { request: ChangeRequest }) {
     index < step ? "done" : index === step ? "current" : "upcoming"
 
   return (
-    <Card size="compact" className="w-full text-left">
+    <Card size="compact" className={cn("w-full text-left", className)}>
       <CardHeader>
         <CardTitle>Progres pengajuan</CardTitle>
       </CardHeader>
