@@ -8,33 +8,42 @@ import { formatRupiah } from "@/lib/format"
 import { cn } from "@/lib/styles"
 
 /*
- * TaskActionList · "Perlu tindakan" versi desktop
- * (Figma PINTARA → UI Screen → P1 · Beranda (Desktop)).
+ * TaskActionList · "Perlu tindakan" versi desktop.
  *
  * Tiap baris: ikon dalam lingkaran, judul + deskripsi, jumlah/nominal tebal
- * di kanan, lalu tombol aksi berlebar tetap agar kolom angka sejajar.
- * Tanpa kotak bergaris — pemisah antar baris berupa garis tipis. Tugas
- * bertipe "alert" memakai warna peringatan.
+ * di kanan, lalu tombol aksi. Tanpa kotak bergaris — pemisah antar baris
+ * berupa garis tipis.
+ *
+ * appearance="pengelola" (Figma P1 · Beranda (Desktop)): ikon Primary,
+ *   jumlah H4, tombol secondary berlebar tetap agar kolom angka sejajar.
+ *   Tugas bertipe "alert" memakai warna peringatan.
+ * appearance="wali" (Figma W1 · Beranda (Desktop)): ikon di latar
+ *   Grayscale/Surface/subtitle, nominal Body/Bold, garis Border/default,
+ *   baris 16px, tombol selebar label. Tugas `urgent` (mis. tagihan lewat
+ *   jatuh tempo) tampil paling atas: ikon Semantic/Error, tombol primary.
+ * `highlight` tampil tebal Semantic/Error setelah deskripsi.
  */
 function TaskActionList({
   tasks,
+  appearance = "pengelola",
   emptyTitle = "Semua beres",
   emptyDescription = "Tidak ada yang perlu ditindaklanjuti saat ini.",
   className,
 }: {
   tasks: DashboardTask[]
+  appearance?: "pengelola" | "wali"
   emptyTitle?: string
   emptyDescription?: string
   className?: string
 }) {
+  const wali = appearance === "wali"
+  const divider = wali
+    ? "border-grayscale-border-default"
+    : "border-grayscale-surface-disabled"
+
   if (tasks.length === 0) {
     return (
-      <div
-        className={cn(
-          "flex items-center gap-ns-l border-t border-grayscale-surface-disabled py-ns-l",
-          className
-        )}
-      >
+      <div className={cn("flex items-center gap-ns-l border-t py-ns-l", divider, className)}>
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success-subtle text-success">
           <CircleCheckIcon className="size-5" aria-hidden="true" />
         </span>
@@ -46,43 +55,71 @@ function TaskActionList({
     )
   }
 
+  /* Wali: tugas mendesak didahulukan (urutan lain tetap) */
+  const sorted = wali
+    ? [...tasks].sort((a, b) => Number(!!b.urgent) - Number(!!a.urgent))
+    : tasks
+
   return (
-    <ul className={cn("border-t border-grayscale-surface-disabled", className)}>
-      {tasks.map((task) => {
+    <ul className={cn("border-t", divider, className)}>
+      {sorted.map((task) => {
         const Icon = TASK_ICONS[task.icon]
-        const warning = task.icon === "alert"
         const value =
           task.amount != null ? formatRupiah(task.amount) : task.count ?? null
         return (
           <li
             key={task.id}
-            className="flex items-center gap-ns-l border-b border-grayscale-surface-disabled py-3.5"
+            className={cn(
+              "flex items-center gap-ns-l border-b",
+              divider,
+              wali ? "py-ns-l" : "py-3.5"
+            )}
           >
             <span
               className={cn(
                 "flex size-10 shrink-0 items-center justify-center rounded-full",
-                warning
-                  ? "bg-warning-subtle text-warning"
-                  : "bg-primary-surface-subtitle text-primary-text-primary"
+                task.urgent
+                  ? "bg-error-subtle text-error"
+                  : task.icon === "alert"
+                    ? "bg-warning-subtle text-warning"
+                    : wali
+                      ? "bg-grayscale-surface-subtitle text-primary-text-primary"
+                      : "bg-primary-surface-subtitle text-primary-text-primary"
               )}
             >
               <Icon aria-hidden="true" className="size-5" />
             </span>
-            <div className="flex min-w-0 flex-1 flex-col gap-ns-s leading-normal">
+            <div
+              className={cn(
+                "flex min-w-0 flex-1 flex-col leading-normal",
+                wali ? "gap-ns-3xs" : "gap-ns-s"
+              )}
+            >
               <p className="text-body font-bold text-grayscale-text-title">{task.title}</p>
               <p className="text-subtitle text-grayscale-text-subtitle">
                 {task.description}
+                {task.highlight && (
+                  <>
+                    {" · "}
+                    <strong className="font-bold text-error">{task.highlight}</strong>
+                  </>
+                )}
               </p>
             </div>
             {value != null && (
-              <p className="min-w-10 text-right text-h4 font-bold text-grayscale-text-title">
+              <p
+                className={cn(
+                  "text-right font-bold text-grayscale-text-title",
+                  wali ? "text-body leading-normal" : "min-w-10 text-h4"
+                )}
+              >
                 {value}
               </p>
             )}
             <Button
-              variant="secondary"
+              variant={task.urgent ? "primary" : "secondary"}
               size="sm"
-              className="w-28"
+              className={wali ? undefined : "w-28"}
               nativeButton={false}
               render={<Link to={task.to} />}
             >

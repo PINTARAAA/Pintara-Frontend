@@ -13,6 +13,13 @@ export type DashboardTask = {
   to: string
   /* Label tombol aksi di daftar "Perlu tindakan" versi desktop, mis. "Verifikasi" */
   actionLabel?: string
+  /*
+   * Bagian deskripsi yang perlu disorot, mis. "1 lewat jatuh tempo" —
+   * desktop: tebal Semantic/Error setelah deskripsi; mobile: digabung "·"
+   */
+  highlight?: string
+  /* Mendesak (mis. tagihan lewat jatuh tempo): ikon merah, tombol primary, tampil paling atas di desktop */
+  urgent?: boolean
 }
 
 export type Person = {
@@ -78,6 +85,8 @@ export type WaliDashboardData = {
   activeStudentId: string
   nextSession: {
     id: string
+    /* Jadwal rutin asal sesi, untuk "Ajukan perubahan" (/wali/jadwal/:routineId/ubah) */
+    routineId: string
     subject: string
     start: Date
     end: Date
@@ -86,6 +95,7 @@ export type WaliDashboardData = {
   tasks: DashboardTask[]
   weekSchedule: {
     id: string
+    routineId: string
     subject: string
     start: Date
     end: Date

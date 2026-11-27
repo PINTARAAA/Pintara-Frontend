@@ -55,7 +55,11 @@ function TaskList({
             key={task.id}
             icon={<Icon />}
             title={task.title}
-            description={task.description}
+            description={
+              task.highlight
+                ? `${task.description} · ${task.highlight}`
+                : task.description
+            }
             trailingText={
               task.amount != null
                 ? formatRupiah(task.amount)

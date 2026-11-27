@@ -16,6 +16,7 @@ import { cn } from "@/lib/styles"
  *   desktopHeader="page" : Top app bar diganti Page header (judul H3, tanpa
  *     aksi — notifikasi sudah ada di sidebar), halaman putih, header dan
  *     subheader tidak menempel; padding atas 32, subheader 24 di bawahnya.
+ *     `subtitle` ikut tampil di atas judul (mis. sapaan Beranda Wali).
  *
  * <TabScreen subtitle="Selamat pagi," title="Ibu Sari Wulandari"
  *   action={<TopAppBarButton label="Notifikasi" dot><BellIcon /></TopAppBarButton>}>
@@ -61,6 +62,7 @@ function TabScreen({
           <PageHeader
             className="hidden pl-(--gutter) pr-(--gutter-end) pt-ns-3xl lg:flex"
             title={title}
+            subtitle={subtitle}
             actions={desktopHeaderActions}
           />
         )}

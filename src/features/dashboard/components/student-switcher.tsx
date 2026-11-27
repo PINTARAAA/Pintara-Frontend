@@ -22,10 +22,13 @@ function StudentSwitcher({
   students,
   value,
   onValueChange,
+  align = "start",
 }: {
   students: WaliStudent[]
   value: string
   onValueChange: (id: string) => void
+  /* Perataan menu: "end" saat switcher di kanan Page header desktop */
+  align?: "start" | "end"
 }) {
   const active = students.find((s) => s.id === value) ?? students[0]
   const pill =
@@ -53,7 +56,7 @@ function StudentSwitcher({
         {content}
         <ChevronDownIcon aria-hidden="true" className="size-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-auto min-w-60">
+      <DropdownMenuContent align={align} className="w-auto min-w-60">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Tampilkan data anak</DropdownMenuLabel>
           <DropdownMenuRadioGroup value={value} onValueChange={(v) => onValueChange(v as string)}>

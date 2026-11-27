@@ -10,6 +10,8 @@ import { cn } from "@/lib/styles"
  * Subtitle/Bold Primary/Text/primary, gap 6) di atas judul H3/Bold, gap 8.
  * Aksi (mis. tombol halaman) rata kanan, sejajar dasar judul, gap 12.
  * Tidak menempel dan tanpa garis bawah.
+ * `subtitle` (mis. sapaan beranda, Body/Regular Grayscale/Text/subtitle)
+ * tampil di atas judul dengan gap 4; aksi lalu rata tengah vertikal.
  *
  * <PageHeader title="Detail Pendaftaran"
  *   back={{ label: "Pendaftaran", onClick: () => navigate(-1) }}
@@ -17,12 +19,14 @@ import { cn } from "@/lib/styles"
  */
 function PageHeader({
   title,
+  subtitle,
   back,
   actions,
   className,
   ...props
 }: Omit<React.ComponentProps<"header">, "title"> & {
   title: React.ReactNode
+  subtitle?: React.ReactNode
   back?: { label: string; onClick: () => void }
   actions?: React.ReactNode
 }) {
@@ -30,7 +34,8 @@ function PageHeader({
     <header
       data-slot="page-header"
       className={cn(
-        "flex w-full items-end justify-between gap-ns-l",
+        "flex w-full justify-between gap-ns-l",
+        subtitle != null ? "items-center" : "items-end",
         className
       )}
       {...props}
@@ -46,7 +51,14 @@ function PageHeader({
             {back.label}
           </button>
         )}
-        <h1 className="text-h3 font-bold text-grayscale-text-title">{title}</h1>
+        {subtitle != null ? (
+          <div className="flex flex-col gap-ns-2xs">
+            <p className="text-body leading-normal text-grayscale-text-subtitle">{subtitle}</p>
+            <h1 className="text-h3 font-bold text-grayscale-text-title">{title}</h1>
+          </div>
+        ) : (
+          <h1 className="text-h3 font-bold text-grayscale-text-title">{title}</h1>
+        )}
       </div>
       {actions != null && (
         <div className="flex shrink-0 items-center gap-ns-m">{actions}</div>

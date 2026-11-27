@@ -12,7 +12,8 @@ function DashboardSection({
   headingClassName,
   children,
 }: {
-  title: string
+  /* Teks, atau teks + elemen kecil seperti pil jumlah */
+  title: React.ReactNode
   /* Kelas tambahan untuk judul, mis. "lg:text-headline" di desktop */
   headingClassName?: string
   /* Keterangan Caption di bawah judul, mis. rentang tanggal "24–30 November 2026" */

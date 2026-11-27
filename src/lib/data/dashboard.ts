@@ -150,6 +150,7 @@ export function waliDashboardData(studentId?: string): WaliDashboardData {
     activeStudentId: student.id,
     nextSession: {
       id: "les-1",
+      routineId: isFirst ? "rut-mtk-s1" : "rut-bing-s2",
       subject: isFirst ? "Matematika" : "Bahasa Inggris",
       start: at(1, 16),
       end: at(1, 17, 30),
@@ -173,20 +174,25 @@ export function waliDashboardData(studentId?: string): WaliDashboardData {
             title: "Validasi 2 sesi les",
             description: "Matematika 19 Nov dan IPA 21 Nov",
             to: "/wali/absensi",
+            actionLabel: "Validasi",
           },
           {
             id: "tagihan",
             icon: "wallet",
             title: "Bayar tagihan",
-            description: "2 tagihan · 1 lewat jatuh tempo",
+            description: "2 tagihan",
+            highlight: "1 lewat jatuh tempo",
             amount: 600_000,
             to: "/wali/tagihan",
+            actionLabel: "Bayar",
+            urgent: true,
           },
         ]
       : [],
     weekSchedule: [
       {
         id: "j1",
+        routineId: isFirst ? "rut-ipa-s1" : "rut-bing-s2",
         subject: isFirst ? "IPA" : "Bahasa Inggris",
         start: at(3, 16),
         end: at(3, 17, 30),
