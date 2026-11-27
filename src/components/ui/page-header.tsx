@@ -12,6 +12,8 @@ import { cn } from "@/lib/styles"
  * Tidak menempel dan tanpa garis bawah.
  * `subtitle` (mis. sapaan beranda, Body/Regular Grayscale/Text/subtitle)
  * tampil di atas judul dengan gap 4; aksi lalu rata tengah vertikal.
+ * `description` (Body/Regular Grayscale/Text/subtitle) tampil di bawah
+ * judul dengan gap 8, mis. jam · sejak pada Detail Jadwal (W4).
  *
  * <PageHeader title="Detail Pendaftaran"
  *   back={{ label: "Pendaftaran", onClick: () => navigate(-1) }}
@@ -20,6 +22,7 @@ import { cn } from "@/lib/styles"
 function PageHeader({
   title,
   subtitle,
+  description,
   back,
   actions,
   className,
@@ -27,6 +30,7 @@ function PageHeader({
 }: Omit<React.ComponentProps<"header">, "title"> & {
   title: React.ReactNode
   subtitle?: React.ReactNode
+  description?: React.ReactNode
   back?: { label: string; onClick: () => void }
   actions?: React.ReactNode
 }) {
@@ -53,11 +57,22 @@ function PageHeader({
         )}
         {subtitle != null ? (
           <div className="flex flex-col gap-ns-2xs">
-            <p className="text-body leading-normal text-grayscale-text-subtitle">{subtitle}</p>
-            <h1 className="text-h3 font-bold text-grayscale-text-title">{title}</h1>
+            <p className="text-body leading-normal text-grayscale-text-subtitle">
+              {subtitle}
+            </p>
+            <h1 className="text-h3 font-bold text-grayscale-text-title">
+              {title}
+            </h1>
           </div>
         ) : (
-          <h1 className="text-h3 font-bold text-grayscale-text-title">{title}</h1>
+          <h1 className="text-h3 font-bold text-grayscale-text-title">
+            {title}
+          </h1>
+        )}
+        {description != null && (
+          <p className="text-body leading-normal text-grayscale-text-subtitle">
+            {description}
+          </p>
         )}
       </div>
       {actions != null && (

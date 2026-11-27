@@ -13,7 +13,9 @@ import { cn } from "@/lib/styles"
  *   berisi `pageTitle` di kiri atas; hasil (maks. 560px) dan tombol plain
  *   berada di tengah halaman, tombol berdampingan dengan lebar sesuai label
  *   (urutan dibalik: tombol utama di kanan). Tanpa `pageTitle` tampilan
- *   desktop sama seperti sebelumnya.
+ *   desktop sama seperti sebelumnya. footerVariant="bar" dengan `pageTitle`:
+ *   di desktop bilah tidak menempel, tombol di tengah di bawah hasil.
+ *   `pageWidth="wide"` = 760px, mis. dua kartu berdampingan (W4 Terkirim).
  */
 
 function ResultScreen({
@@ -26,6 +28,7 @@ function ResultScreen({
   footerVariant = "plain",
   pageTitle,
   pageBack,
+  pageWidth = "default",
   children,
 }: {
   title: React.ReactNode
@@ -44,6 +47,7 @@ function ResultScreen({
   pageTitle?: React.ReactNode
   /* Tautan kembali di atas `pageTitle`, mis. { label: "Beranda", onClick } */
   pageBack?: { label: string; onClick: () => void }
+  pageWidth?: "default" | "wide"
   children?: React.ReactNode
 }) {
   const page = pageTitle != null
@@ -67,7 +71,8 @@ function ResultScreen({
           className={cn(
             "gap-ns-2xl px-ns-2xl pt-ns-3xl pb-ns-2xl mx-auto flex w-full max-w-120 flex-1 flex-col items-center",
             align === "center" && "justify-center",
-            page && "lg:max-w-140 lg:flex-none lg:px-0 lg:pt-0"
+            page && "lg:max-w-140 lg:flex-none lg:px-0 lg:pt-0",
+            page && pageWidth === "wide" && "lg:max-w-190"
           )}
         >
           <div
@@ -122,9 +127,18 @@ function ResultScreen({
           (footerVariant === "bar" ? (
             <div
               data-slot="action-bar"
-              className="border-grayscale-border-disabled bg-grayscale-surface-default px-ns-l pt-ns-m sticky bottom-0 z-10 border-t pb-[max(var(--spacing-ns-l),env(safe-area-inset-bottom))]"
+              className={cn(
+                "border-grayscale-border-disabled bg-grayscale-surface-default px-ns-l pt-ns-m sticky bottom-0 z-10 border-t pb-[max(var(--spacing-ns-l),env(safe-area-inset-bottom))]",
+                page &&
+                  "lg:static lg:border-t-0 lg:bg-transparent lg:px-0 lg:pt-0 lg:pb-0"
+              )}
             >
-              <div className="gap-ns-m mx-auto flex w-full max-w-120 *:flex-1">
+              <div
+                className={cn(
+                  "gap-ns-m mx-auto flex w-full max-w-120 *:flex-1",
+                  page && "lg:justify-center lg:*:flex-none"
+                )}
+              >
                 {footer}
               </div>
             </div>

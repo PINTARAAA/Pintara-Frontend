@@ -50,6 +50,8 @@ function DetailScreen({
   desktopWidth = "default",
   desktopHeaderActions,
   desktopSubheader = "show",
+  desktopTitle,
+  desktopDescription,
   className,
   children,
 }: {
@@ -87,6 +89,13 @@ function DetailScreen({
    * desktop dipindah ke Page header lewat `desktopHeaderActions`)
    */
   desktopSubheader?: "show" | "hidden"
+  /*
+   * Khusus desktopHeader="page": judul Page header bila berbeda dari judul
+   * Top app bar mobile (mis. "Matematika · setiap Rabu" vs "Detail Jadwal"),
+   * dan keterangan di bawah judul
+   */
+  desktopTitle?: React.ReactNode
+  desktopDescription?: React.ReactNode
   className?: string
   children: React.ReactNode
 }) {
@@ -109,7 +118,8 @@ function DetailScreen({
         {page && (
           <PageHeader
             className="hidden pl-(--gutter) pr-(--gutter-end) pt-ns-3xl lg:flex"
-            title={title}
+            title={desktopTitle ?? title}
+            description={desktopDescription}
             back={
               backLabel === null
                 ? undefined

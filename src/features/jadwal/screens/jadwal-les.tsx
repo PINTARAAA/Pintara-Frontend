@@ -32,6 +32,11 @@ import { cn } from "@/lib/styles"
  * Student switcher → [Pengajuan perubahan] → Minggu ini (sesi 7 hari ke
  * depan, "Hari ini"/"Besok" di kanan) → Jadwal rutin (ketuk → detail).
  * Anak yang dipilih disimpan di ?siswa=… agar tetap sama saat kembali.
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): halaman putih, Page header "Jadwal
+ * Les" dengan Student switcher di kanan (lonceng ada di sidebar). Kolom
+ * utama: [Pengajuan perubahan] + Minggu ini (jarak 32); kolom samping 400px:
+ * Jadwal rutin; jarak antar kolom 40.
  */
 function JadwalLes() {
   const unreadNotifications = useUnreadNotifications()
@@ -52,6 +57,17 @@ function JadwalLes() {
           unread={unreadNotifications}
         />
       }
+      desktopHeader="page"
+      desktopHeaderActions={
+        data && (
+          <StudentSwitcher
+            students={data.students}
+            value={data.activeStudentId}
+            onValueChange={(id) => setParams({ siswa: id }, { replace: true })}
+            align="end"
+          />
+        )
+      }
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat jadwal…" />
@@ -70,56 +86,64 @@ function JadwalLes() {
             query.isPlaceholderData && "opacity-60"
           )}
         >
-          <StudentSwitcher
-            students={data.students}
-            value={data.activeStudentId}
-            onValueChange={(id) => setParams({ siswa: id }, { replace: true })}
-          />
+          <div className="lg:hidden">
+            <StudentSwitcher
+              students={data.students}
+              value={data.activeStudentId}
+              onValueChange={(id) =>
+                setParams({ siswa: id }, { replace: true })
+              }
+            />
+          </div>
 
-          {data.pendingRequests.length > 0 && (
-            <DashboardSection title="Pengajuan perubahan">
-              <DashboardList>
-                {data.pendingRequests.map((request) => (
-                  <ListItem
-                    key={request.id}
-                    icon={<RotateCwIcon />}
-                    title={formatChangeTitle(request)}
-                    description={`${CHANGE_STATUS_LABEL[request.status]} · diajukan ${formatDayMonth(request.submittedAt)}`}
-                    chevron
-                    render={<Link to={`/wali/jadwal/pengajuan/${request.id}`} />}
-                  />
-                ))}
-              </DashboardList>
-            </DashboardSection>
-          )}
-
-          <div className="grid gap-ns-2xl lg:grid-cols-2 lg:items-start">
-            <DashboardSection
-              title="Minggu ini"
-              description={formatDateRange(data.week.from, data.week.to)}
-            >
-              {data.week.sessions.length > 0 ? (
-                <DashboardList>
-                  {data.week.sessions.map((session) => (
-                    <ListItem
-                      key={session.id}
-                      icon={<CalendarIcon />}
-                      title={`${session.subject} · ${formatWeekdayDate(session.start)}`}
-                      description={`${formatTimeRange(session.start, session.end)} · ${session.tutorName}`}
-                      trailingText={
-                        isToday(session.start)
-                          ? "Hari ini"
-                          : isTomorrow(session.start)
-                            ? "Besok"
-                            : undefined
-                      }
-                    />
-                  ))}
-                </DashboardList>
-              ) : (
-                <EmptyNote>Tidak ada les minggu ini.</EmptyNote>
+          <div className="flex flex-col gap-ns-2xl lg:grid lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-start lg:gap-ns-4xl">
+            <div className="flex flex-col gap-ns-2xl lg:gap-ns-3xl">
+              {data.pendingRequests.length > 0 && (
+                <DashboardSection title="Pengajuan perubahan">
+                  <DashboardList>
+                    {data.pendingRequests.map((request) => (
+                      <ListItem
+                        key={request.id}
+                        icon={<RotateCwIcon />}
+                        title={formatChangeTitle(request)}
+                        description={`${CHANGE_STATUS_LABEL[request.status]} · diajukan ${formatDayMonth(request.submittedAt)}`}
+                        chevron
+                        render={
+                          <Link to={`/wali/jadwal/pengajuan/${request.id}`} />
+                        }
+                      />
+                    ))}
+                  </DashboardList>
+                </DashboardSection>
               )}
-            </DashboardSection>
+
+              <DashboardSection
+                title="Minggu ini"
+                description={formatDateRange(data.week.from, data.week.to)}
+              >
+                {data.week.sessions.length > 0 ? (
+                  <DashboardList>
+                    {data.week.sessions.map((session) => (
+                      <ListItem
+                        key={session.id}
+                        icon={<CalendarIcon />}
+                        title={`${session.subject} · ${formatWeekdayDate(session.start)}`}
+                        description={`${formatTimeRange(session.start, session.end)} · ${session.tutorName}`}
+                        trailingText={
+                          isToday(session.start)
+                            ? "Hari ini"
+                            : isTomorrow(session.start)
+                              ? "Besok"
+                              : undefined
+                        }
+                      />
+                    ))}
+                  </DashboardList>
+                ) : (
+                  <EmptyNote>Tidak ada les minggu ini.</EmptyNote>
+                )}
+              </DashboardSection>
+            </div>
 
             <DashboardSection
               title="Jadwal rutin"
