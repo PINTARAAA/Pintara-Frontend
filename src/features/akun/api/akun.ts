@@ -1,11 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import {
-  PENGELOLA_MENU,
-  TUTOR_ACCOUNT,
-  WALI_ACCOUNT,
-} from "@/lib/data/akun"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { clearAccessToken, httpClient } from "@/lib/api"
 import type {
   PengelolaMenu,
@@ -13,22 +7,9 @@ import type {
   WaliAccount,
 } from "@/types/akun"
 
-/*
- * Akun · Figma PINTARA → UI Screen → Wali Murid → W8 dan Tutor → T6
- *
- * TODO(backend):
- *   getWaliAccount()  → httpClient.get("/wali/akun")
- *   getTutorAccount() → httpClient.get("/tutor/akun")
- *   getPengelolaMenu() → httpClient.get("/pengelola/lainnya")
- *   logout()         → httpClient.post("/auth/logout") lalu hapus sesi lokal
- *
- * Data akun hanya bisa diubah oleh Pengelola LBB, jadi layar ini hanya baca.
- */
-
 export async function getWaliAccount(): Promise<WaliAccount> {
-  assertMockAllowed()
-  await delay()
-  return WALI_ACCOUNT
+  const { data } = await httpClient.get<WaliAccount>("/wali/akun")
+  return data
 }
 
 export const waliAccountQuery = () =>
@@ -39,9 +20,8 @@ export const waliAccountQuery = () =>
   })
 
 export async function getTutorAccount(): Promise<TutorAccount> {
-  assertMockAllowed()
-  await delay()
-  return TUTOR_ACCOUNT
+  const { data } = await httpClient.get<TutorAccount>("/tutor/akun")
+  return data
 }
 
 export const tutorAccountQuery = () =>
@@ -52,9 +32,8 @@ export const tutorAccountQuery = () =>
   })
 
 export async function getPengelolaMenu(): Promise<PengelolaMenu> {
-  assertMockAllowed()
-  await delay()
-  return PENGELOLA_MENU
+  const { data } = await httpClient.get<PengelolaMenu>("/pengelola/lainnya")
+  return data
 }
 
 export const pengelolaMenuQuery = () =>
