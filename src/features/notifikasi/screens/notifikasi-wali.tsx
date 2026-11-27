@@ -19,6 +19,8 @@ import type { NotificationKind } from "@/types/notifikasi"
 /*
  * W9 · Notifikasi (wali) · Figma "Notifikasi / Wali" dan "- Kosong"
  * Kerangka daftar ada di NotificationScreen.
+ * Desktop: Figma "Notifikasi / Wali (Desktop)" dan "- Kosong (Desktop)"
+ * lewat `desktopPage`.
  */
 const ICONS: Record<NotificationKind, React.ReactNode> = {
   validasi: <ClipboardCheckIcon />,
@@ -38,6 +40,7 @@ function NotifikasiWali() {
       markRead={markRead}
       markAllRead={markAllRead}
       emptyDescription="Kabar soal jadwal, absensi, dan tagihan akan muncul di sini."
+      desktopPage
     />
   )
 }

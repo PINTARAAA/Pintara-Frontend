@@ -27,13 +27,17 @@ import { SummaryRow } from "@/features/pendaftaran/components"
  * "Daftarkan anak lain" ke W2, tambahan di luar Figma) → Data akun
  * (Kontak & login, hanya baca) → Bantuan (Hubungi Pengelola LBB, Tentang
  * PINTARA) → Keluar (Confirmation modal, lalu ke /masuk?alasan=keluar).
+ *
+ * Desktop (≥ lg, frame "Akun / Wali (Desktop)"): halaman putih, Page header
+ * "Akun"; Profil · Siswa tertaut · Data akun di kolom utama, Bantuan + Keluar
+ * 380px di kanan (jarak 32, gap tiap kolom 24).
  */
 function AkunWali() {
   const query = useQuery(waliAccountQuery())
   const account = query.data
 
   return (
-    <TabScreen title="Akun">
+    <TabScreen title="Akun" desktopHeader="page">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat akun…" />
       ) : query.isError ? (
@@ -44,7 +48,7 @@ function AkunWali() {
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : account ? (
-        <div className="grid gap-ns-2xl lg:grid-cols-2 lg:items-start">
+        <div className="grid gap-ns-2xl lg:grid-cols-[minmax(0,1fr)_23.75rem] lg:items-start lg:gap-x-ns-3xl">
           <div className="flex flex-col gap-ns-2xl">
             <AccountProfile
               name={account.name}
