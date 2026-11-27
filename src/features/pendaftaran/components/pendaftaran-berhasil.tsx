@@ -26,7 +26,7 @@ function PendaftaranBerhasil({ result }: { result: PendaftaranResult }) {
       pageTitle="Daftar Siswa Baru"
       pageBack={{
         label: "Beranda",
-        onClick: () => navigate("/wali", { replace: true }),
+        onClick: () => navigate("/", { replace: true }),
       }}
       title="Pendaftaran terkirim"
       description={`Data ${result.studentName} sudah kami terima dan sedang menunggu verifikasi Pengelola LBB. Kami akan mengabari Anda setelah ada hasil.`}
@@ -47,7 +47,7 @@ function PendaftaranBerhasil({ result }: { result: PendaftaranResult }) {
           <Button
             variant="tertiary"
             nativeButton={false}
-            render={<Link to="/wali" replace />}
+            render={<Link to="/" replace />}
           >
             Kembali ke Beranda
           </Button>

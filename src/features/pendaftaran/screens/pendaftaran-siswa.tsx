@@ -165,7 +165,7 @@ function PendaftaranSiswa() {
       ) : alreadyRegistered ? (
         <Button
           key="batalkan"
-          onClick={() => navigate("/wali", { replace: true })}
+          onClick={() => navigate("/", { replace: true })}
         >
           Batalkan Pendaftaran
         </Button>

@@ -27,14 +27,15 @@ import {
 } from "@/components"
 import {
   accountQuery,
-  DuplicateFieldError,
+  duplicateFieldOf,
+  isNotFoundError,
   linkableStudentsQuery,
-  NotFoundError,
   ROLE_LABEL,
   saveAccount,
   usernameOf,
 } from "@/features/manajemen-akun/api"
 import type { AccountDetail, AccountRole } from "@/types/manajemen-akun"
+import { getErrorMessage } from "@/lib/api"
 import { formatPhone } from "@/lib/format"
 import { cn } from "@/lib/styles"
 import {
@@ -71,7 +72,7 @@ function FormAkun() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat akun…" />
-      ) : query.error instanceof NotFoundError ? (
+      ) : isNotFoundError(query.error) ? (
         <DataState
           state="empty"
           title="Akun tidak ditemukan"
@@ -85,7 +86,7 @@ function FormAkun() {
         <DataState
           state="error"
           title="Akun gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       )}
@@ -142,18 +143,18 @@ function AkunForm({ account }: { account?: AccountDetail }) {
       else navigate(`/pengelola/akun/${saved.id}`, { replace: true })
     },
     onError: (error) => {
-      if (error instanceof DuplicateFieldError) {
+      const field = duplicateFieldOf(error)
+      if (field) {
         setError(
-          error.field,
+          field,
           {
-            message: `${error.field === "email" ? "Email" : "Username"} sudah dipakai akun lain.`,
+            message: `${field === "email" ? "Email" : "Username"} sudah dipakai akun lain.`,
           },
           { shouldFocus: true }
         )
       } else {
         toast.error("Akun gagal disimpan", {
-          description:
-            "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+          description: `${getErrorMessage(error)} Isian Anda tetap tersimpan.`,
         })
       }
     },

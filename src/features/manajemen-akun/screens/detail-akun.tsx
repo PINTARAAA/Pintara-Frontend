@@ -28,14 +28,15 @@ import { initialsOf } from "@/features/data-master/api"
 import { InfoCard, ProfileHeader } from "@/features/data-master/components"
 import {
   accountQuery,
+  isNotFoundError,
   linkableStudentsQuery,
   linkStudents,
-  NotFoundError,
   resetPassword,
   ROLE_LABEL,
   setAccountStatus,
 } from "@/features/manajemen-akun/api"
 import type { AccountDetail } from "@/types/manajemen-akun"
+import { getErrorMessage } from "@/lib/api"
 import { cn } from "@/lib/styles"
 import { formatRelativeDay } from "@/lib/format"
 
@@ -72,7 +73,7 @@ function DetailAkun() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat akun…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Akun tidak ditemukan"
@@ -86,7 +87,7 @@ function DetailAkun() {
           <DataState
             state="error"
             title="Akun gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )
@@ -113,9 +114,9 @@ function AccountBody({ account }: { account: AccountDetail }) {
       toast.success("Password direset", {
         description: `Password sementara dikirim ke ${email}.`,
       }),
-    onError: () =>
+    onError: (error) =>
       toast.error("Password gagal direset", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 
@@ -137,9 +138,9 @@ function AccountBody({ account }: { account: AccountDetail }) {
         }
       )
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Status akun gagal diubah", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 
@@ -320,9 +321,9 @@ function LinkStudentsSheet({
       })
       onOpenChange(false)
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Siswa gagal ditautkan", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 

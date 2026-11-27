@@ -183,7 +183,6 @@ export function isRetryableError(error: unknown): boolean {
   return (
     error.code === "network" ||
     error.code === "timeout" ||
-    error.code === "server" ||
-    error.code === "rate_limited"
+    error.code === "server"
   )
 }

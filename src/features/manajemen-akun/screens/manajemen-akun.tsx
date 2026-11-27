@@ -19,6 +19,7 @@ import {
 } from "@/components"
 import { MasterList } from "@/features/data-master/components"
 import { accountsQuery } from "@/features/manajemen-akun/api"
+import { getErrorMessage } from "@/lib/api"
 import type {
   AccountList,
   AccountRole,
@@ -120,7 +121,7 @@ function ManajemenAkun() {
               <DataState
                 state="error"
                 title="Daftar akun gagal dimuat"
-                description="Periksa koneksi Anda, lalu coba lagi."
+                description={getErrorMessage(list.error)}
                 action={{ label: "Coba lagi", onClick: () => list.refetch() }}
               />
             ) : (

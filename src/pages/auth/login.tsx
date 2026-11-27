@@ -24,7 +24,7 @@ export default function LoginRoute() {
     >
       <LoginForm
         notice={notice}
-        onSuccess={(user) => navigate(`/${user.role}`, { replace: true })}
+        onSuccess={() => navigate("/", { replace: true })}
       />
     </AuthLayout>
   )
