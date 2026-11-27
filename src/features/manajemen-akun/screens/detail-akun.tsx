@@ -87,7 +87,7 @@ function DetailAkun() {
           <DataState
             state="error"
             title="Akun gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )
