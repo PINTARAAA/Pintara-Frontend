@@ -1,16 +1,17 @@
 import { QueryClient } from "@tanstack/react-query"
 
-/*
- * QueryClient global untuk TanStack Query (data dari API).
- *   staleTime 1 menit  : data dianggap segar, tidak di-fetch ulang tiap render
- *   retry 1            : satu kali percobaan ulang bila request gagal
- *   refetchOnWindowFocus false : tidak fetch ulang hanya karena pindah tab
- */
+import { isApiError, isRetryableError } from "./api-error"
+const MAX_RETRIES = 1
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60_000,
-      retry: 1,
+      retry: (failureCount, error) => {
+        if (failureCount >= MAX_RETRIES) return false
+        /* Error di luar httpClient (mis. data contoh) tetap dicoba ulang */
+        return isApiError(error) ? isRetryableError(error) : true
+      },
       refetchOnWindowFocus: false,
     },
   },
