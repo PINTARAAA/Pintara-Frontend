@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
   toast,
+  PhoneInput,
 } from "@/components"
 import {
   accountQuery,
@@ -34,6 +35,8 @@ import {
   usernameOf,
 } from "@/features/manajemen-akun/api"
 import type { AccountDetail, AccountRole } from "@/types/manajemen-akun"
+import { formatPhone } from "@/lib/format"
+import { cn } from "@/lib/styles"
 import {
   akunSchema,
   type AkunFormInput,
@@ -61,7 +64,11 @@ function FormAkun() {
   if (query.data) return <AkunForm account={query.data} />
 
   return (
-    <DetailScreen title="Ubah Data Akun">
+    <DetailScreen
+      title="Ubah Data Akun"
+      backLabel="Detail Akun"
+      desktopHeader="page"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat akun…" />
       ) : query.error instanceof NotFoundError ? (
@@ -101,7 +108,7 @@ function AkunForm({ account }: { account?: AccountDetail }) {
           name: account.name,
           email: account.email,
           username: account.username,
-          phone: account.phone,
+          phone: formatPhone(account.phone),
           studentIds: account.studentIds,
         }
       : {
@@ -158,16 +165,29 @@ function AkunForm({ account }: { account?: AccountDetail }) {
   return (
     <DetailScreen
       title={account ? "Ubah Data Akun" : "Tambah Akun"}
+      backLabel={account ? "Detail Akun" : "Manajemen Akun"}
+      desktopHeader="page"
+      desktopWidth="wide"
       surface="default"
       className="gap-ns-2xl"
       footer={
-        <Button onClick={submit} disabled={save.isPending}>
-          {save.isPending
-            ? "Menyimpan…"
-            : account
-              ? "Simpan Perubahan"
-              : "Buat Akun"}
-        </Button>
+        <>
+          {/* Figma: Batal hanya ada di desktop */}
+          <Button
+            variant="secondary"
+            className="hidden lg:inline-flex"
+            onClick={() => navigate(-1)}
+          >
+            Batal
+          </Button>
+          <Button onClick={submit} disabled={save.isPending}>
+            {save.isPending
+              ? "Menyimpan…"
+              : account
+                ? "Simpan Perubahan"
+                : "Buat Akun"}
+          </Button>
+        </>
       }
     >
       <form
@@ -177,9 +197,14 @@ function AkunForm({ account }: { account?: AccountDetail }) {
           e.preventDefault()
           void submit()
         }}
-        className="gap-ns-2xl flex flex-col"
+        /*
+         * Desktop (Figma "Manajemen Akun / Tambah akun (Desktop)"): dua
+         * kolom (jarak 48). Peran, banner tutor, dan Tautkan ke siswa
+         * mengisi kolom kiri (grid dense); Data akun di kolom kanan.
+         */
+        className="gap-ns-2xl flex flex-col lg:grid lg:grid-flow-row-dense lg:grid-cols-2 lg:items-start lg:gap-x-12"
       >
-        <fieldset className="gap-ns-m flex flex-col">
+        <fieldset className="gap-ns-m flex flex-col lg:col-start-1">
           <legend className="mb-ns-m text-body text-grayscale-text-title leading-normal font-bold">
             Peran <span aria-hidden="true">*</span>
           </legend>
@@ -213,6 +238,7 @@ function AkunForm({ account }: { account?: AccountDetail }) {
 
         {role === "tutor" && !account && (
           <AlertBanner
+            className="lg:col-start-1"
             status="info"
             title="Tutor baru sebaiknya ditambahkan dari Data Tutor"
             description="Di sana profil mengajar dan tarif honor ikut diisi, lalu akun login dibuat otomatis."
@@ -223,7 +249,15 @@ function AkunForm({ account }: { account?: AccountDetail }) {
           />
         )}
 
-        <Section title="Data akun">
+        <Section
+          title="Data akun"
+          className={cn(
+            "lg:col-start-2 lg:row-start-1",
+            /* Rentangkan ke baris kedua bila kolom kiri berisi dua bagian */
+            (role === "wali" || (role === "tutor" && !account)) &&
+              "lg:row-span-2"
+          )}
+        >
           <Field>
             <FieldLabel htmlFor="name" required>
               Nama lengkap
@@ -296,11 +330,8 @@ function AkunForm({ account }: { account?: AccountDetail }) {
             <FieldLabel htmlFor="phone" required>
               No. WhatsApp
             </FieldLabel>
-            <Input
+            <PhoneInput
               id="phone"
-              type="tel"
-              inputMode="tel"
-              placeholder="Contoh: 0812xxxxxxxx"
               aria-invalid={errors.phone ? true : undefined}
               aria-describedby={errors.phone ? "phone-error" : undefined}
               {...register("phone")}
@@ -312,7 +343,7 @@ function AkunForm({ account }: { account?: AccountDetail }) {
         </Section>
 
         {role === "wali" && (
-          <Section title="Tautkan ke siswa">
+          <Section title="Tautkan ke siswa" className="lg:col-start-1">
             <Controller
               control={control}
               name="studentIds"
@@ -333,7 +364,10 @@ function AkunForm({ account }: { account?: AccountDetail }) {
                       onValueChange={(v) => field.onChange(v as string[])}
                       disabled={students.isPending}
                     >
-                      <SelectTrigger id="students" aria-describedby="students-help">
+                      <SelectTrigger
+                        id="students"
+                        aria-describedby="students-help"
+                      >
                         <SelectValue>
                           {(value: string[]) =>
                             value.length === 0 ? (
@@ -376,13 +410,15 @@ function AkunForm({ account }: { account?: AccountDetail }) {
 
 function Section({
   title,
+  className,
   children,
 }: {
   title: string
+  className?: string
   children: React.ReactNode
 }) {
   return (
-    <section className="gap-ns-l flex flex-col">
+    <section className={cn("gap-ns-l flex flex-col", className)}>
       <h2 className="text-body text-grayscale-text-title leading-normal font-bold">
         {title}
       </h2>

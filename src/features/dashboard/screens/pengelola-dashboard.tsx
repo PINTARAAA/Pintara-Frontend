@@ -169,7 +169,7 @@ function DesktopDashboard({ data }: { data: PengelolaDashboardData }) {
             ) : (
               <CircleCheckIcon aria-hidden="true" className="size-5 shrink-0 text-success" />
             )}
-            <div className="flex flex-col gap-ns-3xs leading-normal">
+            <div className="flex flex-col gap-ns-s leading-normal">
               <p className="text-body font-bold text-grayscale-text-title">
                 {today.missingYesterday > 0
                   ? `${today.missingYesterday} presensi kemarin belum masuk`
@@ -210,7 +210,7 @@ function BillingSummaryCard({
       className="group flex flex-col gap-ns-l rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default p-ns-l outline-none transition-colors hover:border-grayscale-border-darker focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
     >
       <div className="flex items-start gap-ns-s">
-        <div className="flex flex-1 flex-col gap-ns-2xs leading-normal">
+        <div className="flex flex-1 flex-col gap-ns-s leading-normal">
           <p className="text-body font-bold text-grayscale-text-title">
             {formatRupiahCompact(billing.paidAmount)} dari{" "}
             {formatRupiahCompact(billing.totalAmount)} terbayar

@@ -32,7 +32,7 @@ import {
 } from "@/features/verifikasi/api"
 import { REJECT_REASONS } from "@/lib/data/verifikasi"
 import type { PengelolaRegistration } from "@/types/verifikasi"
-import { firstName } from "@/lib/format"
+import { firstName, toWhatsAppUrl } from "@/lib/format"
 import {
   formatRequestedSchedule,
   formatSubmitted,
@@ -48,12 +48,14 @@ import {
  *   menunggu      : Tolak (→ form tolak) · Verifikasi (Confirmation modal)
  *   terverifikasi : Ke Daftar · Cocokkan Tutor (P3, selama belum ada tutor)
  *   ditolak       : Ke Daftar (+ kartu alasan penolakan)
+ *
+ * Desktop (Figma "… / Detail (Desktop)", "/ Konfirmasi verifikasi
+ * (Desktop)", "/ Terverifikasi (Desktop)"): Page header "← Pendaftaran" +
+ * judul, tombol aksi di kanan header; kartu ringkasan selebar konten, lalu
+ * Data Siswa · Data Wali · Kebutuhan Belajar berjajar tiga kolom.
  */
 const LIST = "/pengelola/pendaftaran"
 
-/* "0813-2233-4455" → "6281322334455" (format wa.me) */
-const toWhatsapp = (phone: string) =>
-  phone.replace(/\D/g, "").replace(/^0/, "62")
 const stamp = (date: Date) =>
   format(date, "d MMM yyyy, HH.mm", { locale: localeId })
 
@@ -73,7 +75,9 @@ function DetailPendaftaran() {
         registrationQuery(registrationId).queryKey,
         updated
       )
-      void queryClient.invalidateQueries({ queryKey: ["verifikasi", "daftar"] })
+      void queryClient.invalidateQueries({
+        queryKey: ["verifikasi", "daftar"],
+      })
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] })
       toast.success("Pendaftaran terverifikasi", {
         description: `Data siswa dibuat. Notifikasi terkirim ke ${updated.parent.name}.`,
@@ -99,6 +103,10 @@ function DetailPendaftaran() {
   return (
     <DetailScreen
       title="Detail Pendaftaran"
+      backLabel="Pendaftaran"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       action={registration && <MoreMenu registration={registration} />}
       footer={
         registration && (
@@ -211,7 +219,7 @@ function MoreMenu({ registration }: { registration: PengelolaRegistration }) {
           className="min-h-12"
           render={
             <a
-              href={`https://wa.me/${toWhatsapp(registration.parent.whatsapp)}`}
+              href={toWhatsAppUrl(registration.parent.whatsapp) ?? undefined}
               target="_blank"
               rel="noopener noreferrer"
             />
@@ -279,70 +287,73 @@ function RegistrationDetails({
         </Card>
       )}
 
-      <Card size="compact">
-        <CardHeader>
-          <CardTitle>Data Siswa</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="gap-ns-m flex flex-col">
-            <SummaryRow label="Nama" labelClassName={row}>
-              {r.student.name}
-            </SummaryRow>
-            <SummaryRow label="Kelas" labelClassName={row}>
-              {r.student.grade} {r.student.level}
-            </SummaryRow>
-            <SummaryRow label="Sekolah" labelClassName={row}>
-              {r.student.school}
-            </SummaryRow>
-            <SummaryRow label="Alamat les" labelClassName={row}>
-              {r.student.address}
-            </SummaryRow>
-          </dl>
-        </CardContent>
-      </Card>
-
-      <Card size="compact">
-        <CardHeader>
-          <CardTitle>Data Wali</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="gap-ns-m flex flex-col">
-            <SummaryRow label="Nama" labelClassName={row}>
-              {r.parent.name}
-            </SummaryRow>
-            <SummaryRow label="WhatsApp" labelClassName={row}>
-              {r.parent.whatsapp}
-            </SummaryRow>
-            <SummaryRow label="Akun" labelClassName={row}>
-              <span className="break-all">{r.parent.email}</span>
-            </SummaryRow>
-          </dl>
-        </CardContent>
-      </Card>
-
-      <Card size="compact">
-        <CardHeader>
-          <CardTitle>Kebutuhan Belajar</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="gap-ns-m flex flex-col">
-            <SummaryRow label="Mata pelajaran" labelClassName={row}>
-              {r.needs.subjects.join(", ")}
-            </SummaryRow>
-            <SummaryRow label="Frekuensi" labelClassName={row}>
-              {r.needs.perWeek}× per minggu
-            </SummaryRow>
-            <SummaryRow label="Jadwal diminta" labelClassName={row}>
-              {formatRequestedSchedule(r.needs)}
-            </SummaryRow>
-            {r.needs.notes && (
-              <SummaryRow label="Catatan" labelClassName={row}>
-                {r.needs.notes}
+      {/* Mobile: ditumpuk; desktop: tiga kolom sama tinggi, gap 24 */}
+      <div className="contents lg:grid lg:grid-cols-3 lg:gap-ns-2xl">
+        <Card size="compact">
+          <CardHeader>
+            <CardTitle>Data Siswa</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="gap-ns-m flex flex-col">
+              <SummaryRow label="Nama" labelClassName={row}>
+                {r.student.name}
               </SummaryRow>
-            )}
-          </dl>
-        </CardContent>
-      </Card>
+              <SummaryRow label="Kelas" labelClassName={row}>
+                {r.student.grade} {r.student.level}
+              </SummaryRow>
+              <SummaryRow label="Sekolah" labelClassName={row}>
+                {r.student.school}
+              </SummaryRow>
+              <SummaryRow label="Alamat les" labelClassName={row}>
+                {r.student.address}
+              </SummaryRow>
+            </dl>
+          </CardContent>
+        </Card>
+
+        <Card size="compact">
+          <CardHeader>
+            <CardTitle>Data Wali</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="gap-ns-m flex flex-col">
+              <SummaryRow label="Nama" labelClassName={row}>
+                {r.parent.name}
+              </SummaryRow>
+              <SummaryRow label="WhatsApp" labelClassName={row}>
+                {r.parent.whatsapp}
+              </SummaryRow>
+              <SummaryRow label="Akun" labelClassName={row}>
+                <span className="break-all">{r.parent.email}</span>
+              </SummaryRow>
+            </dl>
+          </CardContent>
+        </Card>
+
+        <Card size="compact">
+          <CardHeader>
+            <CardTitle>Kebutuhan Belajar</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="gap-ns-m flex flex-col">
+              <SummaryRow label="Mata pelajaran" labelClassName={row}>
+                {r.needs.subjects.join(", ")}
+              </SummaryRow>
+              <SummaryRow label="Frekuensi" labelClassName={row}>
+                {r.needs.perWeek}× per minggu
+              </SummaryRow>
+              <SummaryRow label="Jadwal diminta" labelClassName={row}>
+                {formatRequestedSchedule(r.needs)}
+              </SummaryRow>
+              {r.needs.notes && (
+                <SummaryRow label="Catatan" labelClassName={row}>
+                  {r.needs.notes}
+                </SummaryRow>
+              )}
+            </dl>
+          </CardContent>
+        </Card>
+      </div>
 
       {r.status === "terverifikasi" && r.verifiedAt && (
         <p className="text-caption text-grayscale-text-caption leading-normal">

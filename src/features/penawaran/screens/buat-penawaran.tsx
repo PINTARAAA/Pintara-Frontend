@@ -33,6 +33,10 @@ import { NotFoundError } from "@/features/verifikasi/api"
  * → Pesan untuk tutor (opsional, maks. 500) → Kirim Penawaran. Bila slot
  * tutor ternyata sudah terisi: banner error + "Pilih Tutor Lain" (pilihan
  * tutor dilepas, kembali ke kandidat P3).
+ *
+ * Desktop (Figma "… (Desktop)"): Page header "← Les"; ringkasan di kiri dan
+ * pesan untuk tutor di kanan (dua kolom sama lebar, jarak 32); tombol rata
+ * kanan di bawah garis pemisah, dengan tombol Batal khusus desktop.
  */
 const LES = "/pengelola/les"
 const MESSAGE_MAX = 500
@@ -56,7 +60,7 @@ function BuatPenawaran() {
   }
 
   return (
-    <DetailScreen title="Buat Penawaran">
+    <DetailScreen title="Buat Penawaran" backLabel="Les" desktopHeader="page">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Menyiapkan penawaran…" />
       ) : error instanceof NotFoundError ||
@@ -134,6 +138,9 @@ function OfferForm({ draft }: { draft: OfferDraft }) {
   return (
     <DetailScreen
       title="Buat Penawaran"
+      backLabel="Les"
+      desktopHeader="page"
+      desktopWidth="wide"
       footer={
         unavailable ? (
           <Button
@@ -143,9 +150,19 @@ function OfferForm({ draft }: { draft: OfferDraft }) {
             Pilih Tutor Lain
           </Button>
         ) : (
-          <Button onClick={() => send.mutate()} disabled={send.isPending}>
-            {send.isPending ? "Mengirim…" : "Kirim Penawaran"}
-          </Button>
+          <>
+            {/* Figma: Batal hanya ada di desktop */}
+            <Button
+              variant="secondary"
+              className="hidden lg:inline-flex"
+              onClick={() => navigate(-1)}
+            >
+              Batal
+            </Button>
+            <Button onClick={() => send.mutate()} disabled={send.isPending}>
+              {send.isPending ? "Mengirim…" : "Kirim Penawaran"}
+            </Button>
+          </>
         )
       }
     >
@@ -161,29 +178,35 @@ function OfferForm({ draft }: { draft: OfferDraft }) {
         />
       )}
 
-      <OfferSummaryCard offer={draft} />
+      {/* Mobile: ditumpuk; desktop: dua kolom sama lebar, jarak 32 */}
+      <div className="contents lg:grid lg:grid-cols-2 lg:items-start lg:gap-ns-3xl">
+        <OfferSummaryCard offer={draft} />
 
-      <Field>
-        <FieldLabel htmlFor="offer-message">Pesan untuk tutor</FieldLabel>
-        <Textarea
-          id="offer-message"
-          maxLength={MESSAGE_MAX}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={`Contoh: ${firstName(draft.student.name)} sedang persiapan ujian, mohon fokus pada latihan soal.`}
-          aria-describedby="offer-message-help"
-        />
-        <FieldDescription
-          id="offer-message-help"
-          counter={`${message.length}/${MESSAGE_MAX}`}
-        >
-          Opsional. Ikut terkirim bersama notifikasi penawaran.
-        </FieldDescription>
-      </Field>
+        <div className="contents lg:flex lg:flex-col lg:gap-ns-l">
+          <Field>
+            <FieldLabel htmlFor="offer-message">Pesan untuk tutor</FieldLabel>
+            <Textarea
+              id="offer-message"
+              maxLength={MESSAGE_MAX}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={`Contoh: ${firstName(draft.student.name)} sedang persiapan ujian, mohon fokus pada latihan soal.`}
+              aria-describedby="offer-message-help"
+            />
+            <FieldDescription
+              id="offer-message-help"
+              counter={`${message.length}/${MESSAGE_MAX}`}
+            >
+              Opsional. Ikut terkirim bersama notifikasi penawaran.
+            </FieldDescription>
+          </Field>
 
-      <p className="text-caption text-grayscale-text-caption leading-normal">
-        Setelah tutor menjawab, catat tanggapannya di halaman detail penawaran.
-      </p>
+          <p className="text-caption text-grayscale-text-caption leading-normal">
+            Setelah tutor menjawab, catat tanggapannya di halaman detail
+            penawaran.
+          </p>
+        </div>
+      </div>
     </DetailScreen>
   )
 }

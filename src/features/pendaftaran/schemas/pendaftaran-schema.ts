@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { isValidPhone } from "@/lib/format"
+
 /*
  * Validasi form pendaftaran siswa · Figma PINTARA → UI Screen → Wali Murid →
  * W2 · Pendaftaran Siswa. Pesan error mengikuti frame
@@ -43,9 +45,9 @@ export const pendaftaranSchema = z
   .object({
     /* Langkah 1 · Data Wali & Siswa */
     parentName: required("Nama wali wajib diisi."),
-    parentPhone: required("No. WhatsApp wali wajib diisi.").regex(
-      /^(\+62|62|0)8[\d\s-]{7,14}$/,
-      "Format No. WhatsApp tidak valid. Contoh: 0812xxxxxxxx"
+    parentPhone: required("No. WhatsApp wali wajib diisi.").refine(
+      isValidPhone,
+      "Format No. WhatsApp tidak valid. Contoh: 0812-3456-7890"
     ),
     studentName: required("Nama lengkap siswa wajib diisi."),
     grade: z.string().min(1, "Pilih kelas siswa."),

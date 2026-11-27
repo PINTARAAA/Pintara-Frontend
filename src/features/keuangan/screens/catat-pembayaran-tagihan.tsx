@@ -76,7 +76,11 @@ function CatatPembayaranTagihan() {
   }
 
   return (
-    <DetailScreen title="Catat Pembayaran">
+    <DetailScreen
+      title="Catat Pembayaran"
+      backLabel="Rincian Tagihan"
+      desktopHeader="page"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat tagihan…" />
       ) : query.isError && !(query.error instanceof ReportNotFoundError) ? (
@@ -89,7 +93,9 @@ function CatatPembayaranTagihan() {
       ) : (
         <DataState
           state="empty"
-          title={query.isError ? "Tagihan tidak ditemukan" : "Tagihan sudah lunas"}
+          title={
+            query.isError ? "Tagihan tidak ditemukan" : "Tagihan sudah lunas"
+          }
           description="Pembayaran hanya bisa dicatat untuk tagihan yang belum lunas."
           action={{
             label: "Kembali ke Laporan Keuangan",
@@ -188,15 +194,28 @@ function PaymentForm({ bill }: { bill: StudentBill }) {
   return (
     <DetailScreen
       title="Catat Pembayaran"
+      backLabel="Rincian Tagihan"
+      desktopHeader="page"
+      desktopWidth="wide"
       surface="default"
       className="gap-ns-2xl"
       footer={
-        <Button
-          onClick={() => validate() && save.mutate()}
-          disabled={save.isPending}
-        >
-          {save.isPending ? "Menyimpan…" : "Simpan Pembayaran"}
-        </Button>
+        <>
+          {/* Figma: Batal hanya ada di desktop */}
+          <Button
+            variant="secondary"
+            className="hidden lg:inline-flex"
+            onClick={() => navigate(-1)}
+          >
+            Batal
+          </Button>
+          <Button
+            onClick={() => validate() && save.mutate()}
+            disabled={save.isPending}
+          >
+            {save.isPending ? "Menyimpan…" : "Simpan Pembayaran"}
+          </Button>
+        </>
       }
     >
       <div className="gap-ns-2xs bg-grayscale-surface-subtitle px-ns-l py-ns-m flex flex-col rounded-(--comp-radius-md) leading-normal">
@@ -212,77 +231,81 @@ function PaymentForm({ bill }: { bill: StudentBill }) {
         noValidate
         aria-label="Formulir pembayaran tagihan"
         onSubmit={(e) => e.preventDefault()}
-        className="gap-ns-2xl flex flex-col"
+        /* Desktop: nominal · tanggal · metode di kiri, bukti di kanan */
+        className="gap-ns-2xl lg:gap-x-ns-4xl flex flex-col lg:grid lg:grid-cols-2 lg:items-start"
       >
-        <Field>
-          <FieldLabel htmlFor="amount" required>
-            Nominal diterima
-          </FieldLabel>
-          <Input
-            id="amount"
-            inputMode="numeric"
-            autoComplete="off"
-            placeholder={`Contoh: ${formatRupiah(remaining)}`}
-            value={amount > 0 ? formatRupiah(amount) : ""}
-            onChange={(e) => {
-              setAmount(digitsOnly(e.target.value))
-              clear("amount")
-            }}
-            aria-invalid={errors.amount ? true : undefined}
-            aria-describedby={errors.amount ? "amount-error" : "amount-help"}
-          />
-          {errors.amount ? (
-            <FieldError id="amount-error">{errors.amount}</FieldError>
-          ) : (
-            <FieldDescription id="amount-help">
-              Maksimal sisa tagihan. Kurang dari sisa akan tercatat Dibayar
-              Sebagian.
-            </FieldDescription>
-          )}
-        </Field>
+        <div className="lg:gap-ns-2xl contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col">
+          <Field>
+            <FieldLabel htmlFor="amount" required>
+              Nominal diterima
+            </FieldLabel>
+            <Input
+              id="amount"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder={`Contoh: ${formatRupiah(remaining)}`}
+              value={amount > 0 ? formatRupiah(amount) : ""}
+              onChange={(e) => {
+                setAmount(digitsOnly(e.target.value))
+                clear("amount")
+              }}
+              aria-invalid={errors.amount ? true : undefined}
+              aria-describedby={errors.amount ? "amount-error" : "amount-help"}
+            />
+            {errors.amount ? (
+              <FieldError id="amount-error">{errors.amount}</FieldError>
+            ) : (
+              <FieldDescription id="amount-help">
+                Maksimal sisa tagihan. Kurang dari sisa akan tercatat Dibayar
+                Sebagian.
+              </FieldDescription>
+            )}
+          </Field>
 
-        <Field>
-          <FieldLabel htmlFor="paid-at" required>
-            Tanggal pembayaran
-          </FieldLabel>
-          <DatePicker
-            id="paid-at"
-            value={paidAt}
-            onValueChange={(d) => {
-              setPaidAt(d)
-              clear("date")
-            }}
-            invalid={!!errors.date}
-            calendarProps={{ disabled: { after: new Date() } }}
-          />
-          {errors.date && <FieldError>{errors.date}</FieldError>}
-        </Field>
+          <Field>
+            <FieldLabel htmlFor="paid-at" required>
+              Tanggal pembayaran
+            </FieldLabel>
+            <DatePicker
+              id="paid-at"
+              value={paidAt}
+              onValueChange={(d) => {
+                setPaidAt(d)
+                clear("date")
+              }}
+              invalid={!!errors.date}
+              calendarProps={{ disabled: { after: new Date() } }}
+            />
+            {errors.date && <FieldError>{errors.date}</FieldError>}
+          </Field>
 
-        <Field>
-          <FieldLabel htmlFor="method" required>
-            Metode
-          </FieldLabel>
-          <Select
-            items={MANUAL_METHODS.map((m) => ({ value: m, label: m }))}
-            value={method}
-            onValueChange={(v) => v && setMethod(v as ManualMethod)}
-          >
-            <SelectTrigger id="method">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup className="p-0">
-                {MANUAL_METHODS.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </Field>
+          <Field>
+            <FieldLabel htmlFor="method" required>
+              Metode
+            </FieldLabel>
+            <Select
+              items={MANUAL_METHODS.map((m) => ({ value: m, label: m }))}
+              value={method}
+              onValueChange={(v) => v && setMethod(v as ManualMethod)}
+            >
+              <SelectTrigger id="method">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup className="p-0">
+                  {MANUAL_METHODS.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
 
         <FileUpload
+          className="lg:col-start-2 lg:row-start-1"
           id="proof"
           label="Bukti pembayaran"
           accept={DOC_ACCEPT}

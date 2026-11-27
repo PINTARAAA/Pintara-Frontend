@@ -5,6 +5,7 @@ import { Link, useNavigate, useSearchParams } from "react-router"
 
 import {
   DetailScreen,
+  Button,
   StatusBadge,
   DataState,
   Input,
@@ -16,7 +17,7 @@ import {
   TabsTrigger,
   TopAppBarButton,
 } from "@/components"
-import { DashboardList } from "@/features/dashboard/components"
+import { MasterList } from "@/features/data-master/components"
 import { accountsQuery } from "@/features/manajemen-akun/api"
 import type {
   AccountList,
@@ -31,6 +32,10 @@ import { cn } from "@/lib/styles"
  * Kolom cari (nama, email, username) → tab Wali · Tutor · Pengelola dengan
  * jumlah → daftar akun (email · siswa tertaut; nonaktif = badge). Tombol +
  * → Tambah Akun (peran mengikuti tab). Disimpan di ?peran=…&q=….
+ *
+ * Desktop (Figma "Manajemen Akun / Daftar (Desktop)"): Page header tanpa
+ * tautan kembali dengan tombol Tambah Akun; tab (420px) di kiri dan kolom
+ * cari (360px) di kanan dalam satu baris; daftar selebar konten.
  */
 const ROLES: { value: AccountRole; label: string }[] = [
   { value: "wali", label: "Wali" },
@@ -46,7 +51,8 @@ function describe(a: AccountRow) {
 function ManajemenAkun() {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
-  const role = ROLES.find((r) => r.value === params.get("peran"))?.value ?? "wali"
+  const role =
+    ROLES.find((r) => r.value === params.get("peran"))?.value ?? "wali"
   const query = params.get("q") ?? ""
   const list = useQuery({
     ...accountsQuery(role, query),
@@ -69,24 +75,37 @@ function ManajemenAkun() {
     >
       <DetailScreen
         title="Manajemen Akun"
+        backLabel={null}
+        desktopHeader="page"
+        desktopWidth="wide"
+        desktopHeaderActions={
+          <Button
+            onClick={() => navigate(`/pengelola/akun/tambah?peran=${role}`)}
+          >
+            Tambah Akun
+          </Button>
+        }
         action={
+          /* Ikon + khusus mobile; desktop memakai tombol di Page header */
           <TopAppBarButton
             label="Tambah akun"
             variant="plain"
-            className="text-primary-surface-default"
+            className="text-primary-surface-default lg:hidden"
             onClick={() => navigate(`/pengelola/akun/tambah?peran=${role}`)}
           >
             <PlusIcon />
           </TopAppBarButton>
         }
         subheader={
-          <div className="gap-ns-s flex flex-col">
+          <div className="gap-ns-s lg:gap-ns-2xl flex flex-col lg:flex-row lg:items-end lg:justify-between">
             <SearchField value={query} onCommit={(q) => update({ q })} />
-            <TabsList className="border-grayscale-border-default -mb-ns-m w-full border-b *:-mb-px">
+            <TabsList className="border-grayscale-border-default -mb-ns-m w-full border-b *:-mb-px lg:order-first lg:mb-0 lg:w-105">
               {ROLES.map((r) => (
                 <TabsTrigger key={r.value} value={r.value}>
                   {r.label}
-                  {list.data && <TabsCount>{list.data.counts[r.value]}</TabsCount>}
+                  {list.data && (
+                    <TabsCount>{list.data.counts[r.value]}</TabsCount>
+                  )}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -106,6 +125,8 @@ function ManajemenAkun() {
               />
             ) : (
               <AccountItems
+                /* Kembali ringkas saat tab atau kata kunci berubah */
+                key={`${role}:${query}`}
                 data={list.data}
                 busy={list.isPlaceholderData}
                 searching={!!query.trim()}
@@ -140,17 +161,26 @@ function AccountItems({
             ? "Tidak ada akun yang cocok dengan nama, email, atau username tersebut."
             : "Akun yang Anda buat akan muncul di sini."
         }
-        action={searching ? { label: "Hapus pencarian", onClick: onClear } : undefined}
+        action={
+          searching ? { label: "Hapus pencarian", onClick: onClear } : undefined
+        }
       />
     )
   }
   return (
     <div
       aria-busy={busy}
-      className={cn("transition-opacity", busy && "opacity-60")}
+      className={cn(
+        "gap-ns-m flex flex-col transition-opacity",
+        busy && "opacity-60"
+      )}
     >
-      <DashboardList>
-        {data.items.map((a) => (
+      {/* 10 baris pertama; sisanya lewat "Lihat N akun lainnya" (sama
+          seperti Data Tutor / Data Siswa) */}
+      <MasterList
+        items={data.items}
+        noun="akun"
+        renderItem={(a) => (
           <ListItem
             key={a.id}
             icon={<UserIcon />}
@@ -164,8 +194,8 @@ function AccountItems({
             chevron
             render={<Link to={`/pengelola/akun/${a.id}`} />}
           />
-        ))}
-      </DashboardList>
+        )}
+      />
     </div>
   )
 }
@@ -194,7 +224,7 @@ function SearchField({
   }, [draft, value])
 
   return (
-    <div className="relative">
+    <div className="relative lg:w-90 lg:shrink-0">
       <Input
         type="search"
         aria-label="Cari nama, email, atau username"

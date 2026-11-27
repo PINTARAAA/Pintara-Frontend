@@ -106,7 +106,7 @@ function StatusContent({ data }: { data: AttendanceStatusOverview }) {
         aria-label="Ringkasan presensi"
         className="flex flex-col gap-ns-m rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default p-ns-l"
       >
-        <div className="flex flex-col gap-ns-2xs leading-normal">
+        <div className="flex flex-col gap-ns-s leading-normal">
           <p className="text-body font-bold text-grayscale-text-title">
             {collected} dari {data.total} presensi terkumpul
           </p>

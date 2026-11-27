@@ -38,7 +38,7 @@ function TaskActionList({
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success-subtle text-success">
           <CircleCheckIcon className="size-5" aria-hidden="true" />
         </span>
-        <div className="flex flex-col gap-ns-3xs leading-normal">
+        <div className="flex flex-col gap-ns-s leading-normal">
           <p className="text-body font-bold text-grayscale-text-title">{emptyTitle}</p>
           <p className="text-subtitle text-grayscale-text-subtitle">{emptyDescription}</p>
         </div>
@@ -68,7 +68,7 @@ function TaskActionList({
             >
               <Icon aria-hidden="true" className="size-5" />
             </span>
-            <div className="flex min-w-0 flex-1 flex-col gap-ns-3xs leading-normal">
+            <div className="flex min-w-0 flex-1 flex-col gap-ns-s leading-normal">
               <p className="text-body font-bold text-grayscale-text-title">{task.title}</p>
               <p className="text-subtitle text-grayscale-text-subtitle">
                 {task.description}

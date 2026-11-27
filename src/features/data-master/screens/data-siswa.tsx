@@ -1,21 +1,14 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
-import { PlusIcon, UserIcon } from "lucide-react"
-import { Link, useNavigate } from "react-router"
+import { UserIcon } from "lucide-react"
+import { Link } from "react-router"
 
-import {
-  DetailScreen,
-  StatusBadge,
-  DataState,
-  ListItem,
-  TopAppBarButton,
-} from "@/components"
-import { DashboardList } from "@/features/dashboard/components"
+import { DetailScreen, StatusBadge, DataState, ListItem } from "@/components"
 import { studentsQuery } from "@/features/data-master/api"
 import { STUDENT_SUBJECTS } from "@/lib/data/data-master"
 import type { StudentRow } from "@/types/data-master"
-import { MasterFilters } from "@/features/data-master/components"
+import { MasterFilters, MasterList } from "@/features/data-master/components"
 import { useMasterFilter } from "@/features/data-master/hooks"
 import { cn } from "@/lib/styles"
 
@@ -24,7 +17,14 @@ import { cn } from "@/lib/styles"
  *
  * Kolom cari nama siswa/wali + pil Mata pelajaran · Lokasi · Status →
  * "N siswa ditemukan" → daftar (kelas · mapel · tutor / "belum ada tutor";
- * nonaktif: "selesai <bulan>" + badge). Tombol + → Tambah Siswa.
+ * nonaktif: "selesai <bulan>" + badge).
+ *
+ * Tanpa tombol Tambah Siswa: data siswa hanya dibuat lewat pendaftaran wali
+ * yang diverifikasi pengelola (P2), sehingga siswa selalu tertaut ke akun
+ * walinya.
+ *
+ * Desktop (Figma "Data Siswa / Daftar (Desktop)"): Page header tanpa
+ * tautan kembali; cari + pil satu baris.
  */
 const shortTutor = (name: string) => name.split(" ").slice(0, 2).join(" ")
 
@@ -48,7 +48,6 @@ function describe(s: StudentRow) {
 }
 
 function DataSiswa() {
-  const navigate = useNavigate()
   const { filter, update, reset, filtered } = useMasterFilter()
   const query = useQuery({
     ...studentsQuery(filter),
@@ -58,17 +57,9 @@ function DataSiswa() {
   return (
     <DetailScreen
       title="Data Siswa"
-      action={
-        <TopAppBarButton
-          label="Tambah siswa"
-          variant="plain"
-          className="text-primary-surface-default"
-          /* SEMENTARA: layar Tambah Siswa belum ada di Figma */
-          onClick={() => navigate("/pengelola/siswa/tambah")}
-        >
-          <PlusIcon />
-        </TopAppBarButton>
-      }
+      backLabel={null}
+      desktopHeader="page"
+      desktopWidth="wide"
       subheader={
         <MasterFilters
           searchLabel="Cari nama siswa atau wali"
@@ -113,8 +104,12 @@ function DataSiswa() {
           <p className="text-caption text-grayscale-text-caption leading-normal">
             {query.data.length} siswa ditemukan
           </p>
-          <DashboardList>
-            {query.data.map((s) => (
+          {/* 10 baris pertama; sisanya lewat "Lihat N siswa lainnya" */}
+          <MasterList
+            key={JSON.stringify(filter)}
+            items={query.data}
+            noun="siswa"
+            renderItem={(s) => (
               <ListItem
                 key={s.id}
                 icon={<UserIcon />}
@@ -128,8 +123,8 @@ function DataSiswa() {
                 chevron
                 render={<Link to={`/pengelola/siswa/${s.id}`} />}
               />
-            ))}
-          </DashboardList>
+            )}
+          />
         </div>
       )}
     </DetailScreen>

@@ -12,10 +12,16 @@ import { formatKm } from "@/features/penawaran/lib"
 import { formatRupiah } from "@/lib/format"
 
 /* Kartu "Ringkasan penawaran" (P4 · Buat penawaran & Detail), label 104px */
-function OfferSummaryCard({ offer }: { offer: OfferSummary }) {
+function OfferSummaryCard({
+  offer,
+  className,
+}: {
+  offer: OfferSummary
+  className?: string
+}) {
   const row = "w-[104px]"
   return (
-    <Card size="compact">
+    <Card size="compact" className={className}>
       <CardHeader>
         <CardTitle>Ringkasan penawaran</CardTitle>
       </CardHeader>

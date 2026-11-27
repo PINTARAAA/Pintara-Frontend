@@ -4,6 +4,7 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  type UseQueryResult,
 } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
@@ -41,6 +42,7 @@ import type { HonorRecap, TutorHonor } from "@/types/keuangan"
 
 import {
   StudentBillsPanel,
+  StudentBillsPeriodPill,
   UnduhLaporanSheet,
 } from "@/features/keuangan/components"
 
@@ -61,6 +63,11 @@ import { cn } from "@/lib/styles"
  * total + bar dibayar/belum → Belum dibayar → Sudah dibayar].
  * Tab, bulan disimpan di ?tab=tagihan&bulan=YYYY-MM. Tab Tagihan Siswa dan
  * tombol unduh laporan memakai komponen P8 · Laporan Keuangan.
+ *
+ * Desktop (Figma "Honor / … (Desktop)"): Page header "Keuangan" dengan pil
+ * periode + tombol di kanan (Hitung Rekap Honor saat belum dihitung, Unduh
+ * setelah dihitung); tab selebar 420px. Kolom kiri: banner / daftar honor;
+ * kolom kanan 420px: Cara perhitungan / ringkasan total (jarak 40).
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 const monthName = (d: Date) => format(d, "MMMM", { locale: localeId })
@@ -80,6 +87,50 @@ function KeuanganPengelola() {
     setParams(next, { replace: true })
   }
 
+  /* Dipakai panel Honor dan aksi Page header desktop (cache yang sama) */
+  const honor = useQuery({
+    ...honorRecapQuery(month),
+    placeholderData: keepPreviousData,
+  })
+  const calculate = useCalculateHonor()
+  const onHonorMonthChange = (key: string, isCurrent: boolean) =>
+    setParam("bulan", isCurrent ? null : key)
+
+  const download = (
+    <Button variant="secondary" onClick={() => setSheetOpen(true)}>
+      Unduh
+    </Button>
+  )
+  const honorData = honor.data
+  const onBillsMonthChange = (key: string) =>
+    setParam("bulan", key === monthKey(new Date()) ? null : key)
+  const desktopActions =
+    tab === "tagihan" ? (
+      <>
+        <StudentBillsPeriodPill
+          month={month}
+          onMonthChange={onBillsMonthChange}
+        />
+        {download}
+      </>
+    ) : honorData ? (
+      <>
+        <HonorPeriodPill data={honorData} onMonthChange={onHonorMonthChange} />
+        {honorData.state === "belum_dihitung" ? (
+          <Button
+            onClick={() => calculate.mutate(honorData.month)}
+            disabled={calculate.isPending || honorData.final === 0}
+          >
+            {calculate.isPending ? "Menghitung…" : "Hitung Rekap Honor"}
+          </Button>
+        ) : (
+          download
+        )}
+      </>
+    ) : (
+      download
+    )
+
   return (
     <Tabs
       value={tab}
@@ -88,6 +139,8 @@ function KeuanganPengelola() {
     >
       <TabScreen
         title="Keuangan"
+        desktopHeader="page"
+        desktopHeaderActions={desktopActions}
         action={
           <TopAppBarButton
             label="Unduh laporan keuangan"
@@ -97,7 +150,7 @@ function KeuanganPengelola() {
           </TopAppBarButton>
         }
         subheader={
-          <TabsList className="border-grayscale-border-default w-full border-b *:-mb-px">
+          <TabsList className="border-grayscale-border-default w-full border-b *:-mb-px lg:w-105">
             <TabsTrigger value="honor">Honor Tutor</TabsTrigger>
             <TabsTrigger value="tagihan">Tagihan Siswa</TabsTrigger>
           </TabsList>
@@ -105,19 +158,16 @@ function KeuanganPengelola() {
       >
         <TabsContent value="honor" className="flex flex-col">
           <HonorPanel
-            month={month}
-            onMonthChange={(key, isCurrent) =>
-              setParam("bulan", isCurrent ? null : key)
-            }
+            query={honor}
+            calculate={calculate}
+            onMonthChange={onHonorMonthChange}
           />
         </TabsContent>
         <TabsContent value="tagihan" className="flex flex-col">
           <StudentBillsPanel
             month={month}
-            className="lg:max-w-3xl"
-            onMonthChange={(key) =>
-              setParam("bulan", key === monthKey(new Date()) ? null : key)
-            }
+            desktopPill="header"
+            onMonthChange={onBillsMonthChange}
           />
         </TabsContent>
       </TabScreen>
@@ -131,22 +181,11 @@ function KeuanganPengelola() {
   )
 }
 
-function HonorPanel({
-  month,
-  onMonthChange,
-}: {
-  month?: Date
-  onMonthChange: (key: string, isCurrent: boolean) => void
-}) {
+/* Hitung rekap honor bulan tertentu (tombol di panel mobile & header desktop) */
+function useCalculateHonor() {
   const queryClient = useQueryClient()
-  const query = useQuery({
-    ...honorRecapQuery(month),
-    placeholderData: keepPreviousData,
-  })
-  const data = query.data
-
-  const calculate = useMutation({
-    mutationFn: () => calculateHonor(data?.month ?? new Date()),
+  return useMutation({
+    mutationFn: (month: Date) => calculateHonor(month),
     networkMode: "always",
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: ["honor"] })
@@ -159,6 +198,39 @@ function HonorPanel({
         description: "Periksa koneksi Anda, lalu coba lagi.",
       }),
   })
+}
+
+function HonorPeriodPill({
+  data,
+  onMonthChange,
+}: {
+  data: HonorRecap
+  onMonthChange: (key: string, isCurrent: boolean) => void
+}) {
+  return (
+    <FilterPill
+      label="Periode"
+      menuLabel="Pilih periode"
+      value={monthKey(data.month)}
+      options={data.months.map((m) => ({
+        value: monthKey(m),
+        label: monthLabel(m),
+      }))}
+      onValueChange={(v) => onMonthChange(v, v === monthKey(data.months[0]))}
+    />
+  )
+}
+
+function HonorPanel({
+  query,
+  calculate,
+  onMonthChange,
+}: {
+  query: UseQueryResult<HonorRecap>
+  calculate: ReturnType<typeof useCalculateHonor>
+  onMonthChange: (key: string, isCurrent: boolean) => void
+}) {
+  const data = query.data
 
   if (query.isPending) {
     return <DataState state="loading" loadingLabel="Memuat rekap honor…" />
@@ -178,26 +250,20 @@ function HonorPanel({
     <div
       aria-busy={query.isPlaceholderData}
       className={cn(
-        "gap-ns-2xl flex flex-col transition-opacity lg:max-w-3xl",
+        "gap-ns-2xl lg:gap-x-ns-4xl flex flex-col transition-opacity lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start",
         query.isPlaceholderData && "opacity-60"
       )}
     >
-      <FilterPill
-        label="Periode"
-        menuLabel="Pilih periode"
-        value={monthKey(data.month)}
-        options={data.months.map((m) => ({
-          value: monthKey(m),
-          label: monthLabel(m),
-        }))}
-        onValueChange={(v) => onMonthChange(v, v === monthKey(data.months[0]))}
-      />
+      {/* Desktop: pil periode pindah ke Page header */}
+      <div className="lg:hidden">
+        <HonorPeriodPill data={data} onMonthChange={onMonthChange} />
+      </div>
 
       {data.state === "belum_dihitung" ? (
         <NotCalculated
           data={data}
           calculating={calculate.isPending}
-          onCalculate={() => calculate.mutate()}
+          onCalculate={() => calculate.mutate(data.month)}
         />
       ) : (
         <Recap data={data} />
@@ -219,35 +285,38 @@ function NotCalculated({
   const navigate = useNavigate()
   return (
     <>
-      <AlertBanner
-        status="info"
-        title={`Rekap honor ${monthName(data.month)} belum dihitung`}
-        description={`${data.final} dari ${data.total} presensi sudah final. Presensi yang belum final tidak ikut dihitung.`}
-        action={
-          data.final < data.total
-            ? {
-                label: "Verifikasi presensi",
-                onClick: () => navigate("/pengelola/presensi"),
-              }
-            : undefined
-        }
-      />
-
-      {data.tutorsWithoutRate.map((name) => (
+      {/* Desktop: banner di kolom kiri */}
+      <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-ns-2xl">
         <AlertBanner
-          key={name}
-          status="warning"
-          title={`Tarif honor ${name} belum diatur`}
-          description="Tutor ini ditandai dan tidak ikut dihitung sampai tarifnya diatur."
-          action={{
-            label: "Atur tarif",
-            /* SEMENTARA: layar Data Tutor (P9) */
-            onClick: () => navigate("/pengelola/tutor"),
-          }}
+          status="info"
+          title={`Rekap honor ${monthName(data.month)} belum dihitung`}
+          description={`${data.final} dari ${data.total} presensi sudah final. Presensi yang belum final tidak ikut dihitung.`}
+          action={
+            data.final < data.total
+              ? {
+                  label: "Verifikasi presensi",
+                  onClick: () => navigate("/pengelola/presensi"),
+                }
+              : undefined
+          }
         />
-      ))}
 
-      <Card size="compact">
+        {data.tutorsWithoutRate.map((name) => (
+          <AlertBanner
+            key={name}
+            status="warning"
+            title={`Tarif honor ${name} belum diatur`}
+            description="Tutor ini ditandai dan tidak ikut dihitung sampai tarifnya diatur."
+            action={{
+              label: "Atur tarif",
+              /* SEMENTARA: layar Data Tutor (P9) */
+              onClick: () => navigate("/pengelola/tutor"),
+            }}
+          />
+        ))}
+      </div>
+
+      <Card size="compact" className="lg:col-start-2 lg:row-start-1">
         <CardHeader>
           <CardTitle>Cara perhitungan</CardTitle>
         </CardHeader>
@@ -258,7 +327,12 @@ function NotCalculated({
         </CardContent>
       </Card>
 
-      <Button onClick={onCalculate} disabled={calculating || data.final === 0}>
+      {/* Desktop: tombol pindah ke Page header */}
+      <Button
+        className="lg:hidden"
+        onClick={onCalculate}
+        disabled={calculating || data.final === 0}
+      >
         {calculating ? "Menghitung…" : "Hitung Rekap Honor"}
       </Button>
     </>
@@ -276,7 +350,7 @@ function Recap({ data }: { data: Extract<HonorRecap, { state: "dihitung" }> }) {
     <>
       <section
         aria-label="Ringkasan honor"
-        className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal"
+        className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal lg:col-start-2 lg:row-start-1"
       >
         <div className="gap-ns-2xs flex flex-col">
           <p className="text-caption text-grayscale-text-caption">
@@ -316,60 +390,63 @@ function Recap({ data }: { data: Extract<HonorRecap, { state: "dihitung" }> }) {
         </ul>
       </section>
 
-      {data.skipped.length > 0 && (
-        <AlertBanner
-          status="warning"
-          title={`${data.skipped.length} tutor belum dihitung`}
-          description={`Tarif ${data.skipped.join(", ")} belum diatur. Hitung ulang setelah tarif diatur.`}
-        />
-      )}
+      {/* Desktop: banner + daftar honor di kolom kiri */}
+      <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-ns-2xl">
+        {data.skipped.length > 0 && (
+          <AlertBanner
+            status="warning"
+            title={`${data.skipped.length} tutor belum dihitung`}
+            description={`Tarif ${data.skipped.join(", ")} belum diatur. Hitung ulang setelah tarif diatur.`}
+          />
+        )}
 
-      {data.unpaidHonors.length > 0 && (
-        <HonorSection
-          title={`Belum dibayar · ${data.unpaidHonors.length}`}
-          showAll={showAllUnpaid}
-          onToggle={() => setShowAllUnpaid((v) => !v)}
-          items={data.unpaidHonors}
-          render={(h) => (
-            <ListItem
-              key={h.tutorId}
-              icon={<UserIcon />}
-              title={h.name}
-              description={`${h.sessions} sesi · ${h.payment ? "dibayar sebagian" : METHOD_LABEL[h.method]}`}
-              trailingText={formatRupiah(h.total - (h.payment?.amount ?? 0))}
-              chevron
-              render={
-                <Link
-                  to={`/pengelola/keuangan/honor/${monthParam}/${h.tutorId}`}
-                />
-              }
-            />
-          )}
-        />
-      )}
+        {data.unpaidHonors.length > 0 && (
+          <HonorSection
+            title={`Belum dibayar · ${data.unpaidHonors.length}`}
+            showAll={showAllUnpaid}
+            onToggle={() => setShowAllUnpaid((v) => !v)}
+            items={data.unpaidHonors}
+            render={(h) => (
+              <ListItem
+                key={h.tutorId}
+                icon={<UserIcon />}
+                title={h.name}
+                description={`${h.sessions} sesi · ${h.payment ? "dibayar sebagian" : METHOD_LABEL[h.method]}`}
+                trailingText={formatRupiah(h.total - (h.payment?.amount ?? 0))}
+                chevron
+                render={
+                  <Link
+                    to={`/pengelola/keuangan/honor/${monthParam}/${h.tutorId}`}
+                  />
+                }
+              />
+            )}
+          />
+        )}
 
-      {data.paidHonors.length > 0 && (
-        <HonorSection
-          title={`Sudah dibayar · ${data.paidHonors.length}`}
-          showAll={showAllPaid}
-          onToggle={() => setShowAllPaid((v) => !v)}
-          items={data.paidHonors}
-          render={(h) => (
-            <ListItem
-              key={h.tutorId}
-              icon={<UserIcon />}
-              title={h.name}
-              description={`${h.sessions} sesi · ${h.payment ? METHOD_LABEL[h.payment.method] : ""} · ${h.payment ? formatDayMonth(h.payment.paidAt) : ""}`}
-              trailingText={formatRupiah(h.total)}
-              render={
-                <Link
-                  to={`/pengelola/keuangan/honor/${monthParam}/${h.tutorId}`}
-                />
-              }
-            />
-          )}
-        />
-      )}
+        {data.paidHonors.length > 0 && (
+          <HonorSection
+            title={`Sudah dibayar · ${data.paidHonors.length}`}
+            showAll={showAllPaid}
+            onToggle={() => setShowAllPaid((v) => !v)}
+            items={data.paidHonors}
+            render={(h) => (
+              <ListItem
+                key={h.tutorId}
+                icon={<UserIcon />}
+                title={h.name}
+                description={`${h.sessions} sesi · ${h.payment ? METHOD_LABEL[h.payment.method] : ""} · ${h.payment ? formatDayMonth(h.payment.paidAt) : ""}`}
+                trailingText={formatRupiah(h.total)}
+                render={
+                  <Link
+                    to={`/pengelola/keuangan/honor/${monthParam}/${h.tutorId}`}
+                  />
+                }
+              />
+            )}
+          />
+        )}
+      </div>
     </>
   )
 }

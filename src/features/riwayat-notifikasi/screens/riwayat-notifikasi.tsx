@@ -42,6 +42,9 @@ import { cn } from "@/lib/styles"
  * Pil Status · Jenis · Periode (filter aktif = chip ×) → Gagal terkirim · N
  * (Kirim ulang semua; ketuk → detail) → Terkirim. Disimpan di
  * ?status=…&jenis=…&periode=….
+ *
+ * Desktop (Figma "… (Desktop)"): Page header tanpa tautan kembali dengan
+ * pil/chip filter di kanan; daftar selebar 760px rata kiri.
  */
 const KINDS = Object.keys(KIND_LABEL) as LogNotificationKind[]
 const time = (d: Date) => format(d, "HH.mm")
@@ -111,56 +114,69 @@ function RiwayatNotifikasi() {
   const data = query.data
   const empty = data && data.failed.length === 0 && data.sent.length === 0
 
+  /* Pil/chip filter: baris subheader di mobile, Page header di desktop */
+  const filters = (
+    <>
+      {filter.status ? (
+        <FilterChip
+          label={filter.status === "gagal" ? "Gagal" : "Terkirim"}
+          onClear={() => update("status", null)}
+        />
+      ) : (
+        <FilterPill
+          label="Status"
+          menuLabel="Pilih status"
+          triggerLabel="Semua status"
+          value=""
+          options={[
+            { value: "", label: "Semua status" },
+            { value: "gagal", label: "Gagal" },
+            { value: "terkirim", label: "Terkirim" },
+          ]}
+          onValueChange={(v) => update("status", (v as LogStatus) || null)}
+        />
+      )}
+      {filter.kind ? (
+        <FilterChip label={KIND_LABEL[filter.kind]} onClear={() => update("jenis", null)} />
+      ) : (
+        <FilterPill
+          label="Jenis"
+          menuLabel="Pilih jenis notifikasi"
+          triggerLabel="Semua jenis"
+          value=""
+          options={[
+            { value: "", label: "Semua jenis" },
+            ...KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] })),
+          ]}
+          onValueChange={(v) => update("jenis", v || null)}
+        />
+      )}
+      <FilterPill
+        label="Periode"
+        menuLabel="Pilih periode"
+        value={filter.period}
+        options={PERIODS.map((p) => ({
+          value: p,
+          label: p === "hari-ini" ? `Hari ini · ${periodLabel(p)}` : periodLabel(p),
+        }))}
+        triggerLabel={periodLabel(filter.period)}
+        onValueChange={(v) => update("periode", v)}
+      />
+    </>
+  )
+
   return (
     <DetailScreen
       title="Riwayat Notifikasi"
+      backLabel={null}
+      desktopHeader="page"
+      desktopWidth="wide"
+      desktopHeaderActions={<div className="gap-ns-s flex items-center">{filters}</div>}
+      /* Desktop: baris filter pindah ke Page header */
+      desktopSubheader="hidden"
       subheader={
         <div className="gap-ns-s -mx-(--gutter) px-(--gutter) flex overflow-x-auto [scrollbar-width:none]">
-          {filter.status ? (
-            <FilterChip
-              label={filter.status === "gagal" ? "Gagal" : "Terkirim"}
-              onClear={() => update("status", null)}
-            />
-          ) : (
-            <FilterPill
-              label="Status"
-              menuLabel="Pilih status"
-              triggerLabel="Semua status"
-              value=""
-              options={[
-                { value: "", label: "Semua status" },
-                { value: "gagal", label: "Gagal" },
-                { value: "terkirim", label: "Terkirim" },
-              ]}
-              onValueChange={(v) => update("status", (v as LogStatus) || null)}
-            />
-          )}
-          {filter.kind ? (
-            <FilterChip label={KIND_LABEL[filter.kind]} onClear={() => update("jenis", null)} />
-          ) : (
-            <FilterPill
-              label="Jenis"
-              menuLabel="Pilih jenis notifikasi"
-              triggerLabel="Semua jenis"
-              value=""
-              options={[
-                { value: "", label: "Semua jenis" },
-                ...KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] })),
-              ]}
-              onValueChange={(v) => update("jenis", v || null)}
-            />
-          )}
-          <FilterPill
-            label="Periode"
-            menuLabel="Pilih periode"
-            value={filter.period}
-            options={PERIODS.map((p) => ({
-              value: p,
-              label: p === "hari-ini" ? `Hari ini · ${periodLabel(p)}` : periodLabel(p),
-            }))}
-            triggerLabel={periodLabel(filter.period)}
-            onValueChange={(v) => update("periode", v)}
-          />
+          {filters}
         </div>
       }
     >

@@ -38,6 +38,10 @@ import { rejectionTemplate } from "@/features/verifikasi/lib"
  * Pendaftaran (Destructive). Setelah terkirim kembali ke detail + toast.
  * Juga dipakai dari P3 ("Tolak pendaftaran" bila tutor belum tersedia);
  * ?alasan=… memilih alasan awal beserta templat pesannya.
+ *
+ * Desktop (Figma "… / Tolak (Desktop)"): Page header "← Detail Pendaftaran",
+ * formulir selebar 720px, alasan dalam dua kolom, tombol rata kanan di
+ * bawah garis pemisah.
  */
 const MESSAGE_MAX = 500
 const REASON_VALUES = REJECT_REASONS.map((r) => r.value) as [
@@ -66,7 +70,12 @@ function TolakPendaftaran() {
   }
 
   return (
-    <DetailScreen title="Tolak Pendaftaran">
+    <DetailScreen
+      title="Tolak Pendaftaran"
+      backLabel="Detail Pendaftaran"
+      desktopHeader="page"
+      desktopWidth="form"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pendaftaran…" />
       ) : query.isError && !(query.error instanceof NotFoundError) ? (
@@ -144,7 +153,9 @@ function RejectFormScreen({
         registrationQuery(registration.id).queryKey,
         updated
       )
-      void queryClient.invalidateQueries({ queryKey: ["verifikasi", "daftar"] })
+      void queryClient.invalidateQueries({
+        queryKey: ["verifikasi", "daftar"],
+      })
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] })
       toast.success("Pendaftaran ditolak", {
         description: `Pesan penolakan terkirim ke ${updated.parent.name}.`,
@@ -172,6 +183,9 @@ function RejectFormScreen({
   return (
     <DetailScreen
       title="Tolak Pendaftaran"
+      backLabel="Detail Pendaftaran"
+      desktopHeader="page"
+      desktopWidth="form"
       surface="default"
       className="gap-ns-2xl"
       footer={
@@ -224,8 +238,8 @@ function RejectFormScreen({
                   field.onChange(v)
                 }}
                 onBlur={field.onBlur}
-                /* Tiap baris setinggi 48px seperti Figma */
-                className="gap-0 *:min-h-12"
+                /* Mobile: tiap baris 48px; desktop: dua kolom, baris 32px */
+                className="gap-0 *:min-h-12 lg:grid-cols-2 lg:gap-x-ns-2xl lg:*:min-h-8"
               >
                 {REJECT_REASONS.map((r) => (
                   <RadioGroupItem

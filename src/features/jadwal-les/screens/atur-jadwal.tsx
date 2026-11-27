@@ -12,6 +12,7 @@ import { useNavigate, useParams } from "react-router"
 import {
   DetailScreen,
   ResultScreen,
+  RESULT_BUTTON_DESKTOP,
   AlertBanner,
   Button,
   Card,
@@ -65,6 +66,11 @@ import { NotFoundError } from "@/features/verifikasi/api"
  * dan field sesi terkait merah. Dipakai untuk penawaran yang diterima
  * (/les/jadwal/atur/:offerId) maupun mengubah jadwal aktif
  * (/les/jadwal/:pairId/ubah).
+ *
+ * Desktop (Figma "… (Desktop)"): Page header "← Les"; sesi berjajar dua
+ * kolom (jarak 40), Mulai berlaku di kolom kiri baris berikutnya; tombol
+ * Batal (khusus desktop) · Simpan Jadwal rata kanan di bawah garis pemisah.
+ * Tersimpan: Page header "Atur Jadwal Les", hasil di tengah.
  */
 const LES_JADWAL = "/pengelola/les?tab=jadwal"
 const longDate = (date: Date) =>
@@ -91,7 +97,7 @@ function AturJadwal() {
   }
 
   return (
-    <DetailScreen title="Atur Jadwal Les">
+    <DetailScreen title="Atur Jadwal Les" backLabel="Les" desktopHeader="page">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Menyiapkan jadwal…" />
       ) : query.error instanceof NotFoundError ? (
@@ -128,6 +134,7 @@ function ScheduleForm({
   onSaved: (pair: Pair) => void
 }) {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [sessions, setSessions] = React.useState<ScheduleSession[]>(
     draft.sessions
   )
@@ -198,15 +205,28 @@ function ScheduleForm({
   return (
     <DetailScreen
       title="Atur Jadwal Les"
+      backLabel="Les"
+      desktopHeader="page"
+      desktopWidth="wide"
       surface="default"
       className="gap-ns-2xl"
       footer={
-        <Button
-          onClick={() => validate() && save.mutate()}
-          disabled={save.isPending}
-        >
-          {save.isPending ? "Menyimpan…" : "Simpan Jadwal"}
-        </Button>
+        <>
+          {/* Figma: Batal hanya ada di desktop */}
+          <Button
+            variant="secondary"
+            className="hidden lg:inline-flex"
+            onClick={() => navigate(-1)}
+          >
+            Batal
+          </Button>
+          <Button
+            onClick={() => validate() && save.mutate()}
+            disabled={save.isPending}
+          >
+            {save.isPending ? "Menyimpan…" : "Simpan Jadwal"}
+          </Button>
+        </>
       }
     >
       {conflict && <ConflictBanner draft={draft} conflict={conflict} />}
@@ -226,7 +246,8 @@ function ScheduleForm({
         noValidate
         aria-label="Formulir jadwal les"
         onSubmit={(e) => e.preventDefault()}
-        className="gap-ns-2xl flex flex-col"
+        /* Desktop: sesi dua kolom (jarak 40), Mulai berlaku di kolom kiri */
+        className="gap-ns-2xl lg:gap-x-ns-4xl flex flex-col lg:grid lg:grid-cols-2 lg:items-start"
       >
         {sessions.map((session, index) => (
           <SessionFields
@@ -249,7 +270,7 @@ function ScheduleForm({
           />
         ))}
 
-        <Field>
+        <Field className="lg:col-start-1">
           <FieldLabel htmlFor="effective-from" required>
             Mulai berlaku
           </FieldLabel>
@@ -414,12 +435,14 @@ function ScheduleSaved({ pair }: { pair: Pair }) {
   const navigate = useNavigate()
   return (
     <ResultScreen
+      pageTitle="Atur Jadwal Les"
       title="Jadwal les tersimpan"
       description={`${pair.tutor.shortName} dan ${pair.parentName} (wali ${firstName(pair.student.name)}) sudah menerima notifikasi jadwal.`}
       footer={
         <>
           <Button
             size="lg"
+            className={RESULT_BUTTON_DESKTOP}
             onClick={() => navigate("/pengelola", { replace: true })}
           >
             Selesai

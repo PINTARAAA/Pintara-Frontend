@@ -7,6 +7,7 @@ import { Link, useNavigate, useParams } from "react-router"
 import {
   DetailScreen,
   ResultScreen,
+  RESULT_BUTTON_DESKTOP,
   StatusBadge,
   Button,
   Card,
@@ -41,6 +42,11 @@ import { NotFoundError } from "@/features/verifikasi/api"
  *   menunggu : Catat Ditolak (→ form) · Catat Diterima (→ layar hasil)
  *   diterima : Atur Jadwal Les (P5 · form jadwal untuk penawaran ini)
  *   ditolak  : Cari Tutor Lain (P3)
+ *
+ * Desktop (Figma "Penawaran / Detail - Menunggu (Desktop)" dan "/ Diterima
+ * (Desktop)"): Page header "← Les" dengan tombol aksi di kanan; kartu judul
+ * selebar konten, lalu Ringkasan (+ Pesan) di kiri dan Progres penugasan
+ * 420px di kanan. Layar hasil diterima: Page header "Penawaran".
  */
 const LES = "/pengelola/les"
 const stamp = (date: Date) => format(date, "d MMM, HH.mm", { locale: localeId })
@@ -85,6 +91,10 @@ function DetailPenawaran() {
   return (
     <DetailScreen
       title="Detail Penawaran"
+      backLabel="Les"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       footer={
         offer && (
           <Actions
@@ -132,29 +142,41 @@ function DetailPenawaran() {
             <StatusBadge category="penawaran_tutor" status={offer.status} />
           </section>
 
-          <Card size="compact">
-            <CardHeader>
-              <CardTitle>Progres penugasan</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OfferTimeline offer={offer} />
-            </CardContent>
-          </Card>
-
-          <OfferSummaryCard offer={offer} />
-
-          {offer.message && (
-            <Card size="compact">
+          {/*
+           * Mobile: Progres → Ringkasan → Pesan (ditumpuk).
+           * Desktop: Ringkasan + Pesan di kolom kiri, Progres 420px di kanan.
+           */}
+          <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-ns-2xl">
+            <Card
+              size="compact"
+              className="lg:col-start-2 lg:row-span-2 lg:row-start-1"
+            >
               <CardHeader>
-                <CardTitle>Pesan untuk tutor</CardTitle>
+                <CardTitle>Progres penugasan</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-subtitle text-grayscale-text-body leading-normal">
-                  {offer.message}
-                </p>
+                <OfferTimeline offer={offer} />
               </CardContent>
             </Card>
-          )}
+
+            <OfferSummaryCard
+              offer={offer}
+              className="lg:col-start-1 lg:row-start-1"
+            />
+
+            {offer.message && (
+              <Card size="compact" className="lg:col-start-1 lg:row-start-2">
+                <CardHeader>
+                  <CardTitle>Pesan untuk tutor</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-subtitle text-grayscale-text-body leading-normal">
+                    {offer.message}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </>
       ) : null}
     </DetailScreen>
@@ -281,12 +303,14 @@ function AcceptedResult({ offer }: { offer: Offer }) {
   const navigate = useNavigate()
   return (
     <ResultScreen
+      pageTitle="Penawaran"
       title={`${offer.tutor.shortName} menerima penawaran`}
       description={`Tutor sudah ditetapkan untuk ${firstName(offer.student.name)}. Lanjutkan dengan mengatur jadwal les.`}
       footer={
         <>
           <Button
             size="lg"
+            className={RESULT_BUTTON_DESKTOP}
             nativeButton={false}
             render={<Link to={`${LES}/jadwal/atur/${offer.id}`} replace />}
           >

@@ -37,6 +37,11 @@ import { firstName } from "@/lib/format"
  * Berlaku + alasan wali) → hasil cek bentrok (success/error) → Persetujuan
  * pihak terkait (wali & tutor, wajib dicentang). Bilah aksi: Tolak
  * (konfirmasi) · Setujui Perubahan. Keputusan dikirim ke wali (W4 · W9).
+ *
+ * Desktop (Figma "… / Tinjau pengajuan perubahan (Desktop)"): Page header
+ * "← Les" dengan Tolak · Setujui Perubahan di kanan; ringkasan selebar
+ * konten, lalu Perubahan + hasil cek bentrok di kiri dan Persetujuan pihak
+ * terkait 420px di kanan (jarak 40).
  */
 const LES_JADWAL = "/pengelola/les?tab=jadwal"
 const stamp = (date: Date) => format(date, "d MMM, HH.mm", { locale: localeId })
@@ -53,7 +58,11 @@ function TinjauPengajuan() {
   }
 
   return (
-    <DetailScreen title="Pengajuan Perubahan">
+    <DetailScreen
+      title="Pengajuan Perubahan"
+      backLabel="Les"
+      desktopHeader="page"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pengajuan…" />
       ) : query.isError && !(query.error instanceof NotFoundError) ? (
@@ -137,6 +146,10 @@ function ReviewForm({ review }: { review: ChangeReview }) {
   return (
     <DetailScreen
       title="Pengajuan Perubahan"
+      backLabel="Les"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       surface="default"
       className="gap-ns-2xl"
       footer={
@@ -172,80 +185,89 @@ function ReviewForm({ review }: { review: ChangeReview }) {
         </p>
       </div>
 
-      <Card size="compact">
-        <CardHeader>
-          <CardTitle>Perubahan</CardTitle>
-        </CardHeader>
-        <CardContent className="gap-ns-m flex flex-col">
-          <dl className="gap-ns-m flex flex-col">
-            <SummaryRow label="Dari" labelClassName="w-[104px]">
-              {fromSession.day}, {formatRange(fromSession)} ({request.subject})
-            </SummaryRow>
-            <SummaryRow label="Menjadi" labelClassName="w-[104px]">
-              {toSession.day}, {formatRange(toSession)}
-            </SummaryRow>
-            <SummaryRow label="Berlaku" labelClassName="w-[104px]">
-              {scope}
-            </SummaryRow>
-          </dl>
-          <p className="text-subtitle text-grayscale-text-body leading-normal">
-            “{request.reason}”
-          </p>
-        </CardContent>
-      </Card>
+      {/*
+       * Mobile: ditumpuk. Desktop: Perubahan + cek bentrok di kolom kiri,
+       * Persetujuan pihak terkait 420px di kanan.
+       */}
+      <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-x-ns-4xl lg:gap-y-ns-l">
+        <Card size="compact" className="lg:col-start-1 lg:row-start-1">
+          <CardHeader>
+            <CardTitle>Perubahan</CardTitle>
+          </CardHeader>
+          <CardContent className="gap-ns-m flex flex-col">
+            <dl className="gap-ns-m flex flex-col">
+              <SummaryRow label="Dari" labelClassName="w-[104px]">
+                {fromSession.day}, {formatRange(fromSession)} ({request.subject}
+                )
+              </SummaryRow>
+              <SummaryRow label="Menjadi" labelClassName="w-[104px]">
+                {toSession.day}, {formatRange(toSession)}
+              </SummaryRow>
+              <SummaryRow label="Berlaku" labelClassName="w-[104px]">
+                {scope}
+              </SummaryRow>
+            </dl>
+            <p className="text-subtitle text-grayscale-text-body leading-normal">
+              “{request.reason}”
+            </p>
+          </CardContent>
+        </Card>
 
-      {conflict ? (
-        <AlertBanner
-          status="error"
-          title="Jadwal baru bentrok"
-          description={
-            conflict.with === "tutor"
-              ? `${tutorShort} mengajar ${conflict.other.studentName} setiap ${conflict.other.day} ${formatRange(conflict.other)}. Slot kosong: ${suggestFreeSlot(conflict.other)}. Tolak pengajuan dan tawarkan jam lain ke wali.`
-              : `${student} sudah les ${conflict.other.day} ${formatRange(conflict.other)}. Tolak pengajuan dan tawarkan jam lain ke wali.`
-          }
-        />
-      ) : (
-        <AlertBanner
-          status="success"
-          title="Tidak bentrok"
-          description={`${toSession.day} ${formatRange(toSession)} kosong untuk ${tutorShort} dan ${student}.`}
-        />
-      )}
+        {conflict ? (
+          <AlertBanner
+            className="lg:col-start-1 lg:row-start-2"
+            status="error"
+            title="Jadwal baru bentrok"
+            description={
+              conflict.with === "tutor"
+                ? `${tutorShort} mengajar ${conflict.other.studentName} setiap ${conflict.other.day} ${formatRange(conflict.other)}. Slot kosong: ${suggestFreeSlot(conflict.other)}. Tolak pengajuan dan tawarkan jam lain ke wali.`
+                : `${student} sudah les ${conflict.other.day} ${formatRange(conflict.other)}. Tolak pengajuan dan tawarkan jam lain ke wali.`
+            }
+          />
+        ) : (
+          <AlertBanner
+            className="lg:col-start-1 lg:row-start-2"
+            status="success"
+            title="Tidak bentrok"
+            description={`${toSession.day} ${formatRange(toSession)} kosong untuk ${tutorShort} dan ${student}.`}
+          />
+        )}
 
-      <fieldset
-        className="gap-ns-m flex flex-col"
-        aria-describedby="consent-help"
-        disabled={!!conflict}
-      >
-        <legend className="mb-ns-2xs text-body text-grayscale-text-title leading-normal font-bold">
-          Persetujuan pihak terkait <span className="text-error">*</span>
-        </legend>
-        <p
-          id="consent-help"
-          className={
-            showConsentError && !consented
-              ? "text-caption text-error leading-normal"
-              : "text-caption text-grayscale-text-caption leading-normal"
-          }
-          role={showConsentError && !consented ? "alert" : undefined}
+        <fieldset
+          className="gap-ns-m flex flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1"
+          aria-describedby="consent-help"
+          disabled={!!conflict}
         >
-          {showConsentError && !consented
-            ? "Centang keduanya setelah wali dan tutor mengonfirmasi."
-            : "Catat setelah dikonfirmasi. Jadwal baru berlaku jika keduanya setuju."}
-        </p>
-        <div className="flex flex-col *:min-h-12">
-          <Checkbox
-            checked={parentAgreed}
-            onCheckedChange={(v) => setParentAgreed(v === true)}
-            label={`Wali (${request.parentName}) menyetujui`}
-          />
-          <Checkbox
-            checked={tutorAgreed}
-            onCheckedChange={(v) => setTutorAgreed(v === true)}
-            label={`Tutor (${tutorShort}) menyetujui`}
-          />
-        </div>
-      </fieldset>
+          <legend className="mb-ns-2xs text-body text-grayscale-text-title leading-normal font-bold">
+            Persetujuan pihak terkait <span className="text-error">*</span>
+          </legend>
+          <p
+            id="consent-help"
+            className={
+              showConsentError && !consented
+                ? "text-caption text-error leading-normal"
+                : "text-caption text-grayscale-text-caption leading-normal"
+            }
+            role={showConsentError && !consented ? "alert" : undefined}
+          >
+            {showConsentError && !consented
+              ? "Centang keduanya setelah wali dan tutor mengonfirmasi."
+              : "Catat setelah dikonfirmasi. Jadwal baru berlaku jika keduanya setuju."}
+          </p>
+          <div className="flex flex-col *:min-h-12">
+            <Checkbox
+              checked={parentAgreed}
+              onCheckedChange={(v) => setParentAgreed(v === true)}
+              label={`Wali (${request.parentName}) menyetujui`}
+            />
+            <Checkbox
+              checked={tutorAgreed}
+              onCheckedChange={(v) => setTutorAgreed(v === true)}
+              label={`Tutor (${tutorShort}) menyetujui`}
+            />
+          </div>
+        </fieldset>
+      </div>
 
       <ConfirmDialog
         open={confirmReject}

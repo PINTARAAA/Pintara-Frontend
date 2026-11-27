@@ -28,6 +28,10 @@ import type { NotificationLog } from "@/types/riwayat-notifikasi"
  * Kartu judul (jenis, waktu, status) → Pengiriman (penerima, kanal · kontak,
  * percobaan, penyebab) → Isi pesan → catatan. Gagal: bilah aksi Ubah Kontak
  * (Manajemen Akun) · Kirim Ulang; berhasil → kembali ke daftar dengan toast.
+ *
+ * Desktop (Figma "… / Detail gagal (Desktop)"): Page header "← Riwayat
+ * Notifikasi" dengan tombol di kanan; kartu judul selebar konten, lalu
+ * Pengiriman dan Isi pesan berdampingan (dua kolom, jarak 24).
  */
 const stamp = (d: Date) => format(d, "EEEE, d MMM yyyy · HH.mm", { locale: localeId })
 
@@ -64,6 +68,10 @@ function DetailNotifikasi() {
   return (
     <DetailScreen
       title="Detail Notifikasi"
+      backLabel="Riwayat Notifikasi"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       footer={
         log?.status === "gagal" && (
           <>
@@ -117,15 +125,17 @@ function LogBody({ log }: { log: NotificationLog }) {
     <>
       <section
         aria-label="Ringkasan notifikasi"
-        className="gap-ns-2xs border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col items-start rounded-(--comp-radius-md) border leading-normal"
+        className="gap-ns-s border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col items-start rounded-(--comp-radius-md) border leading-normal"
       >
         <h2 className="text-body text-grayscale-text-title font-bold">
           {KIND_LABEL[log.kind]}
         </h2>
         <p className="text-caption text-grayscale-text-caption">{stamp(log.sentAt)}</p>
-        <StatusBadge category="notifikasi" status={log.status} className="mt-ns-xs" />
+        <StatusBadge category="notifikasi" status={log.status} />
       </section>
 
+      {/* Desktop: Pengiriman & Isi pesan berdampingan */}
+      <div className="lg:gap-ns-2xl contents lg:grid lg:grid-cols-2">
       <InfoCard
         title="Pengiriman"
         rows={[
@@ -152,6 +162,7 @@ function LogBody({ log }: { log: NotificationLog }) {
           {log.message}
         </p>
       </InfoCard>
+      </div>
 
       {failed && (
         <p className="text-caption text-grayscale-text-caption leading-normal">

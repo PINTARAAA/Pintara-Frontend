@@ -28,6 +28,10 @@ import { formatRupiah } from "@/lib/format"
  * Identitas (sejak, siswa aktif, status) → Kontak → Kualifikasi →
  * Ketersediaan & lokasi → Honor. Bilah aksi: Nonaktifkan (ditolak bila
  * masih ada jadwal aktif) · Ubah Profil.
+ *
+ * Desktop (Figma "Data Tutor / Profil (Desktop)" dan "Tidak bisa
+ * dinonaktifkan (Desktop)"): Page header "← Data Tutor" dengan tombol di
+ * kanan; identitas selebar konten, empat kartu info dalam grid 2 kolom.
  */
 const shortName = (name: string) => name.split(" ").slice(0, 2).join(" ")
 
@@ -40,6 +44,10 @@ function ProfilTutor() {
   return (
     <DetailScreen
       title="Profil Tutor"
+      backLabel="Data Tutor"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       action={
         tutor && (
           <ProfileMenu
@@ -107,46 +115,49 @@ function ProfilTutor() {
             caption={`Tutor sejak ${format(tutor.joinedAt, "MMMM yyyy", { locale: localeId })} · ${tutor.activeStudents} siswa aktif`}
             status={tutor.status}
           />
-          <InfoCard
-            title="Kontak"
-            rows={[
-              ["WhatsApp", tutor.phone],
-              ["Email", <span className="break-all">{tutor.email}</span>],
-            ]}
-          />
-          <InfoCard
-            title="Kualifikasi"
-            rows={[
-              ["Pendidikan", tutor.education],
-              ["Mata pelajaran", tutor.subjects.join(", ")],
-              ["Jenjang", formatLevelsLong(tutor.levels)],
-            ]}
-          />
-          <InfoCard
-            title="Ketersediaan & lokasi"
-            rows={[
-              ["Hari", formatDays(tutor.days)],
-              ["Jam", `${tutor.from}–${tutor.until}`],
-              [
-                "Domisili",
-                `Kec. ${tutor.district} · layanan ≤ ${SERVICE_RADIUS_KM} km`,
-              ],
-            ]}
-          />
-          <InfoCard
-            title="Honor"
-            rows={[
-              [
-                "Tarif per sesi",
-                tutor.rate === null ? (
-                  <span className="text-error">Belum diatur</span>
-                ) : (
-                  formatRupiah(tutor.rate)
-                ),
-              ],
-              ["Pengambilan", tutor.pickup],
-            ]}
-          />
+          {/* Desktop: kartu info dalam grid 2 kolom, jarak 24 */}
+          <div className="lg:gap-ns-2xl contents lg:grid lg:grid-cols-2">
+            <InfoCard
+              title="Kontak"
+              rows={[
+                ["WhatsApp", tutor.phone],
+                ["Email", <span className="break-all">{tutor.email}</span>],
+              ]}
+            />
+            <InfoCard
+              title="Kualifikasi"
+              rows={[
+                ["Pendidikan", tutor.education],
+                ["Mata pelajaran", tutor.subjects.join(", ")],
+                ["Jenjang", formatLevelsLong(tutor.levels)],
+              ]}
+            />
+            <InfoCard
+              title="Ketersediaan & lokasi"
+              rows={[
+                ["Hari", formatDays(tutor.days)],
+                ["Jam", `${tutor.from}–${tutor.until}`],
+                [
+                  "Domisili",
+                  `Kec. ${tutor.district} · layanan ≤ ${SERVICE_RADIUS_KM} km`,
+                ],
+              ]}
+            />
+            <InfoCard
+              title="Honor"
+              rows={[
+                [
+                  "Tarif per sesi",
+                  tutor.rate === null ? (
+                    <span className="text-error">Belum diatur</span>
+                  ) : (
+                    formatRupiah(tutor.rate)
+                  ),
+                ],
+                ["Pengambilan", tutor.pickup],
+              ]}
+            />
+          </div>
         </>
       ) : null}
     </DetailScreen>

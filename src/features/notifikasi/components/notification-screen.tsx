@@ -12,6 +12,7 @@ import { useNavigate } from "react-router"
 
 import {
   DetailScreen,
+  Button,
   DataState,
   ListItem,
   toast,
@@ -33,6 +34,11 @@ import type {
  * List item dengan ikon sesuai jenis + chevron. Mengetuk notifikasi
  * menandainya dibaca lalu membuka layar terkait. Tombol centang di top app
  * bar menandai semua dibaca (tampil bila ada yang baru).
+ *
+ * `desktopPage` (P14 · pengelola, Figma "Notifikasi / Pengelola (Desktop)"):
+ * Page header tanpa tautan kembali (Notifikasi ada di sidebar), "Tandai
+ * semua dibaca" sebagai tombol teks di kanan header, daftar selebar 768px.
+ * Tanpa `desktopPage` (wali · tutor) tampilan desktop tidak berubah.
  */
 
 /* "2 jam lalu" · "12 menit lalu" · "08.00" (hari ini) · "8 Okt" */
@@ -52,6 +58,7 @@ function NotificationScreen<Kind extends string>({
   markRead,
   markAllRead,
   emptyDescription,
+  desktopPage = false,
 }: {
   query: UseQueryResult<NotificationList<Kind>>
   /* Key yang di-invalidate setelah status baca berubah */
@@ -60,6 +67,7 @@ function NotificationScreen<Kind extends string>({
   markRead: (id: string) => Promise<void>
   markAllRead: () => Promise<void>
   emptyDescription: string
+  desktopPage?: boolean
 }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -96,15 +104,33 @@ function NotificationScreen<Kind extends string>({
     </DashboardList>
   )
 
+  const hasUnread = !!data && data.unread.length > 0
+
   return (
     <DetailScreen
       title="Notifikasi"
       className="gap-ns-2xl"
+      {...(desktopPage && {
+        backLabel: null,
+        desktopHeader: "page" as const,
+        desktopHeaderActions: hasUnread ? (
+          <Button
+            variant="tertiary"
+            size="sm"
+            onClick={() => readAll.mutate()}
+            disabled={readAll.isPending}
+          >
+            Tandai semua dibaca
+          </Button>
+        ) : undefined,
+      })}
       action={
-        data && data.unread.length > 0 ? (
+        hasUnread ? (
           <TopAppBarButton
             variant="plain"
             label="Tandai semua dibaca"
+            /* Desktop (desktopPage): diganti tombol teks di Page header */
+            className={desktopPage ? "lg:hidden" : undefined}
             onClick={() => readAll.mutate()}
             disabled={readAll.isPending}
           >

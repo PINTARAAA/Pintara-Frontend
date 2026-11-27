@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router"
 import {
   DetailScreen,
   ResultScreen,
+  RESULT_BUTTON_DESKTOP,
   AlertBanner,
   Button,
   Card,
@@ -38,7 +39,7 @@ import {
   formatRequestedSchedule,
   formatShortAddress,
 } from "@/features/verifikasi/lib"
-import { firstName } from "@/lib/format"
+import { firstName, toWhatsAppUrl } from "@/lib/format"
 
 /*
  * P3 · Cocokkan Tutor · Figma "Pencocokan / Kandidat tutor",
@@ -49,12 +50,13 @@ import { firstName } from "@/lib/format"
  * Bila tidak ada tutor yang memenuhi semua kriteria: banner peringatan dan
  * alternatif (kecocokan sebagian · hubungi wali · tolak pendaftaran).
  * Setelah dipilih tampil layar hasil dengan ringkasan pencocokan.
+ *
+ * Desktop (Figma "… (Desktop)"): Page header "← Les" + "Cocokkan Tutor";
+ * kandidat berjajar tiga kolom dengan tombol "Pilih Kak …" di kanan header.
+ * Tidak ada kandidat: konten selebar 768px. Tersimpan: Page header tanpa
+ * tautan kembali, hasil di tengah (560px), tombol berdampingan.
  */
 const LES = "/pengelola/les"
-
-/* "0821-4455-6677" → "6282144556677" (format wa.me) */
-const toWhatsapp = (phone: string) =>
-  phone.replace(/\D/g, "").replace(/^0/, "62")
 
 function CocokkanTutor() {
   const { registrationId = "" } = useParams()
@@ -74,7 +76,7 @@ function CocokkanTutor() {
   }
 
   return (
-    <DetailScreen title="Cocokkan Tutor">
+    <DetailScreen title="Cocokkan Tutor" backLabel="Les" desktopHeader="page">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Mencari kandidat tutor…" />
       ) : query.isError && !(query.error instanceof NotFoundError) ? (
@@ -174,6 +176,10 @@ function CandidatePicker({
   return (
     <DetailScreen
       title="Cocokkan Tutor"
+      backLabel="Les"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       footer={
         <Button
           onClick={() => selected && save.mutate(selected)}
@@ -205,7 +211,8 @@ function CandidatePicker({
           aria-label="Kandidat tutor"
           value={effectiveId}
           onValueChange={(v) => setSelectedId(v as string)}
-          className="gap-ns-l"
+          /* Mobile: ditumpuk; desktop: tiga kolom, gap 24 */
+          className="gap-ns-l lg:grid-cols-3 lg:gap-ns-2xl"
         >
           {candidates.map((c) => (
             <TutorCandidate
@@ -264,7 +271,7 @@ function NoCandidate({
   const { registration: r, candidates } = data
 
   return (
-    <DetailScreen title="Cocokkan Tutor">
+    <DetailScreen title="Cocokkan Tutor" backLabel="Les" desktopHeader="page">
       <StudentNeeds registration={r} />
 
       <AlertBanner
@@ -297,7 +304,7 @@ function NoCandidate({
             chevron
             render={
               <a
-                href={`https://wa.me/${toWhatsapp(r.parent.whatsapp)}`}
+                href={toWhatsAppUrl(r.parent.whatsapp) ?? undefined}
                 target="_blank"
                 rel="noopener noreferrer"
               />
@@ -333,12 +340,14 @@ function MatchSaved({
 
   return (
     <ResultScreen
+      pageTitle="Cocokkan Tutor"
       title={`${candidate.shortName} dipilih untuk ${firstName(r.student.name)}`}
       description={`Kirim penawaran agar ${candidate.shortName} bisa menerima atau menolak penugasan ini.`}
       footer={
         <>
           <Button
             size="lg"
+            className={RESULT_BUTTON_DESKTOP}
             nativeButton={false}
             render={<Link to={`${LES}/penawaran/${r.id}/buat`} replace />}
           >

@@ -19,6 +19,10 @@ import { firstName, formatDayMonth } from "@/lib/format"
  * [Belum dikirim: tutor sudah dipilih di P3, penawaran belum dikirim] →
  * Menunggu konfirmasi tutor (ketuk → detail, catat jawaban) → Riwayat
  * penawaran (badge Diterima/Ditolak + alasan).
+ *
+ * Desktop (Figma "Penawaran / Daftar (Desktop)"): dua kolom, kiri (Belum
+ * dikirim · Menunggu konfirmasi) mengisi sisa lebar, kanan Riwayat 420px,
+ * jarak 40.
  */
 const LES = "/pengelola/les"
 
@@ -57,7 +61,7 @@ function OffersPanel({ query }: { query: UseQueryResult<OfferList> }) {
   }
 
   return (
-    <div className="gap-ns-2xl grid lg:grid-cols-2 lg:items-start">
+    <div className="gap-ns-2xl lg:gap-ns-4xl grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
       <div className="gap-ns-2xl flex flex-col">
         {unsent.length > 0 && (
           <DashboardSection

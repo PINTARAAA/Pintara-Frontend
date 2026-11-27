@@ -42,6 +42,10 @@ import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
  * Kolom cari (nama siswa atau wali) + tombol filter jenjang → tab Menunggu
  * (counter) · Terverifikasi · Ditolak → daftar pendaftar (ketuk → detail).
  * Tab, kata kunci, dan jenjang disimpan di ?tab=…&q=…&jenjang=….
+ *
+ * Desktop (Figma "… / Daftar (Desktop)" dan "/ Kosong (Desktop)"): Page
+ * header "Pendaftaran"; tab di kiri dan kolom cari + filter di kanan dalam
+ * satu baris; daftar selebar konten.
  */
 const TABS: { value: RegistrationStatus; param: string; label: string }[] = [
   { value: "menunggu_verifikasi", param: "menunggu", label: "Menunggu" },
@@ -106,19 +110,20 @@ function VerifikasiPendaftaran() {
     >
       <TabScreen
         title="Pendaftaran"
+        desktopHeader="page"
         action={
           <NotificationButton to="/pengelola/notifikasi" unread={unread} />
         }
         subheader={
-          <div className="gap-ns-s flex flex-col">
-            <div className="gap-ns-s flex items-end">
+          <div className="gap-ns-s lg:gap-ns-2xl flex flex-col lg:flex-row lg:items-end lg:justify-between">
+            <div className="gap-ns-s lg:gap-ns-m flex items-end lg:w-95">
               <SearchField value={query} onCommit={(q) => update({ q })} />
               <LevelFilter
                 value={level}
                 onValueChange={(v) => update({ jenjang: v })}
               />
             </div>
-            <TabsList className="border-grayscale-border-default w-full border-b *:-mb-px">
+            <TabsList className="border-grayscale-border-default w-full border-b *:-mb-px lg:order-first lg:w-105">
               {TABS.map((t) => (
                 <TabsTrigger key={t.param} value={t.param}>
                   {t.label}
@@ -147,7 +152,7 @@ function VerifikasiPendaftaran() {
           <div
             aria-busy={list.isPlaceholderData}
             className={cn(
-              "gap-ns-m flex flex-col transition-opacity lg:max-w-3xl",
+              "gap-ns-m flex flex-col transition-opacity",
               list.isPlaceholderData && "opacity-60"
             )}
           >

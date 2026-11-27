@@ -61,7 +61,11 @@ function UbahNotifikasi() {
   if (query.data) return <SettingForm setting={query.data} />
 
   return (
-    <DetailScreen title="Ubah Notifikasi">
+    <DetailScreen
+      title="Ubah Notifikasi"
+      backLabel="Pengaturan Notifikasi"
+      desktopHeader="page"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pengaturan…" />
       ) : query.error instanceof NotFoundError ? (
@@ -176,15 +180,28 @@ function SettingForm({ setting }: { setting: NotificationSetting }) {
   return (
     <DetailScreen
       title={setting.screenTitle}
+      backLabel="Pengaturan Notifikasi"
+      desktopHeader="page"
+      desktopWidth="wide"
       surface="default"
       className="gap-ns-2xl"
       footer={
-        <Button
-          onClick={() => validate() && save.mutate()}
-          disabled={save.isPending}
-        >
-          {save.isPending ? "Menyimpan…" : "Simpan Pengaturan"}
-        </Button>
+        <>
+          {/* Figma: Batal hanya ada di desktop */}
+          <Button
+            variant="secondary"
+            className="hidden lg:inline-flex"
+            onClick={() => navigate(-1)}
+          >
+            Batal
+          </Button>
+          <Button
+            onClick={() => validate() && save.mutate()}
+            disabled={save.isPending}
+          >
+            {save.isPending ? "Menyimpan…" : "Simpan Pengaturan"}
+          </Button>
+        </>
       }
     >
       {unknown.length > 0 && (
@@ -195,6 +212,13 @@ function SettingForm({ setting }: { setting: NotificationSetting }) {
         />
       )}
 
+      {/*
+       * Desktop (Figma "… / Ubah pengingat presensi (Desktop)"): dua kolom
+       * (jarak 48) — status + waktu pengiriman di kiri, template + pratinjau
+       * di kanan. Banner error tetap selebar konten di atasnya.
+       */}
+      <div className="contents lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-12">
+      <div className="lg:gap-ns-2xl contents lg:flex lg:flex-col">
       <label className="gap-ns-m bg-grayscale-surface-subtitle px-ns-l py-ns-m flex cursor-pointer items-center rounded-(--comp-radius-md) leading-normal">
         <span className="gap-ns-2xs flex min-w-0 flex-1 flex-col">
           <span className="text-subtitle leading-normal text-grayscale-text-title font-bold">
@@ -254,7 +278,9 @@ function SettingForm({ setting }: { setting: NotificationSetting }) {
       )}
 
       {timing.kind === "kejadian" && channelField}
+      </div>
 
+      <div className="lg:gap-ns-2xl contents lg:flex lg:flex-col">
       <Section title="Template pesan">
         <Field>
           <FieldLabel htmlFor="template" required>
@@ -313,6 +339,8 @@ function SettingForm({ setting }: { setting: NotificationSetting }) {
           </div>
         </Section>
       )}
+      </div>
+      </div>
     </DetailScreen>
   )
 }

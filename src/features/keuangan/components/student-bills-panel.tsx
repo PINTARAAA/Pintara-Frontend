@@ -25,17 +25,52 @@ import { cn } from "@/lib/styles"
  * Pil periode → ringkasan (terbayar dari total, sisa, bar Lunas/Sebagian/
  * Belum bayar) → Belum bayar · N → Dibayar sebagian · N → "Lihat N tagihan
  * lunas". Dipakai layar Tagihan Siswa (P8) dan tab Tagihan Siswa di Keuangan.
+ *
+ * Desktop (Figma "Laporan Keuangan / Tagihan siswa (Desktop)"): daftar
+ * tagihan di kiri, ringkasan 420px di kanan (jarak 40). Dengan
+ * `desktopPill="header"` pil periode disembunyikan di desktop karena layar
+ * induk menaruh <StudentBillsPeriodPill> di Page header.
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 const PREVIEW = 3
 
+/* Pil periode tagihan untuk Page header desktop (cache query yang sama) */
+function StudentBillsPeriodPill({
+  month,
+  onMonthChange,
+}: {
+  month?: Date
+  onMonthChange: (key: string) => void
+}) {
+  const { data } = useQuery({
+    ...studentBillsQuery(month),
+    placeholderData: keepPreviousData,
+  })
+  if (!data) return null
+  return (
+    <FilterPill
+      label="Periode"
+      menuLabel="Pilih periode"
+      value={monthKey(data.month)}
+      options={data.months.map((m) => ({
+        value: monthKey(m),
+        label: monthLabel(m),
+      }))}
+      onValueChange={onMonthChange}
+    />
+  )
+}
+
 function StudentBillsPanel({
   month,
   onMonthChange,
+  desktopPill = "inline",
   className,
 }: {
   month?: Date
   onMonthChange: (key: string) => void
+  /* header = pil periode tampil di Page header desktop, bukan di panel */
+  desktopPill?: "inline" | "header"
   className?: string
 }) {
   const query = useQuery({
@@ -69,16 +104,18 @@ function StudentBillsPanel({
         className
       )}
     >
-      <FilterPill
-        label="Periode"
-        menuLabel="Pilih periode"
-        value={monthKey(data.month)}
-        options={data.months.map((m) => ({
-          value: monthKey(m),
-          label: monthLabel(m),
-        }))}
-        onValueChange={onMonthChange}
-      />
+      <div className={cn(desktopPill === "header" && "lg:hidden")}>
+        <FilterPill
+          label="Periode"
+          menuLabel="Pilih periode"
+          value={monthKey(data.month)}
+          options={data.months.map((m) => ({
+            value: monthKey(m),
+            label: monthLabel(m),
+          }))}
+          onValueChange={onMonthChange}
+        />
+      </div>
 
       {count === 0 ? (
         <DataState
@@ -100,12 +137,13 @@ function BillList({ data }: { data: StudentBillList }) {
     rows.reduce((sum, r) => sum + r.total - r.remaining, 0)
 
   return (
-    <>
+    /* Desktop: daftar di kiri, ringkasan 420px di kanan */
+    <div className="lg:gap-x-ns-4xl contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
       <section
         aria-label="Ringkasan tagihan"
-        className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal"
+        className="gap-ns-m border-grayscale-border-default bg-grayscale-surface-default p-ns-l flex flex-col rounded-(--comp-radius-md) border leading-normal lg:col-start-2 lg:row-start-1"
       >
-        <div className="gap-ns-2xs flex flex-col">
+        <div className="gap-ns-s flex flex-col">
           <p className="text-body text-grayscale-text-title font-bold">
             {formatRupiahCompact(data.paid)} dari{" "}
             {formatRupiahCompact(data.total)} terbayar
@@ -119,17 +157,31 @@ function BillList({ data }: { data: StudentBillList }) {
         <StackedProgressBar
           total={data.total}
           segments={[
-            { label: "Lunas", value: paidAmount(data.paidOff), tone: "success" },
-            { label: "Sebagian", value: paidAmount(data.partial), tone: "warning" },
+            {
+              label: "Lunas",
+              value: paidAmount(data.paidOff),
+              tone: "success",
+            },
+            {
+              label: "Sebagian",
+              value: paidAmount(data.partial),
+              tone: "warning",
+            },
           ]}
         />
         <ul className="gap-x-ns-l gap-y-ns-s text-caption text-grayscale-text-body flex flex-wrap">
           <li className="gap-ns-xs inline-flex items-center">
-            <span aria-hidden="true" className="bg-success size-2 rounded-full" />
+            <span
+              aria-hidden="true"
+              className="bg-success size-2 rounded-full"
+            />
             Lunas · {data.paidOff.length}
           </li>
           <li className="gap-ns-xs inline-flex items-center">
-            <span aria-hidden="true" className="bg-warning size-2 rounded-full" />
+            <span
+              aria-hidden="true"
+              className="bg-warning size-2 rounded-full"
+            />
             Sebagian · {data.partial.length}
           </li>
           <li className="gap-ns-xs inline-flex items-center">
@@ -142,60 +194,62 @@ function BillList({ data }: { data: StudentBillList }) {
         </ul>
       </section>
 
-      {data.unpaid.length > 0 && (
-        <BillSection
-          title={`Belum bayar · ${data.unpaid.length}`}
-          items={data.unpaid}
-          describe={(r) =>
-            `${r.sessions} sesi · jatuh tempo ${formatDayMonth(r.dueDate)}`
-          }
-          amount={(r) => r.remaining}
-        />
-      )}
-
-      {data.partial.length > 0 && (
-        <BillSection
-          title={`Dibayar sebagian · ${data.partial.length}`}
-          items={data.partial}
-          describe={(r) =>
-            `Sisa ${formatRupiah(r.remaining)} dari ${formatRupiah(r.total)}`
-          }
-          amount={(r) => r.remaining}
-        />
-      )}
-
-      {data.paidOff.length > 0 &&
-        (showPaid ? (
+      <div className="lg:gap-ns-2xl contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col">
+        {data.unpaid.length > 0 && (
           <BillSection
-            title={`Lunas · ${data.paidOff.length}`}
-            items={data.paidOff}
-            describe={(r) => `${r.sessions} sesi · lunas`}
-            amount={(r) => r.total}
-            action={
-              <Button
-                variant="tertiary"
-                size="sm"
-                className="-my-ns-s -mr-ns-l"
-                aria-expanded
-                onClick={() => setShowPaid(false)}
-              >
-                Sembunyikan
-              </Button>
+            title={`Belum bayar · ${data.unpaid.length}`}
+            items={data.unpaid}
+            describe={(r) =>
+              `${r.sessions} sesi · jatuh tempo ${formatDayMonth(r.dueDate)}`
             }
-            showAll
+            amount={(r) => r.remaining}
           />
-        ) : (
-          <Button
-            variant="tertiary"
-            size="sm"
-            className="-mt-ns-s w-fit"
-            aria-expanded={false}
-            onClick={() => setShowPaid(true)}
-          >
-            Lihat {data.paidOff.length} tagihan lunas
-          </Button>
-        ))}
-    </>
+        )}
+
+        {data.partial.length > 0 && (
+          <BillSection
+            title={`Dibayar sebagian · ${data.partial.length}`}
+            items={data.partial}
+            describe={(r) =>
+              `Sisa ${formatRupiah(r.remaining)} dari ${formatRupiah(r.total)}`
+            }
+            amount={(r) => r.remaining}
+          />
+        )}
+
+        {data.paidOff.length > 0 &&
+          (showPaid ? (
+            <BillSection
+              title={`Lunas · ${data.paidOff.length}`}
+              items={data.paidOff}
+              describe={(r) => `${r.sessions} sesi · lunas`}
+              amount={(r) => r.total}
+              action={
+                <Button
+                  variant="tertiary"
+                  size="sm"
+                  className="-my-ns-s -mr-ns-l"
+                  aria-expanded
+                  onClick={() => setShowPaid(false)}
+                >
+                  Sembunyikan
+                </Button>
+              }
+              showAll
+            />
+          ) : (
+            <Button
+              variant="tertiary"
+              size="sm"
+              className="-mt-ns-s w-fit"
+              aria-expanded={false}
+              onClick={() => setShowPaid(true)}
+            >
+              Lihat {data.paidOff.length} tagihan lunas
+            </Button>
+          ))}
+      </div>
+    </div>
   )
 }
 
@@ -246,7 +300,9 @@ function BillSection({
             description={describe(row)}
             trailingText={formatRupiah(amount(row))}
             chevron
-            render={<Link to={`/pengelola/laporan-keuangan/tagihan/${row.id}`} />}
+            render={
+              <Link to={`/pengelola/laporan-keuangan/tagihan/${row.id}`} />
+            }
           />
         ))}
       </DashboardList>
@@ -254,4 +310,4 @@ function BillSection({
   )
 }
 
-export { StudentBillsPanel }
+export { StudentBillsPanel, StudentBillsPeriodPill }

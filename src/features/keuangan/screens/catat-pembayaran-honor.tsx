@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router"
 import {
   DetailScreen,
   ResultScreen,
+  RESULT_BUTTON_DESKTOP,
   AlertBanner,
   StatusBadge,
   Button,
@@ -50,6 +51,12 @@ import { formatRupiah, formatDate } from "@/lib/format"
  * Tanggal pembayaran (maks. hari ini) → Nominal dibayar (maks. total; kurang
  * dari total = Sebagian) → Bukti pembayaran (JPG/PNG/PDF, maks. 5 MB) →
  * banner "Hanya pencatatan". Setelah tersimpan tampil layar hasil.
+ *
+ * Desktop (Figma "Honor / … (Desktop)"): Page header "← Rincian Honor";
+ * dua kolom sama lebar (jarak 40): metode (radio berdampingan) · tanggal ·
+ * nominal di kiri, bukti pembayaran + banner di kanan; Batal (khusus
+ * desktop) · Simpan Pembayaran rata kanan di bawah garis pemisah.
+ * Tersimpan: Page header "Catat Pembayaran", hasil di tengah.
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 const digitsOnly = (value: string) => Number(value.replace(/\D/g, "")) || 0
@@ -79,7 +86,11 @@ function CatatPembayaranHonor() {
   }
 
   return (
-    <DetailScreen title="Catat Pembayaran">
+    <DetailScreen
+      title="Catat Pembayaran"
+      backLabel="Rincian Honor"
+      desktopHeader="page"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat honor…" />
       ) : query.isError && !(query.error instanceof HonorNotFoundError) ? (
@@ -115,6 +126,7 @@ function PaymentForm({
 }) {
   const { month = "", tutorId = "" } = useParams()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const remaining = honor.total - (honor.payment?.amount ?? 0)
 
   const [method, setMethod] = React.useState<HonorPaymentMethod>(honor.method)
@@ -188,15 +200,28 @@ function PaymentForm({
   return (
     <DetailScreen
       title="Catat Pembayaran"
+      backLabel="Rincian Honor"
+      desktopHeader="page"
+      desktopWidth="wide"
       surface="default"
       className="gap-ns-2xl"
       footer={
-        <Button
-          onClick={() => validate() && save.mutate()}
-          disabled={save.isPending}
-        >
-          {save.isPending ? "Menyimpan…" : "Simpan Pembayaran"}
-        </Button>
+        <>
+          {/* Figma: Batal hanya ada di desktop */}
+          <Button
+            variant="secondary"
+            className="hidden lg:inline-flex"
+            onClick={() => navigate(-1)}
+          >
+            Batal
+          </Button>
+          <Button
+            onClick={() => validate() && save.mutate()}
+            disabled={save.isPending}
+          >
+            {save.isPending ? "Menyimpan…" : "Simpan Pembayaran"}
+          </Button>
+        </>
       }
     >
       <div className="gap-ns-2xs bg-grayscale-surface-subtitle px-ns-l py-ns-m flex flex-col rounded-(--comp-radius-md) leading-normal">
@@ -213,93 +238,98 @@ function PaymentForm({
         noValidate
         aria-label="Formulir pembayaran honor"
         onSubmit={(e) => e.preventDefault()}
-        className="gap-ns-2xl flex flex-col"
+        className="gap-ns-2xl lg:gap-x-ns-4xl flex flex-col lg:grid lg:grid-cols-2 lg:items-start"
       >
-        <fieldset className="gap-ns-m flex flex-col">
-          <legend className="mb-ns-m text-body text-grayscale-text-title leading-normal font-bold">
-            Metode pengambilan <span className="text-error">*</span>
-          </legend>
-          <RadioGroup
-            value={method}
-            onValueChange={(v) => setMethod(v as HonorPaymentMethod)}
-            className="gap-0 *:min-h-12"
-          >
-            <RadioGroupItem
-              value="tunai"
-              label="Tunai · diambil langsung di LBB"
+        <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-ns-2xl">
+          <fieldset className="gap-ns-m flex flex-col">
+            <legend className="mb-ns-m text-body text-grayscale-text-title leading-normal font-bold">
+              Metode pengambilan <span className="text-error">*</span>
+            </legend>
+            <RadioGroup
+              value={method}
+              onValueChange={(v) => setMethod(v as HonorPaymentMethod)}
+              /* Mobile: tiap baris 48px; desktop: dua pilihan berdampingan */
+              className="gap-0 *:min-h-12 lg:grid-cols-2 lg:gap-x-ns-2xl lg:*:min-h-8"
+            >
+              <RadioGroupItem
+                value="tunai"
+                label="Tunai · diambil langsung di LBB"
+              />
+              <RadioGroupItem value="transfer" label="Transfer bank" />
+            </RadioGroup>
+          </fieldset>
+
+          <Field>
+            <FieldLabel htmlFor="paid-at" required>
+              Tanggal pembayaran
+            </FieldLabel>
+            <DatePicker
+              id="paid-at"
+              value={paidAt}
+              onValueChange={(d) => {
+                setPaidAt(d)
+                clear("date")
+              }}
+              invalid={!!errors.date}
+              calendarProps={{ disabled: { after: new Date() } }}
             />
-            <RadioGroupItem value="transfer" label="Transfer bank" />
-          </RadioGroup>
-        </fieldset>
+            {errors.date && <FieldError>{errors.date}</FieldError>}
+          </Field>
 
-        <Field>
-          <FieldLabel htmlFor="paid-at" required>
-            Tanggal pembayaran
-          </FieldLabel>
-          <DatePicker
-            id="paid-at"
-            value={paidAt}
-            onValueChange={(d) => {
-              setPaidAt(d)
-              clear("date")
+          <Field>
+            <FieldLabel htmlFor="amount" required>
+              Nominal dibayar
+            </FieldLabel>
+            <Input
+              id="amount"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder={`Contoh: ${formatRupiah(remaining)}`}
+              value={amount > 0 ? formatRupiah(amount) : ""}
+              onChange={(e) => {
+                setAmount(digitsOnly(e.target.value))
+                clear("amount")
+              }}
+              aria-invalid={errors.amount ? true : undefined}
+              aria-describedby={errors.amount ? "amount-error" : "amount-help"}
+            />
+            {errors.amount ? (
+              <FieldError id="amount-error">{errors.amount}</FieldError>
+            ) : (
+              <FieldDescription id="amount-help">
+                {amount > 0 && amount < remaining
+                  ? `Tercatat sebagai pembayaran sebagian, sisa ${formatRupiah(remaining - amount)}.`
+                  : `Sesuai ${honor.payment ? "sisa" : "total"} honor ${formatRupiah(remaining)}.`}
+              </FieldDescription>
+            )}
+          </Field>
+        </div>
+
+        <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-ns-2xl">
+          <FileUpload
+            id="proof"
+            label="Bukti pembayaran"
+            required
+            accept={DOC_ACCEPT}
+            helper="JPG, PNG, atau PDF · maks. 5 MB"
+            file={doc.file}
+            status={doc.status}
+            progress={doc.progress}
+            error={doc.status === "error" ? doc.error : errors.file}
+            onSelect={selectFile}
+            onRemove={() => {
+              cancelUpload.current?.()
+              setDoc(EMPTY_DOC)
             }}
-            invalid={!!errors.date}
-            calendarProps={{ disabled: { after: new Date() } }}
           />
-          {errors.date && <FieldError>{errors.date}</FieldError>}
-        </Field>
 
-        <Field>
-          <FieldLabel htmlFor="amount" required>
-            Nominal dibayar
-          </FieldLabel>
-          <Input
-            id="amount"
-            inputMode="numeric"
-            autoComplete="off"
-            placeholder={`Contoh: ${formatRupiah(remaining)}`}
-            value={amount > 0 ? formatRupiah(amount) : ""}
-            onChange={(e) => {
-              setAmount(digitsOnly(e.target.value))
-              clear("amount")
-            }}
-            aria-invalid={errors.amount ? true : undefined}
-            aria-describedby={errors.amount ? "amount-error" : "amount-help"}
+          <AlertBanner
+            status="info"
+            title="Hanya pencatatan"
+            description="PINTARA tidak mentransfer dana. Pembayaran tetap dilakukan di luar aplikasi."
           />
-          {errors.amount ? (
-            <FieldError id="amount-error">{errors.amount}</FieldError>
-          ) : (
-            <FieldDescription id="amount-help">
-              {amount > 0 && amount < remaining
-                ? `Tercatat sebagai pembayaran sebagian, sisa ${formatRupiah(remaining - amount)}.`
-                : `Sesuai ${honor.payment ? "sisa" : "total"} honor ${formatRupiah(remaining)}.`}
-            </FieldDescription>
-          )}
-        </Field>
-
-        <FileUpload
-          id="proof"
-          label="Bukti pembayaran"
-          required
-          accept={DOC_ACCEPT}
-          helper="JPG, PNG, atau PDF · maks. 5 MB"
-          file={doc.file}
-          status={doc.status}
-          progress={doc.progress}
-          error={doc.status === "error" ? doc.error : errors.file}
-          onSelect={selectFile}
-          onRemove={() => {
-            cancelUpload.current?.()
-            setDoc(EMPTY_DOC)
-          }}
-        />
+        </div>
       </form>
-
-      <AlertBanner
-        status="info"
-        title="Hanya pencatatan"
-        description="PINTARA tidak mentransfer dana. Pembayaran tetap dilakukan di luar aplikasi."
-      />
     </DetailScreen>
   )
 }
@@ -310,11 +340,13 @@ function PaymentSaved({ honor }: { honor: HonorDetail }) {
   const payment = honor.payment!
   return (
     <ResultScreen
+      pageTitle="Catat Pembayaran"
       title="Pembayaran honor tercatat"
       description={`Status honor ${honor.shortName} untuk ${monthLabel(honor.month)} sekarang ${honor.status === "lunas" ? "Dibayar" : "Dibayar sebagian"}.`}
       footer={
         <Button
           size="lg"
+          className={RESULT_BUTTON_DESKTOP}
           onClick={() =>
             navigate(
               `/pengelola/keuangan?bulan=${format(honor.month, "yyyy-MM")}`,

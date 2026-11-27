@@ -34,6 +34,10 @@ import {
  * (per mapel: sesi × tarif, total; "Lihat N sesi" bila rincian sesi
  * tersedia) → Pengambilan honor (metode biasa, catatan) → [Pembayaran].
  * Bilah aksi: Catat Pembayaran (selama belum lunas).
+ *
+ * Desktop (Figma "Honor / Rincian tutor (Desktop)"): Page header "←
+ * Keuangan" dengan Catat Pembayaran di kanan; kartu judul selebar konten,
+ * lalu Perhitungan di kiri dan Pengambilan/Pembayaran 420px di kanan.
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
 
@@ -47,6 +51,10 @@ function RincianHonor() {
   return (
     <DetailScreen
       title="Rincian Honor"
+      backLabel="Keuangan"
+      desktopHeader="page"
+      desktopActions="header"
+      desktopWidth="wide"
       footer={
         honor &&
         honor.status !== "lunas" && (
@@ -101,120 +109,123 @@ function RincianHonor() {
             </p>
           </section>
 
-          <Card size="compact">
-            <CardHeader className="gap-ns-2xs">
-              <CardTitle>Perhitungan</CardTitle>
-              <p className="text-caption text-primary-text-primary leading-normal">
-                Dari {honor.sessions} presensi terverifikasi final
-              </p>
-            </CardHeader>
-            <CardContent className="gap-ns-m flex flex-col">
-              <dl className="gap-ns-m flex flex-col">
-                {honor.lines.map((line) => (
-                  <SummaryRow
-                    key={line.subject}
-                    align="between"
-                    label={`${line.subject} · ${line.sessions} sesi × ${formatRupiah(line.rate)}`}
-                  >
-                    {formatRupiah(line.amount)}
-                  </SummaryRow>
-                ))}
-              </dl>
-              <div
-                aria-hidden="true"
-                className="bg-grayscale-border-disabled h-px"
-              />
-              <div className="gap-ns-m flex items-center justify-between leading-normal">
-                <span className="text-subtitle text-grayscale-text-title font-bold">
-                  Total honor
-                </span>
-                <span className="text-body text-grayscale-text-title font-bold">
-                  {formatRupiah(honor.total)}
-                </span>
-              </div>
-
-              {honor.sessionList && honor.sessionList.length > 0 && (
-                <>
-                  <Button
-                    variant="tertiary"
-                    size="sm"
-                    className="w-fit"
-                    aria-expanded={showSessions}
-                    onClick={() => setShowSessions((v) => !v)}
-                  >
-                    {showSessions
-                      ? "Sembunyikan sesi"
-                      : `Lihat ${honor.sessionList.length} sesi`}
-                  </Button>
-                  {showSessions && (
-                    <ul className="gap-ns-s text-caption text-grayscale-text-body flex flex-col leading-normal">
-                      {honor.sessionList
-                        .slice()
-                        .sort((a, b) => a.start.getTime() - b.start.getTime())
-                        .map((s) => (
-                          <li
-                            key={s.id}
-                            className="gap-ns-m flex justify-between"
-                          >
-                            <span>
-                              {formatWeekdayDate(s.start)} · {s.subject} ·{" "}
-                              {firstName(s.student.name)}
-                            </span>
-                            <span className="text-grayscale-text-caption shrink-0">
-                              {s.record?.actualStart}–{s.record?.actualEnd}
-                            </span>
-                          </li>
-                        ))}
-                    </ul>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {honor.payment ? (
+          {/* Desktop: Perhitungan di kiri, Pengambilan/Pembayaran 420px kanan */}
+          <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-ns-2xl">
             <Card size="compact">
-              <CardHeader>
-                <CardTitle>Pembayaran</CardTitle>
+              <CardHeader className="gap-ns-2xs">
+                <CardTitle>Perhitungan</CardTitle>
+                <p className="text-caption text-primary-text-primary leading-normal">
+                  Dari {honor.sessions} presensi terverifikasi final
+                </p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="gap-ns-m flex flex-col">
                 <dl className="gap-ns-m flex flex-col">
-                  <SummaryRow label="Nominal" align="between">
-                    {formatRupiah(honor.payment.amount)}
-                  </SummaryRow>
-                  <SummaryRow label="Metode" align="between">
-                    {METHOD_LABEL[honor.payment.method]}
-                  </SummaryRow>
-                  <SummaryRow label="Tanggal" align="between">
-                    {formatDate(honor.payment.paidAt)}
-                  </SummaryRow>
-                  <SummaryRow label="Bukti" align="between">
-                    <span className="break-all">
-                      {honor.payment.proof.name}
-                    </span>
-                  </SummaryRow>
-                </dl>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card size="compact">
-              <CardHeader>
-                <CardTitle>Pengambilan honor</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <dl className="gap-ns-m flex flex-col">
-                  <SummaryRow label="Metode biasa" align="between">
-                    {METHOD_LABEL[honor.method]}
-                  </SummaryRow>
-                  {honor.methodNote && (
-                    <SummaryRow label="Catatan" align="between">
-                      {honor.methodNote}
+                  {honor.lines.map((line) => (
+                    <SummaryRow
+                      key={line.subject}
+                      align="between"
+                      label={`${line.subject} · ${line.sessions} sesi × ${formatRupiah(line.rate)}`}
+                    >
+                      {formatRupiah(line.amount)}
                     </SummaryRow>
-                  )}
+                  ))}
                 </dl>
+                <div
+                  aria-hidden="true"
+                  className="bg-grayscale-border-disabled h-px"
+                />
+                <div className="gap-ns-m flex items-center justify-between leading-normal">
+                  <span className="text-subtitle text-grayscale-text-title font-bold">
+                    Total honor
+                  </span>
+                  <span className="text-body text-grayscale-text-title font-bold">
+                    {formatRupiah(honor.total)}
+                  </span>
+                </div>
+
+                {honor.sessionList && honor.sessionList.length > 0 && (
+                  <>
+                    <Button
+                      variant="tertiary"
+                      size="sm"
+                      className="w-fit"
+                      aria-expanded={showSessions}
+                      onClick={() => setShowSessions((v) => !v)}
+                    >
+                      {showSessions
+                        ? "Sembunyikan sesi"
+                        : `Lihat ${honor.sessionList.length} sesi`}
+                    </Button>
+                    {showSessions && (
+                      <ul className="gap-ns-s text-caption text-grayscale-text-body flex flex-col leading-normal">
+                        {honor.sessionList
+                          .slice()
+                          .sort((a, b) => a.start.getTime() - b.start.getTime())
+                          .map((s) => (
+                            <li
+                              key={s.id}
+                              className="gap-ns-m flex justify-between"
+                            >
+                              <span>
+                                {formatWeekdayDate(s.start)} · {s.subject} ·{" "}
+                                {firstName(s.student.name)}
+                              </span>
+                              <span className="text-grayscale-text-caption shrink-0">
+                                {s.record?.actualStart}–{s.record?.actualEnd}
+                              </span>
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                  </>
+                )}
               </CardContent>
             </Card>
-          )}
+
+            {honor.payment ? (
+              <Card size="compact">
+                <CardHeader>
+                  <CardTitle>Pembayaran</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <dl className="gap-ns-m flex flex-col">
+                    <SummaryRow label="Nominal" align="between">
+                      {formatRupiah(honor.payment.amount)}
+                    </SummaryRow>
+                    <SummaryRow label="Metode" align="between">
+                      {METHOD_LABEL[honor.payment.method]}
+                    </SummaryRow>
+                    <SummaryRow label="Tanggal" align="between">
+                      {formatDate(honor.payment.paidAt)}
+                    </SummaryRow>
+                    <SummaryRow label="Bukti" align="between">
+                      <span className="break-all">
+                        {honor.payment.proof.name}
+                      </span>
+                    </SummaryRow>
+                  </dl>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card size="compact">
+                <CardHeader>
+                  <CardTitle>Pengambilan honor</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <dl className="gap-ns-m flex flex-col">
+                    <SummaryRow label="Metode biasa" align="between">
+                      {METHOD_LABEL[honor.method]}
+                    </SummaryRow>
+                    {honor.methodNote && (
+                      <SummaryRow label="Catatan" align="between">
+                        {honor.methodNote}
+                      </SummaryRow>
+                    )}
+                  </dl>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </>
       ) : null}
     </DetailScreen>

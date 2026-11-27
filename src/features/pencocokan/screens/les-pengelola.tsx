@@ -34,6 +34,9 @@ import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
  * "Pencocokan / Kosong": siswa terverifikasi yang belum punya tutor
  * (ketuk → pilih kandidat tutor). Tab aktif disimpan di ?tab=….
  * Tab Penawaran: P4 (OffersPanel). Tab Jadwal: P5 (SchedulePanel).
+ *
+ * Desktop (Figma "Pencocokan / Daftar siswa (Desktop)" dan "/ Kosong
+ * (Desktop)"): Page header "Les", tab selebar 420px, daftar selebar konten.
  */
 const TABS = [
   { value: "pencocokan", label: "Pencocokan" },
@@ -73,11 +76,12 @@ function LesPengelola() {
     >
       <TabScreen
         title="Les"
+        desktopHeader="page"
         action={
           <NotificationButton to="/pengelola/notifikasi" unread={unread} />
         }
         subheader={
-          <TabsList className="border-grayscale-border-default w-full border-b *:-mb-px">
+          <TabsList className="border-grayscale-border-default w-full border-b *:-mb-px lg:w-105">
             {TABS.map((t) => (
               <TabsTrigger key={t.value} value={t.value}>
                 {t.label}
@@ -132,7 +136,7 @@ function MatchingPanel({
   }
 
   return (
-    <div className="gap-ns-m flex flex-col lg:max-w-3xl">
+    <div className="gap-ns-m flex flex-col">
       <p className="text-caption text-grayscale-text-caption leading-normal">
         Siswa terverifikasi yang belum punya tutor
       </p>

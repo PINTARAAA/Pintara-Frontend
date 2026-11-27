@@ -12,6 +12,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  PhoneInput,
 } from "@/components"
 import { FormGroup } from "@/features/pendaftaran/components/form-group"
 import {
@@ -57,12 +58,8 @@ function StepDataSiswa() {
           <FieldLabel htmlFor="parentPhone" required>
             No. WhatsApp wali
           </FieldLabel>
-          <Input
+          <PhoneInput
             id="parentPhone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="Contoh: 0812xxxxxxxx"
             {...invalid("parentPhone")}
             {...register("parentPhone")}
           />
