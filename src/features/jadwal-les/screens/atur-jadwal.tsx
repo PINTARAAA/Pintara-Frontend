@@ -443,7 +443,7 @@ function ScheduleSaved({ pair }: { pair: Pair }) {
           <Button
             size="lg"
             className={RESULT_BUTTON_DESKTOP}
-            onClick={() => navigate("/pengelola", { replace: true })}
+            onClick={() => navigate("/", { replace: true })}
           >
             Selesai
           </Button>

@@ -36,7 +36,7 @@ export const ROLE_NAV: Record<
 > = {
   wali: {
     main: [
-      { label: "Beranda", to: "/wali", icon: HouseIcon, end: true },
+      { label: "Beranda", to: "/", icon: HouseIcon, end: true },
       { label: "Jadwal", to: "/wali/jadwal", icon: CalendarIcon },
       { label: "Absensi", to: "/wali/absensi", icon: ClipboardCheckIcon },
       { label: "Tagihan", to: "/wali/tagihan", icon: WalletIcon },
@@ -50,7 +50,7 @@ export const ROLE_NAV: Record<
   },
   tutor: {
     main: [
-      { label: "Beranda", to: "/tutor", icon: HouseIcon, end: true },
+      { label: "Beranda", to: "/", icon: HouseIcon, end: true },
       { label: "Jadwal", to: "/tutor/jadwal", icon: CalendarIcon },
       { label: "Presensi", to: "/tutor/presensi", icon: ClipboardCheckIcon },
       {
@@ -70,7 +70,7 @@ export const ROLE_NAV: Record<
   },
   pengelola: {
     main: [
-      { label: "Beranda", to: "/pengelola", icon: HouseIcon, end: true },
+      { label: "Beranda", to: "/", icon: HouseIcon, end: true },
       { label: "Pendaftaran", to: "/pengelola/pendaftaran", icon: UserPlusIcon },
       { label: "Les", to: "/pengelola/les", icon: CalendarIcon },
       { label: "Keuangan", to: "/pengelola/keuangan", icon: WalletIcon },
@@ -96,7 +96,7 @@ export const ROLE_SIDEBAR: Partial<
       "Anda perlu masuk lagi dengan email/username dan password untuk mengelola data LBB.",
     groups: [
       {
-        items: [{ label: "Beranda", to: "/pengelola", icon: HouseIcon, end: true }],
+        items: [{ label: "Beranda", to: "/", icon: HouseIcon, end: true }],
       },
       {
         label: "Operasional",

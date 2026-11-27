@@ -1,19 +1,23 @@
 import type * as React from "react"
-import { createBrowserRouter, Navigate, Outlet, type RouteObject } from "react-router"
+import { createBrowserRouter, Outlet, redirect, type RouteObject } from "react-router"
 
-import { ROLE_NAV, ROLE_SIDEBAR, type Role } from "./navigation"
-import { SidebarLogoutItem } from "@/features/akun/components/account-help"
-import { SidebarThemeItem } from "@/features/akun/components/theme-setting"
+import { ROLE_NAV, type Role } from "./navigation"
+import { HomeIndex, HomeLayout, RoleShell, type HomeData } from "./routes/role-shell"
 import { PageLoader } from "./page-loader"
-import { redirectIfAuthenticated, requireRole } from "./auth-guards"
+import {
+  redirectIfAuthenticated,
+  requireRole,
+  requireSession,
+} from "./auth-guards"
 import RouteError from "@/pages/error/error"
-import { AppFrame, AppShell } from "@/components"
+import { AppFrame } from "@/components"
 
 /*
  * Daftar route aplikasi.
  *
  *   /masuk                      → AuthLayout
- *   /:peran/…  (wali, tutor, pengelola) → AppShell
+ *   /                           → AppShell + beranda sesuai peran yang login
+ *   /:peran/…  (wali, tutor, pengelola) → AppShell; /:peran saja → /
  *     ├─ layar tab              → bottom nav (mobile) / sidebar (desktop)
  *     └─ layar detail/formulir  → handle.hideBottomNav: tanpa bottom nav di
  *                                 mobile, sidebar tetap tampil di desktop
@@ -377,38 +381,17 @@ const PLACEHOLDER_DETAILS: RouteObject[] = [
   },
 ]
 
-/* Route satu peran: semua layarnya di dalam AppShell */
+/* Route satu peran: semua layarnya di dalam AppShell; berandanya ada di "/" */
 function roleRoutes(role: Role): RouteObject {
-  const { main, utility, sidebarExtra } = ROLE_NAV[role]
-  const sidebar = ROLE_SIDEBAR[role]
-  const [home, ...tabs] = [...main, ...utility]
+  const { main, utility } = ROLE_NAV[role]
+  const [, ...tabs] = [...main, ...utility]
   const extras = EXTRA_ROUTES[role] ?? []
   return {
     path: role,
     loader: () => requireRole(role),
-    element: (
-      <AppShell
-        items={main}
-        utilityItems={utility}
-        sidebarItems={[...main, ...(sidebarExtra?.main ?? [])]}
-        /* Notifikasi di atas Akun, sesuai urutan Figma */
-        sidebarUtilityList={[...(sidebarExtra?.utility ?? []), ...utility]}
-        sidebarGroups={sidebar?.groups}
-        sidebarUtilityItems={sidebar?.utility}
-        /* Shortcut tema: wali & tutor di atas Notifikasi, pengelola di atas Keluar */
-        sidebarUtilityLead={!sidebar && <SidebarThemeItem />}
-        sidebarFooter={
-          sidebar && (
-            <>
-              <SidebarThemeItem />
-              <SidebarLogoutItem description={sidebar.logoutDescription} />
-            </>
-          )
-        }
-      />
-    ),
+    element: <RoleShell role={role} />,
     children: [
-      { index: true, handle: { title: home.label }, lazy: beranda[role] },
+      { index: true, loader: () => redirect("/") },
       ...tabs.map((tab) => ({
         path: tab.to.replace(`/${role}/`, ""),
         handle: { title: tab.label },
@@ -423,6 +406,17 @@ function roleRoutes(role: Role): RouteObject {
   }
 }
 
+const homeRoute: RouteObject = {
+  id: "home",
+  loader: async (): Promise<HomeData> => {
+    const role = await requireSession()
+    const { Component } = await beranda[role]()
+    return { role, Component }
+  },
+  Component: HomeLayout,
+  children: [{ index: true, handle: { title: "Beranda" }, Component: HomeIndex }],
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -434,7 +428,7 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
     hydrateFallbackElement: <PageLoader />,
     children: [
-      { index: true, element: <Navigate to="/masuk" replace /> },
+      homeRoute,
       {
         path: "masuk",
         loader: redirectIfAuthenticated,
