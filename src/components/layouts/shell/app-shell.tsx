@@ -33,6 +33,8 @@ type NavItem = {
   icon: LucideIcon
   /* true = aktif hanya bila URL sama persis (untuk Beranda/index) */
   end?: boolean
+  /* Label di sidebar desktop bila berbeda dari bottom navigation, mis. "Riwayat les" */
+  sidebarLabel?: string
 }
 
 /* Grup menu sidebar desktop; label opsional tampil sebagai judul kecil */
@@ -61,7 +63,7 @@ function SideItem({ item }: { item: NavItem }) {
   return (
     <SidebarNavItem
       icon={<Icon />}
-      label={item.label}
+      label={item.sidebarLabel ?? item.label}
       active={useIsActive(item)}
       render={<NavLink to={item.to} end={item.end} />}
     />
