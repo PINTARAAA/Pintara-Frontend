@@ -1,7 +1,6 @@
 import * as React from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { format, isToday, isTomorrow } from "date-fns"
-import { id as localeId } from "date-fns/locale"
+import { isToday, isTomorrow } from "date-fns"
 import { CalendarIcon, UserPlusIcon } from "lucide-react"
 import { Link } from "react-router"
 
@@ -15,6 +14,7 @@ import {
 } from "@/components"
 import { waliDashboardQuery } from "@/features/dashboard/api"
 import {
+  AgendaDate,
   DashboardSkeleton,
   EmptyNote,
   DashboardList,
@@ -374,26 +374,6 @@ function OngoingRegistrations({ variant }: { variant: "list" | "rows" }) {
         </ul>
       )}
     </DashboardSection>
-  )
-}
-
-/* Kotak tanggal agenda 64×72: hari singkat kapital ("RAB") di atas tanggal H4 */
-function AgendaDate({ date, className }: { date: Date; className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "flex h-18 w-16 shrink-0 flex-col items-center justify-center rounded-(--comp-radius-md) font-bold",
-        className
-      )}
-    >
-      <span className="text-caption leading-normal text-primary-text-primary uppercase">
-        {format(date, "EEE", { locale: localeId })}
-      </span>
-      <span className="text-h4 text-grayscale-text-title">
-        {format(date, "d")}
-      </span>
-    </span>
   )
 }
 

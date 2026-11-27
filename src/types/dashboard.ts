@@ -20,6 +20,8 @@ export type DashboardTask = {
   highlight?: string
   /* Mendesak (mis. tagihan lewat jatuh tempo): ikon merah, tombol primary, tampil paling atas di desktop */
   urgent?: boolean
+  /* Aksi utama tanpa status mendesak (mis. "Isi Presensi" tutor): tombol primary di desktop */
+  primary?: boolean
 }
 
 export type Person = {
