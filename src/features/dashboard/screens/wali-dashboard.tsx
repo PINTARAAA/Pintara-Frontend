@@ -280,13 +280,15 @@ function DesktopDashboard({ data }: { data: WaliDashboardData }) {
                 >
                   <Link
                     to="/wali/riwayat"
-                    className="group flex flex-col items-start gap-ns-2xs py-ns-l leading-normal outline-none focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
+                    className="group flex flex-col items-start gap-ns-s py-ns-l leading-normal outline-none focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
                   >
-                    <span className="text-body font-bold text-grayscale-text-title group-hover:underline">
-                      {item.subject} · {formatShortWeekdayDate(item.date)}
-                    </span>
-                    <span className="text-subtitle text-grayscale-text-subtitle">
-                      {item.topic}
+                    <span className="flex flex-col gap-ns-2xs">
+                      <span className="text-body font-bold text-grayscale-text-title group-hover:underline">
+                        {item.subject} · {formatShortWeekdayDate(item.date)}
+                      </span>
+                      <span className="text-subtitle text-grayscale-text-subtitle">
+                        {item.topic}
+                      </span>
                     </span>
                     <StatusBadge category="presensi" status={item.status} />
                   </Link>
@@ -364,13 +366,15 @@ function OngoingRegistrations({ variant }: { variant: "list" | "rows" }) {
             >
               <Link
                 to={to(r)}
-                className="group flex flex-col items-start gap-ns-2xs py-ns-l leading-normal outline-none focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
+                className="group flex flex-col items-start gap-ns-s py-ns-l leading-normal outline-none focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
               >
-                <span className="text-body font-bold text-grayscale-text-title group-hover:underline">
-                  {r.studentName}
-                </span>
-                <span className="text-subtitle text-grayscale-text-subtitle">
-                  {stage(r).description}
+                <span className="flex flex-col gap-ns-2xs">
+                  <span className="text-body font-bold text-grayscale-text-title group-hover:underline">
+                    {r.studentName}
+                  </span>
+                  <span className="text-subtitle text-grayscale-text-subtitle">
+                    {stage(r).description}
+                  </span>
                 </span>
                 <StatusBadge category="pendaftaran" status={stage(r).badge} />
               </Link>

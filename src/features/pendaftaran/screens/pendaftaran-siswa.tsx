@@ -14,10 +14,11 @@ import {
   toast,
 } from "@/components"
 import {
-  PendaftaranError,
+  alreadyRegisteredIdOf,
   pendaftaranDefaultsQuery,
   submitPendaftaran,
 } from "@/features/pendaftaran/api"
+import { applyFieldErrors, getErrorMessage, isApiError } from "@/lib/api"
 import type { PendaftaranResult } from "@/types/pendaftaran"
 import {
   PendaftaranBerhasil,
@@ -45,6 +46,7 @@ import {
  *   Field wajib kosong   → banner "Lengkapi n data wajib" + field merah
  *   Siswa sudah terdaftar → banner + aksi "Lihat status pendaftaran";
  *                           bilah aksi menjadi Kembali / Batalkan Pendaftaran
+ *   Validasi BE (422)     → error per field, pindah ke langkah field tsb.
  *   Gagal mengirim        → toast error, data tetap di formulir
  *
  * Desktop (≥ lg, frame "… (Desktop)"): Page header (kembali "Beranda" +
@@ -69,6 +71,8 @@ const STEP_DESCRIPTIONS = [
 ] as const
 
 const LAST_STEP = STEP_NAMES.length - 1
+
+const FORM_FIELDS = Object.keys(EMPTY_PENDAFTARAN) as (keyof PendaftaranInput)[]
 
 function PendaftaranSiswa() {
   const navigate = useNavigate()
@@ -95,6 +99,11 @@ function PendaftaranSiswa() {
   })
   const { errors } = form.formState
 
+  const goTo = (next: number) => {
+    setStep(next)
+    window.scrollTo({ top: 0 })
+  }
+
   const submit = useMutation({
     mutationFn: submitPendaftaran,
     /* Saat offline langsung gagal (toast) alih-alih menunggu koneksi diam-diam */
@@ -107,22 +116,35 @@ function PendaftaranSiswa() {
       window.scrollTo({ top: 0 })
     },
     onError: (error) => {
-      if (error instanceof PendaftaranError) {
-        setExistingId(error.registrationId ?? "")
+      const existing = alreadyRegisteredIdOf(error)
+      if (existing != null) {
+        setExistingId(existing)
         window.scrollTo({ top: 0, behavior: "smooth" })
-      } else {
-        toast.error("Pendaftaran gagal dikirim", {
-          description:
-            "Data Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
-        })
+        return
       }
+      if (
+        isApiError(error) &&
+        applyFieldErrors(error, form.setError, FORM_FIELDS)
+      ) {
+        const target = STEP_FIELDS.findIndex((fields) =>
+          fields.some((name) => name in error.fieldErrors)
+        )
+        setAttempted((prev) => {
+          const next = new Set(prev)
+          next.delete(target)
+          return next
+        })
+        goTo(target)
+        toast.error("Pendaftaran belum dapat dikirim", {
+          description: "Periksa kembali data yang ditandai merah.",
+        })
+        return
+      }
+      toast.error("Pendaftaran gagal dikirim", {
+        description: `${getErrorMessage(error)} Data Anda tetap tersimpan di formulir.`,
+      })
     },
   })
-
-  const goTo = (next: number) => {
-    setStep(next)
-    window.scrollTo({ top: 0 })
-  }
 
   const handleNext = async () => {
     setAttempted((prev) => new Set(prev).add(step))

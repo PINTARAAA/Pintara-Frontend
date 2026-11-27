@@ -17,9 +17,13 @@ export type Registration = {
   rejection?: { reason: string; rejectedAt: Date }
 }
 
-export type RegistrationLbbContact = { name: string; whatsapp: string }
+export type RegistrationLbbContact = {
+  name: string
+  whatsapp: string
+  display: string
+}
 
-export type PendaftaranErrorCode = "already_registered"
+export type PendaftaranDefaults = { parentName: string; parentPhone: string }
 
 export type PendaftaranResult = {
   id: string
