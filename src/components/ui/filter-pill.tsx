@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -8,7 +8,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 /*
  * FilterPill · "Filter / …" pada Riwayat Les (W7)
@@ -26,22 +26,25 @@ function FilterPill({
   onValueChange,
   triggerLabel,
   active: highlighted,
+  align = "start",
 }: {
   /* Nama aksesibel, mis. "Filter anak" */
-  label: string
-  menuLabel: string
-  value: string
-  options: { value: string; label: string }[]
-  onValueChange: (value: string) => void
-  triggerLabel?: string
-  active?: boolean
+  label: string;
+  menuLabel: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onValueChange: (value: string) => void;
+  triggerLabel?: string;
+  active?: boolean;
+  /* Perataan menu: "end" saat pil di kanan Page header desktop */
+  align?: "start" | "end";
 }) {
-  const active = options.find((o) => o.value === value) ?? options[0]
+  const active = options.find((o) => o.value === value) ?? options[0];
   const pill =
-    "inline-flex w-fit shrink-0 items-center gap-ns-s rounded-full border border-grayscale-border-default bg-grayscale-surface-default px-ns-m py-ns-s text-subtitle leading-normal font-bold text-grayscale-text-title"
+    "inline-flex w-fit shrink-0 items-center gap-ns-s rounded-full border border-grayscale-border-default bg-grayscale-surface-default px-ns-m py-ns-s text-subtitle leading-normal font-bold text-grayscale-text-title";
 
   if (options.length < 2) {
-    return <span className={pill}>{active?.label}</span>
+    return <span className={pill}>{active?.label}</span>;
   }
 
   return (
@@ -53,7 +56,7 @@ function FilterPill({
         {triggerLabel ?? active?.label}
         <ChevronDownIcon aria-hidden="true" className="size-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-auto min-w-48">
+      <DropdownMenuContent align={align} className="w-auto min-w-48">
         <DropdownMenuGroup>
           <DropdownMenuLabel>{menuLabel}</DropdownMenuLabel>
           <DropdownMenuRadioGroup
@@ -73,7 +76,7 @@ function FilterPill({
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
 
-export { FilterPill }
+export { FilterPill };
