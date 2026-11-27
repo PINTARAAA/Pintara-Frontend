@@ -130,6 +130,27 @@ export async function getRegistrationStatus(
   return { registration: registration ?? null, contact: LBB_CONTACT }
 }
 
+/*
+ * Pendaftaran yang masih diproses (menunggu verifikasi / pencocokan tutor),
+ * terbaru dulu — ditampilkan di Beranda agar wali bisa memantau statusnya.
+ * TODO(backend): httpClient.get("/wali/pendaftaran?status=berjalan")
+ */
+export async function getOngoingRegistrations(): Promise<Registration[]> {
+  assertMockAllowed()
+  await delay()
+  return registrations
+    .filter(
+      (r) => r.stage === "menunggu_verifikasi" || r.stage === "pencocokan_tutor"
+    )
+    .reverse()
+}
+
+export const ongoingRegistrationsQuery = () =>
+  queryOptions({
+    queryKey: ["pendaftaran", "status", "berjalan"],
+    queryFn: getOngoingRegistrations,
+  })
+
 export const registrationStatusQuery = (id?: string, example?: string) =>
   queryOptions({
     queryKey: ["pendaftaran", "status", id ?? "terbaru", example ?? null],

@@ -35,6 +35,10 @@ import { useUnreadNotifications } from "@/features/notifikasi/api"
  * Tab aktif disimpan di ?tab=riwayat agar tetap sama saat kembali dari detail.
  * Riwayat belum punya frame di Figma; memakai List item + Badge presensi
  * seperti "Riwayat sesi" di Beranda.
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): halaman putih, Page header "Validasi
+ * Absensi" (lonceng di sidebar), Tabs selebar 400px, daftar maks. 760px,
+ * jarak tab → isi 16. Kosong: kartu Data state 480px di tengah halaman.
  */
 type TabValue = "perlu-validasi" | "riwayat"
 
@@ -68,8 +72,10 @@ function ValidasiAbsensi() {
             unread={unreadNotifications}
           />
         }
+        desktopHeader="page"
+        className="lg:pt-ns-l"
         subheader={
-          <TabsList className="w-full border-b border-grayscale-border-default *:-mb-px">
+          <TabsList className="w-full border-b border-grayscale-border-default *:-mb-px lg:w-100">
             <TabsTrigger value="perlu-validasi">
               Perlu Validasi
               {data && data.pending.length > 0 && (
@@ -93,7 +99,7 @@ function ValidasiAbsensi() {
           <>
             <TabsContent value="perlu-validasi" className="flex flex-col">
               {data.pending.length > 0 ? (
-                <div className="flex flex-col gap-ns-m">
+                <div className="flex flex-col gap-ns-m lg:max-w-190 lg:gap-ns-l">
                   <p className="text-caption leading-normal text-grayscale-text-caption">
                     Periksa kehadiran setiap sesi. Sesi yang disetujui akan
                     dihitung pada rekap honor tutor.
@@ -124,14 +130,17 @@ function ValidasiAbsensi() {
 
             <TabsContent value="riwayat" className="flex flex-col">
               {data.history.length > 0 ? (
-                <DashboardList>
+                <DashboardList className="lg:max-w-190">
                   {data.history.map((session) => (
                     <ListItem
                       key={session.id}
                       title={`${session.subject} · ${formatShortWeekdayDate(session.start)}`}
                       description={`${who(session)}${session.topic}`}
                       badge={
-                        <StatusBadge category="presensi" status={session.status} />
+                        <StatusBadge
+                          category="presensi"
+                          status={session.status}
+                        />
                       }
                       render={<Link to={`/wali/absensi/${session.id}`} />}
                     />

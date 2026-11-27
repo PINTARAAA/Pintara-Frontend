@@ -36,6 +36,11 @@ import { formatDate, formatDateTime, firstName } from "@/lib/format"
  *   [banner hasil] · kartu siswa (nama, no. & tanggal kirim, badge, ringkasan)
  *   · kartu "Progres Pendaftaran" (Timeline) · [tombol Daftar Ulang]
  *
+ * Desktop (≥ lg, frame "… (Desktop)"): latar putih, Page header (kembali
+ *   "Beranda" + judul H3). Banner hasil selebar konten; di bawahnya kartu
+ *   Progres (kolom utama) dan kartu siswa 380px + [Daftar Ulang] di kanan,
+ *   jarak 32. Kosong: kartu Data state 480px di tengah berisi tombol.
+ *
  * ?id=… menampilkan pendaftaran tertentu; tanpa id → pendaftaran terbaru.
  */
 const BADGE: Record<RegistrationStage, StatusOf<"pendaftaran">> = {
@@ -74,7 +79,13 @@ function StatusPendaftaran() {
   const registration = query.data?.registration
 
   return (
-    <DetailScreen title="Status Pendaftaran">
+    <DetailScreen
+      title="Status Pendaftaran"
+      desktopHeader="page"
+      backLabel="Beranda"
+      desktopWidth="wide"
+      className="lg:flex-1 lg:gap-ns-3xl lg:pt-ns-3xl lg:pb-ns-4xl"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat status pendaftaran…" />
       ) : query.isError ? (
@@ -86,14 +97,27 @@ function StatusPendaftaran() {
         />
       ) : !registration ? (
         <div className="flex flex-1 flex-col justify-center gap-ns-l">
+          {/* Mobile: tombol di bawah kartu; desktop: tombol di dalam kartu */}
           <DataState
             state="empty"
             title="Belum ada pendaftaran"
             description="Daftarkan siswa untuk mulai les privat di LBB Jelajah Ilmu."
+            className="lg:hidden"
+          />
+          <DataState
+            state="empty"
+            title="Belum ada pendaftaran"
+            description="Daftarkan siswa untuk mulai les privat di LBB Jelajah Ilmu."
+            action={{
+              label: "Daftar Siswa Baru",
+              onClick: () => navigate("/wali/pendaftaran"),
+            }}
+            className="hidden lg:flex"
           />
           <Button
             nativeButton={false}
             render={<Link to="/wali/pendaftaran" />}
+            className="lg:hidden"
           >
             Daftar Siswa Baru
           </Button>
@@ -105,16 +129,29 @@ function StatusPendaftaran() {
             contact={query.data.contact}
             onOpenSchedule={() => navigate("/wali/jadwal")}
           />
-          <StudentCard registration={registration} />
-          <ProgressCard registration={registration} />
-          {registration.stage === "ditolak" && (
-            <Button
-              nativeButton={false}
-              render={<Link to="/wali/pendaftaran" />}
-            >
-              Daftar Ulang
-            </Button>
-          )}
+          {/*
+           * Mobile: urutan DOM (siswa · progres · tombol). Desktop: grid,
+           * progres di kolom kiri membentang dua baris; siswa + tombol kanan.
+           */}
+          <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_23.75rem] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-ns-3xl lg:gap-y-ns-l">
+            <StudentCard
+              registration={registration}
+              className="lg:col-start-2 lg:row-start-1"
+            />
+            <ProgressCard
+              registration={registration}
+              className="lg:col-start-1 lg:row-span-2 lg:row-start-1"
+            />
+            {registration.stage === "ditolak" && (
+              <Button
+                nativeButton={false}
+                render={<Link to="/wali/pendaftaran" />}
+                className="lg:col-start-2 lg:row-start-2"
+              >
+                Daftar Ulang
+              </Button>
+            )}
+          </div>
         </>
       )}
     </DetailScreen>
@@ -163,9 +200,15 @@ function ResultBanner({
 }
 
 /* Kartu siswa: nama, no. pendaftaran · tanggal kirim, badge, ringkasan */
-function StudentCard({ registration }: { registration: Registration }) {
+function StudentCard({
+  registration,
+  className,
+}: {
+  registration: Registration
+  className?: string
+}) {
   return (
-    <Card size="compact">
+    <Card size="compact" className={className}>
       <CardHeader>
         <CardTitle>{registration.studentName}</CardTitle>
         <CardDescription>
@@ -173,7 +216,10 @@ function StudentCard({ registration }: { registration: Registration }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <StatusBadge category="pendaftaran" status={BADGE[registration.stage]} />
+        <StatusBadge
+          category="pendaftaran"
+          status={BADGE[registration.stage]}
+        />
         <dl className="flex flex-col gap-ns-m">
           <SummaryRow label="Mata pelajaran" labelClassName="w-[100px]">
             {registration.subjects.join(", ")}
@@ -188,7 +234,13 @@ function StudentCard({ registration }: { registration: Registration }) {
 }
 
 /* Kartu "Progres Pendaftaran": langkah Timeline sesuai tahap */
-function ProgressCard({ registration }: { registration: Registration }) {
+function ProgressCard({
+  registration,
+  className,
+}: {
+  registration: Registration
+  className?: string
+}) {
   const {
     stage,
     submittedAt,
@@ -202,7 +254,7 @@ function ProgressCard({ registration }: { registration: Registration }) {
   const matched = stage === "selesai"
 
   return (
-    <Card size="compact">
+    <Card size="compact" className={className}>
       <CardHeader>
         <CardTitle>Progres Pendaftaran</CardTitle>
       </CardHeader>

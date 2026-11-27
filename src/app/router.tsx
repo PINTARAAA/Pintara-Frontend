@@ -377,7 +377,7 @@ const PLACEHOLDER_DETAILS: RouteObject[] = [
 
 /* Route satu peran: semua layarnya di dalam AppShell */
 function roleRoutes(role: Role): RouteObject {
-  const { main, utility } = ROLE_NAV[role]
+  const { main, utility, sidebarExtra } = ROLE_NAV[role]
   const sidebar = ROLE_SIDEBAR[role]
   const [home, ...tabs] = [...main, ...utility]
   const extras = EXTRA_ROUTES[role] ?? []
@@ -387,6 +387,9 @@ function roleRoutes(role: Role): RouteObject {
       <AppShell
         items={main}
         utilityItems={utility}
+        sidebarItems={[...main, ...(sidebarExtra?.main ?? [])]}
+        /* Notifikasi di atas Akun, sesuai urutan Figma */
+        sidebarUtilityList={[...(sidebarExtra?.utility ?? []), ...utility]}
         sidebarGroups={sidebar?.groups}
         sidebarUtilityItems={sidebar?.utility}
         sidebarFooter={

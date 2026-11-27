@@ -32,7 +32,7 @@ function StepJadwalBelajar() {
           control={control}
           name="days"
           render={({ field }) => (
-            <div className="grid grid-cols-2 gap-x-ns-m gap-y-ns-l">
+            <div className="grid grid-cols-2 gap-x-ns-m gap-y-ns-l lg:grid-cols-6 lg:gap-x-ns-2xl">
               {DAY_OPTIONS.map((day, i) => (
                 <Checkbox
                   key={day}
@@ -64,7 +64,8 @@ function StepJadwalBelajar() {
         title="Waktu belajar *"
         description={`Jam mulai yang diinginkan. Durasi standar ${SESSION_MINUTES} menit per sesi.`}
       >
-        <Field>
+        {/* Desktop: setengah lebar kolom (Figma: Jam mulai + Spacer) */}
+        <Field className="lg:w-[calc(50%-var(--spacing-ns-m))]">
           <FieldLabel htmlFor="startTime" required>
             Jam mulai
           </FieldLabel>
@@ -87,7 +88,9 @@ function StepJadwalBelajar() {
             )}
           />
           {errors.startTime && (
-            <FieldError id="startTime-error">{errors.startTime.message}</FieldError>
+            <FieldError id="startTime-error">
+              {errors.startTime.message}
+            </FieldError>
           )}
         </Field>
       </FormGroup>

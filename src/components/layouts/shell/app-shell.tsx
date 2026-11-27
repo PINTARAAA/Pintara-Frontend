@@ -71,6 +71,8 @@ function SideItem({ item }: { item: NavItem }) {
 function AppShell({
   items,
   utilityItems = [],
+  sidebarItems = items,
+  sidebarUtilityList = utilityItems,
   sidebarGroups,
   sidebarUtilityItems,
   sidebarFooter,
@@ -79,6 +81,13 @@ function AppShell({
   items: NavItem[]
   /* Menu utilitas (Akun, Lainnya): grup bawah Sidebar, akhir BottomNavigation */
   utilityItems?: NavItem[]
+  /*
+   * Opsional, khusus sidebar desktop (tanpa grup): menu utama & utilitas bila
+   * berbeda dari bottom navigation, mis. wali menambah "Riwayat les" dan
+   * "Notifikasi". Default: `items` / `utilityItems`.
+   */
+  sidebarItems?: NavItem[]
+  sidebarUtilityList?: NavItem[]
   /*
    * Opsional, khusus desktop: menu sidebar berkelompok (Figma → Sidebar /
    * Pengelola) menggantikan `items` + `utilityItems` di sidebar. Tanpa
@@ -133,13 +142,13 @@ function AppShell({
         <Sidebar className="hidden lg:sticky lg:top-0 lg:flex lg:h-dvh">
           <SidebarBrand />
           <SidebarNav aria-label="Menu utama" className="flex-1">
-            {items.map((item) => (
+            {sidebarItems.map((item) => (
               <SideItem key={item.to} item={item} />
             ))}
           </SidebarNav>
-          {utilityItems.length > 0 && (
+          {sidebarUtilityList.length > 0 && (
             <SidebarNav aria-label="Menu lainnya">
-              {utilityItems.map((item) => (
+              {sidebarUtilityList.map((item) => (
                 <SideItem key={item.to} item={item} />
               ))}
             </SidebarNav>

@@ -35,10 +35,12 @@ import type {
  * menandainya dibaca lalu membuka layar terkait. Tombol centang di top app
  * bar menandai semua dibaca (tampil bila ada yang baru).
  *
- * `desktopPage` (P14 · pengelola, Figma "Notifikasi / Pengelola (Desktop)"):
- * Page header tanpa tautan kembali (Notifikasi ada di sidebar), "Tandai
- * semua dibaca" sebagai tombol teks di kanan header, daftar selebar 768px.
- * Tanpa `desktopPage` (wali · tutor) tampilan desktop tidak berubah.
+ * `desktopPage` (W9 · wali dan P14 · pengelola, Figma "Notifikasi / …
+ * (Desktop)"): Page header tanpa tautan kembali (Notifikasi ada di sidebar),
+ * "Tandai semua dibaca" sebagai tombol teks di kanan header, daftar selebar
+ * 768px. Kosong ("- Kosong (Desktop)"): kartu Data state 480px di tengah
+ * area konten, horizontal dan vertikal.
+ * Tanpa `desktopPage` (tutor) tampilan desktop tidak berubah.
  */
 
 /* "2 jam lalu" · "12 menit lalu" · "08.00" (hari ini) · "8 Okt" */
@@ -105,6 +107,7 @@ function NotificationScreen<Kind extends string>({
   )
 
   const hasUnread = !!data && data.unread.length > 0
+  const isEmpty = !!data && data.unread.length + data.read.length === 0
 
   return (
     <DetailScreen
@@ -113,6 +116,11 @@ function NotificationScreen<Kind extends string>({
       {...(desktopPage && {
         backLabel: null,
         desktopHeader: "page" as const,
+        /* Kosong: isi mengisi sisa halaman agar kartu tepat di tengah */
+        ...(isEmpty && {
+          desktopWidth: "wide" as const,
+          className: "gap-ns-2xl lg:flex-1",
+        }),
         desktopHeaderActions: hasUnread ? (
           <Button
             variant="tertiary"
@@ -148,7 +156,7 @@ function NotificationScreen<Kind extends string>({
           description="Periksa koneksi Anda, lalu coba lagi."
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
-      ) : data && data.unread.length + data.read.length > 0 ? (
+      ) : data && !isEmpty ? (
         <>
           {data.unread.length > 0 && (
             <DashboardSection title="Baru">

@@ -26,6 +26,10 @@ import type { Bill } from "@/types/tagihan"
  * W6 · Tagihan / Detail · kartu tagihan (periode, no. invoice · siswa,
  * badge, sisa H4, jatuh tempo) dan kartu "Rincian Biaya". Bilah aksi
  * "Bayar Rp…" selama belum lunas.
+ *
+ * Desktop (≥ lg, frame "Detail (Desktop)"): Page header (kembali "Tagihan",
+ * judul "Detail Tagihan") dengan tombol Bayar di kanan; dua kartu
+ * berdampingan (gap 24, sama tinggi).
  */
 function DetailTagihan() {
   const { billId = "" } = useParams()
@@ -37,6 +41,11 @@ function DetailTagihan() {
   return (
     <DetailScreen
       title="Detail Tagihan"
+      desktopHeader="page"
+      backLabel="Tagihan"
+      desktopWidth="wide"
+      desktopActions="header"
+      className="lg:pt-ns-3xl"
       footer={
         bill &&
         remaining > 0 && (
@@ -71,10 +80,10 @@ function DetailTagihan() {
           />
         )
       ) : bill ? (
-        <>
+        <div className="contents lg:grid lg:grid-cols-2 lg:gap-ns-2xl">
           <BillCard bill={bill} />
           <CostBreakdown bill={bill} />
-        </>
+        </div>
       ) : null}
     </DetailScreen>
   )
@@ -132,7 +141,10 @@ function CostBreakdown({ bill }: { bill: Bill }) {
               </dd>
             </div>
           ))}
-          <div aria-hidden="true" className="h-px bg-grayscale-border-disabled" />
+          <div
+            aria-hidden="true"
+            className="h-px bg-grayscale-border-disabled"
+          />
           <div className={row}>
             <dt className={label}>Total tagihan</dt>
             <dd className={value}>{formatRupiah(bill.total)}</dd>

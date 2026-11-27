@@ -9,6 +9,8 @@ import {
   AlertBanner,
   Button,
   ProgressStepper,
+  Timeline,
+  TimelineItem,
   toast,
 } from "@/components"
 import {
@@ -44,12 +46,26 @@ import {
  *   Siswa sudah terdaftar → banner + aksi "Lihat status pendaftaran";
  *                           bilah aksi menjadi Kembali / Batalkan Pendaftaran
  *   Gagal mengirim        → toast error, data tetap di formulir
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): Page header (kembali "Beranda" +
+ *   judul H3), Progress stepper diganti judul langkah "Langkah n dari 4" +
+ *   nama langkah (Headline) di kolom formulir; tombol rata kanan di bawah
+ *   garis pemisah pada akhir kolom formulir. Kolom samping 300px bergaris
+ *   kiri berisi timeline "Langkah pendaftaran".
  */
 const STEP_NAMES = [
   "Data Wali & Siswa",
   "Kebutuhan Belajar",
   "Jadwal Belajar",
   "Ringkasan",
+] as const
+
+/* Keterangan tiap langkah di timeline "Langkah pendaftaran" (desktop) */
+const STEP_DESCRIPTIONS = [
+  "Identitas wali dan siswa",
+  "Mata pelajaran dan frekuensi les",
+  "Hari dan jam yang diinginkan",
+  "Periksa data, lalu kirim",
 ] as const
 
 const LAST_STEP = STEP_NAMES.length - 1
@@ -84,7 +100,9 @@ function PendaftaranSiswa() {
     /* Saat offline langsung gagal (toast) alih-alih menunggu koneksi diam-diam */
     networkMode: "always",
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: ["pendaftaran", "status"] })
+      void queryClient.invalidateQueries({
+        queryKey: ["pendaftaran", "status"],
+      })
       setResult(data)
       window.scrollTo({ top: 0 })
     },
@@ -164,6 +182,11 @@ function PendaftaranSiswa() {
       title="Daftar Siswa Baru"
       surface="default"
       onBack={handleBack}
+      desktopHeader="page"
+      backLabel="Beranda"
+      desktopWidth="wide"
+      desktopActions="none"
+      desktopSubheader="hidden"
       subheader={
         <ProgressStepper
           step={step + 1}
@@ -172,49 +195,86 @@ function PendaftaranSiswa() {
         />
       }
       footer={footer}
-      className="gap-ns-2xl pt-ns-2xl"
+      className="gap-ns-2xl pt-ns-2xl lg:flex-1 lg:pt-ns-3xl lg:pb-ns-4xl"
     >
-      <FormProvider {...form}>
-        <form
-          noValidate
-          aria-label="Formulir pendaftaran siswa"
-          onSubmit={(e) => e.preventDefault()}
-          className="contents"
-        >
-          {showMissingBanner && (
-            <AlertBanner
-              status="error"
-              title={
-                missingCount > 1
-                  ? `Lengkapi ${missingCount} data wajib`
-                  : "Lengkapi data wajib"
-              }
-              description="Data yang belum diisi ditandai merah. Data lain yang sudah diisi tetap tersimpan."
-            />
-          )}
-          {step === LAST_STEP && alreadyRegistered && (
-            <AlertBanner
-              status="error"
-              title="Siswa sudah terdaftar"
-              description={`${form.getValues("studentName")} (${form.getValues("grade")}) sudah memiliki pendaftaran aktif. Data tidak disimpan.`}
-              action={{
-                label: "Lihat status pendaftaran",
-                onClick: () =>
-                  navigate(
-                    existingId
-                      ? `/wali/pendaftaran/status?id=${encodeURIComponent(existingId)}`
-                      : "/wali/pendaftaran/status"
-                  ),
-              }}
-            />
-          )}
+      <div className="contents lg:grid lg:flex-1 lg:grid-cols-[minmax(0,1fr)_18.75rem] lg:gap-ns-4xl">
+        <FormProvider {...form}>
+          <form
+            noValidate
+            aria-label="Formulir pendaftaran siswa"
+            onSubmit={(e) => e.preventDefault()}
+            className="contents lg:flex lg:flex-col lg:gap-ns-3xl"
+          >
+            <div className="hidden flex-col gap-ns-2xs font-bold lg:flex">
+              <p className="text-subtitle leading-normal text-primary-text-primary">
+                Langkah {step + 1} dari {STEP_NAMES.length}
+              </p>
+              <h2 className="text-headline text-grayscale-text-title">
+                {STEP_NAMES[step]}
+              </h2>
+            </div>
 
-          {step === 0 && <StepDataSiswa />}
-          {step === 1 && <StepKebutuhanBelajar />}
-          {step === 2 && <StepJadwalBelajar />}
-          {step === 3 && <StepRingkasan showIntro={!alreadyRegistered} />}
-        </form>
-      </FormProvider>
+            {showMissingBanner && (
+              <AlertBanner
+                status="error"
+                title={
+                  missingCount > 1
+                    ? `Lengkapi ${missingCount} data wajib`
+                    : "Lengkapi data wajib"
+                }
+                description="Data yang belum diisi ditandai merah. Data lain yang sudah diisi tetap tersimpan."
+              />
+            )}
+            {step === LAST_STEP && alreadyRegistered && (
+              <AlertBanner
+                status="error"
+                title="Siswa sudah terdaftar"
+                description={`${form.getValues("studentName")} (${form.getValues("grade")}) sudah memiliki pendaftaran aktif. Data tidak disimpan.`}
+                action={{
+                  label: "Lihat status pendaftaran",
+                  onClick: () =>
+                    navigate(
+                      existingId
+                        ? `/wali/pendaftaran/status?id=${encodeURIComponent(existingId)}`
+                        : "/wali/pendaftaran/status"
+                    ),
+                }}
+              />
+            )}
+
+            {step === 0 && <StepDataSiswa />}
+            {step === 1 && <StepKebutuhanBelajar />}
+            {step === 2 && <StepJadwalBelajar />}
+            {step === 3 && <StepRingkasan showIntro={!alreadyRegistered} />}
+
+            <div className="mt-auto hidden justify-end gap-ns-m border-t border-grayscale-border-default pt-ns-2xl lg:flex">
+              {footer}
+            </div>
+          </form>
+        </FormProvider>
+
+        <aside
+          aria-labelledby="langkah-pendaftaran"
+          className="hidden flex-col gap-ns-l border-l border-grayscale-border-default pl-ns-4xl lg:flex"
+        >
+          <h2
+            id="langkah-pendaftaran"
+            className="text-body leading-normal font-bold text-grayscale-text-title"
+          >
+            Langkah pendaftaran
+          </h2>
+          <Timeline>
+            {STEP_NAMES.map((name, i) => (
+              <TimelineItem
+                key={name}
+                state={i < step ? "done" : i === step ? "current" : "upcoming"}
+                title={name}
+                description={STEP_DESCRIPTIONS[i]}
+              />
+            ))}
+          </Timeline>
+        </aside>
+      </div>
     </DetailScreen>
   )
 }

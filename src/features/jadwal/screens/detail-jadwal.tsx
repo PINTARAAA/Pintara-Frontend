@@ -25,6 +25,10 @@ import { formatDate } from "@/lib/format"
  * catatan, dan bilah aksi "Ajukan Perubahan Jadwal" (Secondary).
  * Bila sudah ada pengajuan yang diproses, tampil banner info dan tombol
  * mengarah ke pengajuan tersebut (satu pengajuan aktif per jadwal).
+ *
+ * Desktop (≥ lg, frame "Detail (Desktop)"): Page header — kembali "Jadwal
+ * Les", judul "Mapel · setiap Hari" (H3), keterangan jam · sejak, tombol
+ * aksi di kanan; kartu judul disembunyikan. Isi selebar 720px, gap 16.
  */
 function DetailJadwal() {
   const { routineId = "" } = useParams()
@@ -35,6 +39,18 @@ function DetailJadwal() {
   return (
     <DetailScreen
       title="Detail Jadwal"
+      desktopHeader="page"
+      backLabel="Jadwal Les"
+      desktopWidth="wide"
+      desktopActions="header"
+      desktopTitle={
+        routine && `${routine.subject} · setiap ${WEEKDAYS[routine.weekday]}`
+      }
+      desktopDescription={
+        routine &&
+        `${formatTimeSlot(routine.startTime, routine.durationMinutes)} · berjalan sejak ${formatDate(routine.since)}`
+      }
+      className="lg:pt-ns-3xl"
       footer={
         routine &&
         (routine.pendingRequest ? (
@@ -42,7 +58,9 @@ function DetailJadwal() {
             variant="secondary"
             nativeButton={false}
             render={
-              <Link to={`/wali/jadwal/pengajuan/${routine.pendingRequest.id}`} />
+              <Link
+                to={`/wali/jadwal/pengajuan/${routine.pendingRequest.id}`}
+              />
             }
           >
             Lihat Pengajuan
@@ -80,8 +98,8 @@ function DetailJadwal() {
           />
         )
       ) : routine ? (
-        <>
-          <Card size="compact">
+        <div className="contents lg:flex lg:max-w-180 lg:flex-col lg:gap-ns-l">
+          <Card size="compact" className="lg:hidden">
             <CardHeader className="gap-ns-2xs">
               <CardTitle>
                 {routine.subject} · setiap {WEEKDAYS[routine.weekday]}
@@ -126,7 +144,7 @@ function DetailJadwal() {
               akan mengonfirmasinya dengan tutor.
             </p>
           )}
-        </>
+        </div>
       ) : null}
     </DetailScreen>
   )

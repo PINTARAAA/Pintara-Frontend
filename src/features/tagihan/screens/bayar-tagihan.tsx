@@ -13,6 +13,8 @@ import {
   CardHeader,
   CardTitle,
   DataState,
+  PageHeader,
+  RESULT_BUTTON_DESKTOP,
   Field,
   FieldDescription,
   FieldError,
@@ -41,6 +43,12 @@ import type { Bill, PaymentResult } from "@/types/tagihan"
  * Nominal: bayar penuh (sisa tagihan) atau sebagian (min. Rp10.000, maks.
  * sisa tagihan). Pembayaran diteruskan ke payment gateway; selama menunggu
  * konfirmasi tampil layar "Memproses" tanpa top app bar.
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): Pilih nominal = Page header (kembali
+ * "Detail Tagihan"), kolom formulir (pilihan nominal berdampingan, tombol
+ * Batal + Lanjut di bawah garis) dan banner info di kolom samping 340px.
+ * Memproses & hasil: Page header "Pembayaran" tanpa tautan kembali, isi
+ * 560px di tengah, tombol hasil berukuran medium berdampingan.
  */
 const MIN_PARTIAL = 10_000
 
@@ -77,7 +85,8 @@ function BayarTagihan() {
     onError: () => {
       setStage({ name: "form" })
       toast.error("Pembayaran gagal dimulai", {
-        description: "Periksa koneksi lalu coba lagi. Tidak ada dana yang ditarik.",
+        description:
+          "Periksa koneksi lalu coba lagi. Tidak ada dana yang ditarik.",
       })
     },
   })
@@ -87,17 +96,21 @@ function BayarTagihan() {
   if (stage.name === "processing") {
     return (
       <div className="flex flex-1 flex-col bg-grayscale-surface-default">
-      <main className="mx-auto flex w-full max-w-120 flex-1 flex-col items-center justify-center gap-ns-l px-ns-2xl py-ns-3xl">
-        <DataState
-          state="loading"
-          loadingLabel="Memeriksa status pembayaran…"
-          aria-live="polite"
+        <PageHeader
+          className="hidden px-ns-4xl pt-ns-3xl lg:flex"
+          title="Pembayaran"
         />
-        <p className="text-center text-caption leading-normal text-grayscale-text-caption">
-          Mohon tunggu, jangan tutup halaman ini. Kami sedang menerima
-          konfirmasi dari payment gateway.
-        </p>
-      </main>
+        <main className="mx-auto flex w-full max-w-120 flex-1 flex-col items-center justify-center gap-ns-l px-ns-2xl py-ns-3xl lg:max-w-140 lg:px-0 lg:pb-ns-4xl">
+          <DataState
+            state="loading"
+            loadingLabel="Memeriksa status pembayaran…"
+            aria-live="polite"
+          />
+          <p className="text-center text-caption leading-normal text-grayscale-text-caption">
+            Mohon tunggu, jangan tutup halaman ini. Kami sedang menerima
+            konfirmasi dari payment gateway.
+          </p>
+        </main>
       </div>
     )
   }
@@ -107,7 +120,9 @@ function BayarTagihan() {
       <PaymentResultScreen
         result={stage.result}
         onRetry={() => setStage({ name: "form" })}
-        onViewBill={() => navigate(`/wali/tagihan/${billId}`, { replace: true })}
+        onViewBill={() =>
+          navigate(`/wali/tagihan/${billId}`, { replace: true })
+        }
         onBack={backToBills}
       />
     )
@@ -137,7 +152,9 @@ function BayarTagihan() {
       ) : (
         <DataState
           state="empty"
-          title={query.isError ? "Tagihan tidak ditemukan" : "Tagihan sudah lunas"}
+          title={
+            query.isError ? "Tagihan tidak ditemukan" : "Tagihan sudah lunas"
+          }
           description="Tidak ada sisa tagihan yang perlu dibayar."
           action={{ label: "Kembali ke Tagihan", onClick: backToBills }}
         />
@@ -159,6 +176,7 @@ function PaymentForm({
   submitting: boolean
   onSubmit: (amount: number) => void
 }) {
+  const navigate = useNavigate()
   const remaining = remainingOf(bill)
   const [mode, setMode] = React.useState<"penuh" | "sebagian">("penuh")
   const [partial, setPartial] = React.useState(0)
@@ -167,7 +185,8 @@ function PaymentForm({
 
   const validate = (amount: number) => {
     if (amount === 0) return "Nominal yang dibayar wajib diisi."
-    if (amount < MIN_PARTIAL) return `Nominal minimal ${formatRupiah(MIN_PARTIAL)}.`
+    if (amount < MIN_PARTIAL)
+      return `Nominal minimal ${formatRupiah(MIN_PARTIAL)}.`
     if (amount > remaining)
       return `Nominal melebihi sisa tagihan ${formatRupiah(remaining)}.`
     return null
@@ -185,80 +204,99 @@ function PaymentForm({
     <DetailScreen
       title="Pembayaran"
       surface="default"
-      className="gap-ns-2xl"
+      desktopHeader="page"
+      backLabel="Detail Tagihan"
+      desktopWidth="wide"
+      desktopActions="none"
+      className="gap-ns-2xl lg:pt-ns-3xl"
       footer={
         <Button onClick={handleSubmit} disabled={submitting}>
           Lanjut ke Pembayaran
         </Button>
       }
     >
-      <div className="flex flex-col gap-ns-2xs rounded-(--comp-radius-md) bg-grayscale-surface-subtitle px-ns-l py-ns-m leading-normal">
-        <p className="text-caption text-grayscale-text-caption">
-          Tagihan {formatPeriod(bill.period)} · {bill.studentName}
-        </p>
-        <p className="text-body font-bold text-grayscale-text-title">
-          Sisa tagihan {formatRupiah(remaining)}
-        </p>
-      </div>
+      <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_21.25rem] lg:items-start lg:gap-ns-4xl">
+        <div className="contents lg:flex lg:flex-col lg:gap-ns-2xl">
+          <div className="flex flex-col gap-ns-2xs rounded-(--comp-radius-md) bg-grayscale-surface-subtitle px-ns-l py-ns-m leading-normal">
+            <p className="text-caption text-grayscale-text-caption">
+              Tagihan {formatPeriod(bill.period)} · {bill.studentName}
+            </p>
+            <p className="text-body font-bold text-grayscale-text-title">
+              Sisa tagihan {formatRupiah(remaining)}
+            </p>
+          </div>
 
-      <fieldset className="flex min-w-0 flex-col gap-ns-l">
-        <legend className="mb-ns-l text-body leading-normal font-bold text-grayscale-text-title">
-          Nominal pembayaran
-        </legend>
-        <RadioGroup
-          value={mode}
-          onValueChange={(v) => {
-            setMode(v as typeof mode)
-            setError(null)
-            if (v === "sebagian") requestAnimationFrame(() => inputRef.current?.focus())
-          }}
-          className="gap-ns-l"
-        >
-          <RadioGroupItem
-            value="penuh"
-            label={`Bayar penuh · ${formatRupiah(remaining)}`}
-          />
-          <RadioGroupItem value="sebagian" label="Bayar sebagian" />
-        </RadioGroup>
-
-        {mode === "sebagian" && (
-          <Field>
-            <FieldLabel htmlFor="amount" required>
-              Nominal yang dibayar
-            </FieldLabel>
-            <Input
-              id="amount"
-              ref={inputRef}
-              inputMode="numeric"
-              autoComplete="off"
-              placeholder="Contoh: Rp200.000"
-              value={partial > 0 ? formatRupiah(partial) : ""}
-              onChange={(e) => {
-                const amount = digitsOnly(e.target.value)
-                setPartial(amount)
-                if (error) setError(validate(amount))
+          <fieldset className="flex min-w-0 flex-col gap-ns-l">
+            <legend className="mb-ns-l text-body leading-normal font-bold text-grayscale-text-title">
+              Nominal pembayaran
+            </legend>
+            <RadioGroup
+              value={mode}
+              onValueChange={(v) => {
+                setMode(v as typeof mode)
+                setError(null)
+                if (v === "sebagian")
+                  requestAnimationFrame(() => inputRef.current?.focus())
               }}
-              onBlur={() => partial > 0 && setError(validate(partial))}
-              aria-invalid={error ? true : undefined}
-              aria-describedby={error ? "amount-error" : undefined}
-            />
-            {error ? (
-              <FieldError id="amount-error">{error}</FieldError>
-            ) : (
-              <FieldDescription>
-                Maksimal {formatRupiah(remaining)} (sisa tagihan). Sisa akan
-                tetap tercatat.
-              </FieldDescription>
-            )}
-          </Field>
-        )}
-      </fieldset>
+              className="gap-ns-l lg:grid-cols-2 lg:gap-ns-2xl"
+            >
+              <RadioGroupItem
+                value="penuh"
+                label={`Bayar penuh · ${formatRupiah(remaining)}`}
+              />
+              <RadioGroupItem value="sebagian" label="Bayar sebagian" />
+            </RadioGroup>
 
-      <AlertBanner
-        status="info"
-        title="Pembayaran melalui payment gateway"
-        description="Anda akan diarahkan ke halaman pembayaran untuk memilih QRIS, virtual account, atau e-wallet."
-      />
+            {mode === "sebagian" && (
+              <Field>
+                <FieldLabel htmlFor="amount" required>
+                  Nominal yang dibayar
+                </FieldLabel>
+                <Input
+                  id="amount"
+                  ref={inputRef}
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="Contoh: Rp200.000"
+                  value={partial > 0 ? formatRupiah(partial) : ""}
+                  onChange={(e) => {
+                    const amount = digitsOnly(e.target.value)
+                    setPartial(amount)
+                    if (error) setError(validate(amount))
+                  }}
+                  onBlur={() => partial > 0 && setError(validate(partial))}
+                  aria-invalid={error ? true : undefined}
+                  aria-describedby={error ? "amount-error" : undefined}
+                />
+                {error ? (
+                  <FieldError id="amount-error">{error}</FieldError>
+                ) : (
+                  <FieldDescription>
+                    Maksimal {formatRupiah(remaining)} (sisa tagihan). Sisa akan
+                    tetap tercatat.
+                  </FieldDescription>
+                )}
+              </Field>
+            )}
+          </fieldset>
+
+          <div className="hidden justify-end gap-ns-m border-t border-grayscale-border-default pt-ns-2xl lg:flex">
+            <Button variant="secondary" onClick={() => navigate(-1)}>
+              Batal
+            </Button>
+            <Button onClick={handleSubmit} disabled={submitting}>
+              Lanjut ke Pembayaran
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile: setelah formulir; desktop: kolom samping */}
+        <AlertBanner
+          status="info"
+          title="Pembayaran melalui payment gateway"
+          description="Anda akan diarahkan ke halaman pembayaran untuk memilih QRIS, virtual account, atau e-wallet."
+        />
+      </div>
     </DetailScreen>
   )
 }
@@ -290,10 +328,15 @@ function PaymentResultScreen({
       <ResultScreen
         status="error"
         title="Pembayaran gagal"
+        pageTitle="Pembayaran"
         description="Transaksi kedaluwarsa atau dibatalkan. Tidak ada dana yang ditarik dan status tagihan tidak berubah."
         footer={
           <>
-            <Button size="lg" onClick={onRetry}>
+            <Button
+              size="lg"
+              onClick={onRetry}
+              className={RESULT_BUTTON_DESKTOP}
+            >
               Coba Bayar Lagi
             </Button>
             {backButton}
@@ -322,11 +365,16 @@ function PaymentResultScreen({
     return (
       <ResultScreen
         title="Pembayaran diterima"
+        pageTitle="Pembayaran"
         highlight={formatRupiah(payment.amount)}
         description={`Sisa tagihan ${period} sebesar ${formatRupiah(remaining)} tetap dapat dibayar sebelum ${formatDate(bill.dueDate)}.`}
         footer={
           <>
-            <Button size="lg" onClick={onRetry}>
+            <Button
+              size="lg"
+              onClick={onRetry}
+              className={RESULT_BUTTON_DESKTOP}
+            >
               Bayar Sisa Tagihan
             </Button>
             {backButton}
@@ -354,11 +402,16 @@ function PaymentResultScreen({
   return (
     <ResultScreen
       title="Pembayaran berhasil"
+      pageTitle="Pembayaran"
       highlight={formatRupiah(payment.amount)}
       description={`Tagihan ${period} untuk ${bill.studentName} sudah lunas.`}
       footer={
         <>
-          <Button size="lg" onClick={onViewBill}>
+          <Button
+            size="lg"
+            onClick={onViewBill}
+            className={RESULT_BUTTON_DESKTOP}
+          >
             Lihat Detail Tagihan
           </Button>
           {backButton}

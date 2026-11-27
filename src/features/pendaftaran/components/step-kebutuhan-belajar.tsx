@@ -33,7 +33,8 @@ function StepKebutuhanBelajar() {
           control={control}
           name="subjects"
           render={({ field }) => (
-            <>
+            /* Desktop: tiga kolom (Figma "Row" × 2) */
+            <div className="contents lg:grid lg:grid-cols-3 lg:gap-x-ns-2xl lg:gap-y-ns-l">
               {SUBJECT_OPTIONS.map((subject, i) => (
                 <Checkbox
                   key={subject}
@@ -53,7 +54,7 @@ function StepKebutuhanBelajar() {
                   }}
                 />
               ))}
-            </>
+            </div>
           )}
         />
         {errors.subjects && (
@@ -71,13 +72,15 @@ function StepKebutuhanBelajar() {
           render={({ field }) => (
             <RadioGroup
               aria-label="Frekuensi les"
-              aria-describedby={errors.frequency ? "frequency-error" : undefined}
+              aria-describedby={
+                errors.frequency ? "frequency-error" : undefined
+              }
               value={field.value || null}
               onValueChange={(v) => {
                 field.onChange(v as string)
                 field.onBlur()
               }}
-              className="gap-ns-l"
+              className="gap-ns-l lg:grid lg:grid-cols-3 lg:gap-x-ns-2xl"
             >
               {FREQUENCY_OPTIONS.map((option, i) => (
                 <RadioGroupItem
@@ -92,7 +95,9 @@ function StepKebutuhanBelajar() {
           )}
         />
         {errors.frequency && (
-          <FieldError id="frequency-error">{errors.frequency.message}</FieldError>
+          <FieldError id="frequency-error">
+            {errors.frequency.message}
+          </FieldError>
         )}
       </FormGroup>
 

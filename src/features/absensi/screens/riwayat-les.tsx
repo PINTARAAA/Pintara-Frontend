@@ -26,6 +26,11 @@ import { cn } from "@/lib/styles"
  * terlaksana, sisa jadwal bulan ini, jumlah per mapel) → "Riwayat sesi"
  * (List item tanpa ikon + Badge presensi; sesi batal tanpa badge).
  * Filter disimpan di ?siswa=…&bulan=YYYY-MM.
+ *
+ * Desktop (≥ lg, frame "Riwayat Les / Wali (Desktop)"): halaman putih,
+ * Page header "Riwayat Les" tanpa tautan kembali dengan pil filter di kanan;
+ * "Riwayat sesi" di kolom utama dan kartu ringkasan 380px di kanan (jarak 32)
+ * dengan heading "Riwayat Sesi Terlaksana" (khusus desktop, di luar Figma).
  */
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
@@ -48,8 +53,39 @@ function RiwayatLes() {
     setParams(next, { replace: true })
   }
 
+  const filters = data && (
+    <>
+      <FilterPill
+        label="Anak"
+        menuLabel="Tampilkan riwayat"
+        value={data.studentId}
+        options={data.students.map((s) => ({ value: s.id, label: s.name }))}
+        onValueChange={(v) => update("siswa", v)}
+      />
+      <FilterPill
+        label="Bulan"
+        menuLabel="Pilih bulan"
+        value={monthKey(data.month)}
+        options={data.months.map((m) => ({
+          value: monthKey(m),
+          label: monthLabel(m),
+        }))}
+        onValueChange={(v) => update("bulan", v)}
+      />
+    </>
+  )
+
   return (
-    <DetailScreen title="Riwayat Les" className="gap-ns-2xl">
+    <DetailScreen
+      title="Riwayat Les"
+      desktopHeader="page"
+      backLabel={null}
+      desktopWidth="wide"
+      desktopHeaderActions={
+        filters && <div className="flex items-center gap-ns-s">{filters}</div>
+      }
+      className="gap-ns-2xl lg:pt-ns-3xl"
+    >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat riwayat les…" />
       ) : query.isError ? (
@@ -67,30 +103,29 @@ function RiwayatLes() {
             query.isPlaceholderData && "opacity-60"
           )}
         >
-          <div className="flex flex-wrap gap-ns-s">
-            <FilterPill
-              label="Anak"
-              menuLabel="Tampilkan riwayat"
-              value={data.studentId}
-              options={data.students.map((s) => ({ value: s.id, label: s.name }))}
-              onValueChange={(v) => update("siswa", v)}
-            />
-            <FilterPill
-              label="Bulan"
-              menuLabel="Pilih bulan"
-              value={monthKey(data.month)}
-              options={data.months.map((m) => ({
-                value: monthKey(m),
-                label: monthLabel(m),
-              }))}
-              onValueChange={(v) => update("bulan", v)}
-            />
-          </div>
+          {/* Desktop: filter pindah ke Page header */}
+          <div className="flex flex-wrap gap-ns-s lg:hidden">{filters}</div>
 
           {data.sessions.length > 0 ? (
-            <>
-              <SummaryCard data={data} />
-              <DashboardSection title="Riwayat sesi">
+            /*
+             * Mobile: ringkasan lalu daftar (urutan DOM). Desktop: grid,
+             * daftar di kolom kiri, ringkasan 380px di kanan.
+             */
+            <div className="contents lg:grid lg:grid-cols-[minmax(0,1fr)_23.75rem] lg:items-start lg:gap-ns-3xl">
+              {/*
+               * Desktop: heading di atas ringkasan agar sejajar dengan
+               * judul "Riwayat sesi" di kolom kiri (mobile tanpa heading)
+               */}
+              <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-ns-m">
+                <h2 className="hidden text-body leading-normal font-bold text-grayscale-text-title lg:block">
+                  Riwayat Sesi Terlaksana
+                </h2>
+                <SummaryCard data={data} />
+              </div>
+              <DashboardSection
+                title="Riwayat sesi"
+                className="lg:col-start-1 lg:row-start-1"
+              >
                 <DashboardList>
                   {data.sessions.map((session) => (
                     <ListItem
@@ -111,7 +146,7 @@ function RiwayatLes() {
                   ))}
                 </DashboardList>
               </DashboardSection>
-            </>
+            </div>
           ) : (
             <DataState
               state="empty"
@@ -126,7 +161,13 @@ function RiwayatLes() {
 }
 
 /* Kartu ringkasan: padding 16, gap 12, garis pemisah, baris per mapel */
-function SummaryCard({ data }: { data: LessonHistory }) {
+function SummaryCard({
+  data,
+  className,
+}: {
+  data: LessonHistory
+  className?: string
+}) {
   const { held, cancelled, upcoming, bySubject } = data.summary
   const notes = [
     cancelled > 0 && `${cancelled} tidak terlaksana`,
@@ -136,7 +177,10 @@ function SummaryCard({ data }: { data: LessonHistory }) {
   return (
     <section
       aria-label="Ringkasan bulan ini"
-      className="flex flex-col gap-ns-m rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default p-ns-l leading-normal"
+      className={cn(
+        "flex flex-col gap-ns-m rounded-(--comp-radius-md) border border-grayscale-border-default bg-grayscale-surface-default p-ns-l leading-normal",
+        className
+      )}
     >
       <div className="flex flex-col gap-ns-2xs">
         <p className="text-body font-bold text-grayscale-text-title">
