@@ -1,45 +1,48 @@
-import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "@/lib/data/auth"
-import type { AuthUser, LoginErrorCode } from "@/types/auth"
+import { httpClient, isApiError, setAccessToken } from "@/lib/api"
+import type { AuthUser, LoginErrorCode, Role } from "@/types/auth"
 
 import type { LoginInput } from "@/features/auth/schemas"
 
-/*
- * Masuk ke akun.
- *
- * TODO(backend): ganti isi `login()` dengan panggilan API, mis.
- *   const { data } = await httpClient.post("/auth/login", input)
- * dan petakan respons gagal ke `LoginError` dengan kode yang sama agar
- * tampilan form tidak perlu diubah.
- *
- * Selama backend belum ada, mode development memakai akun demo di bawah
- * (password semuanya "pintara123"). Akun demo tidak aktif di build produksi.
- */
+type LoginResponse = {
+  id: string
+  name: string
+  role: Role
+  username: string
+  email: string | null
+  whatsapp: string | null
+  token: string
+}
+
+const LOGIN_ERROR_CODES: readonly LoginErrorCode[] = [
+  "invalid_credentials",
+  "account_inactive",
+]
+
+const isLoginErrorCode = (code?: string): code is LoginErrorCode =>
+  LOGIN_ERROR_CODES.includes(code as LoginErrorCode)
 
 export class LoginError extends Error {
   code: LoginErrorCode
 
-  constructor(code: LoginErrorCode) {
-    super(code)
+  constructor(code: LoginErrorCode, message?: string) {
+    super(message ?? code)
     this.name = "LoginError"
     this.code = code
   }
 }
 
 export async function login(input: LoginInput): Promise<AuthUser> {
-  if (!import.meta.env.DEV) {
-    throw new Error("Layanan masuk belum terhubung ke server.")
+  try {
+    const { data } = await httpClient.post<LoginResponse>("/auth/login", {
+      identifier: input.identifier.trim(),
+      password: input.password,
+    })
+    setAccessToken(data.token)
+    return { name: data.name, role: data.role }
+  } catch (error) {
+    if (isApiError(error) && isLoginErrorCode(error.serverCode)) {
+      throw new LoginError(error.serverCode, error.message)
+    }
+    throw error
   }
-
-  await new Promise((resolve) => setTimeout(resolve, 400))
-
-  const key = input.identifier.trim().toLowerCase().split("@")[0]
-  const account = DEMO_ACCOUNTS[key]
-
-  if (!account || input.password !== DEMO_PASSWORD) {
-    throw new LoginError("invalid_credentials")
-  }
-  if (!account.active) {
-    throw new LoginError("account_inactive")
-  }
-  return { name: account.name, role: account.role }
 }
