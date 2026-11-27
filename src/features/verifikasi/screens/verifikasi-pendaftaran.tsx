@@ -31,6 +31,7 @@ import type {
   PengelolaRegistration,
   RegistrationStatus,
 } from "@/types/verifikasi"
+import { getErrorMessage } from "@/lib/api"
 import { formatDaysAgo } from "@/lib/format"
 import { cn } from "@/lib/styles"
 import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
@@ -145,7 +146,7 @@ function VerifikasiPendaftaran() {
           <DataState
             state="error"
             title="Pendaftaran gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(list.error)}
             action={{ label: "Coba lagi", onClick: () => list.refetch() }}
           />
         ) : list.data.items.length > 0 ? (

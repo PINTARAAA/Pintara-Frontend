@@ -18,13 +18,14 @@ import {
   toast,
 } from "@/components"
 import {
-  AlreadyProcessedError,
   canReject,
   gradeLabel,
-  NotFoundError,
+  isAlreadyProcessedError,
+  isNotFoundError,
   registrationQuery,
   rejectRegistration,
 } from "@/features/verifikasi/api"
+import { getErrorMessage } from "@/lib/api"
 import { REJECT_REASONS } from "@/lib/data/verifikasi"
 import type { PengelolaRegistration, RejectReason } from "@/types/verifikasi"
 import { rejectionTemplate } from "@/features/verifikasi/lib"
@@ -78,11 +79,11 @@ function TolakPendaftaran() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pendaftaran…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Pendaftaran gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : (
@@ -163,7 +164,7 @@ function RejectFormScreen({
       navigate(detailPath, { replace: true })
     },
     onError: (error) => {
-      if (error instanceof AlreadyProcessedError) {
+      if (isAlreadyProcessedError(error)) {
         toast.error("Pendaftaran sudah diproses", {
           description: "Status terbaru ditampilkan.",
         })
@@ -172,8 +173,7 @@ function RejectFormScreen({
         return
       }
       toast.error("Penolakan gagal dikirim", {
-        description:
-          "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Isian Anda tetap tersimpan.`,
       })
     },
   })

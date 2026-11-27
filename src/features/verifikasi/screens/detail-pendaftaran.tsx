@@ -24,12 +24,13 @@ import {
 } from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import {
-  AlreadyProcessedError,
   needsTutor,
-  NotFoundError,
+  isAlreadyProcessedError,
+  isNotFoundError,
   registrationQuery,
   verifyRegistration,
 } from "@/features/verifikasi/api"
+import { getErrorMessage } from "@/lib/api"
 import { REJECT_REASONS } from "@/lib/data/verifikasi"
 import type { PengelolaRegistration } from "@/types/verifikasi"
 import { firstName, toWhatsAppUrl } from "@/lib/format"
@@ -84,7 +85,7 @@ function DetailPendaftaran() {
       })
     },
     onError: (error) => {
-      if (error instanceof AlreadyProcessedError) {
+      if (isAlreadyProcessedError(error)) {
         toast.error("Pendaftaran sudah diproses", {
           description: "Status terbaru ditampilkan.",
         })
@@ -94,7 +95,7 @@ function DetailPendaftaran() {
         })
       } else {
         toast.error("Verifikasi gagal", {
-          description: "Periksa koneksi Anda, lalu coba lagi.",
+          description: getErrorMessage(error),
         })
       }
     },
@@ -120,7 +121,7 @@ function DetailPendaftaran() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pendaftaran…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Pendaftaran tidak ditemukan"
@@ -134,7 +135,7 @@ function DetailPendaftaran() {
           <DataState
             state="error"
             title="Pendaftaran gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )
