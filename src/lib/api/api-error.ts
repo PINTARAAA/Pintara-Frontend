@@ -1,21 +1,6 @@
 import { isAxiosError, isCancel } from "axios"
 import type { FieldValues, Path, UseFormSetError } from "react-hook-form"
 
-/*
- * Satu bentuk error untuk seluruh aplikasi.
- *
- * Semua kegagalan request (respons error dari server, timeout, koneksi
- * putus, request dibatalkan) diubah oleh interceptor `httpClient` menjadi
- * `ApiError`, sehingga screen cukup memeriksa `error.code` tanpa perlu tahu
- * detail axios atau format respons backend.
- *
- *   code        kategori error (lihat ApiErrorCode)
- *   status      kode HTTP; 0 bila tidak ada respons (offline/timeout)
- *   message     pesan siap tampil (Bahasa Indonesia)
- *   fieldErrors pesan per field dari validasi server, mis. { email: "…" }
- *   serverCode  kode error asli dari backend bila dikirim, mis. "EMAIL_TAKEN"
- */
-
 export type ApiErrorCode =
   | "network"
   | "timeout"
@@ -50,6 +35,7 @@ type ApiErrorOptions = {
   message?: string
   fieldErrors?: Record<string, string>
   serverCode?: string
+  details?: unknown
   cause?: unknown
 }
 
@@ -58,6 +44,7 @@ export class ApiError extends Error {
   readonly status: number
   readonly fieldErrors: Record<string, string>
   readonly serverCode?: string
+  readonly details?: unknown
 
   constructor(code: ApiErrorCode, options: ApiErrorOptions = {}) {
     super(options.message ?? DEFAULT_ERROR_MESSAGES[code], {
@@ -68,6 +55,7 @@ export class ApiError extends Error {
     this.status = options.status ?? 0
     this.fieldErrors = options.fieldErrors ?? {}
     this.serverCode = options.serverCode
+    this.details = options.details
   }
 
   get hasFieldErrors() {
@@ -77,8 +65,6 @@ export class ApiError extends Error {
 
 export const isApiError = (error: unknown): error is ApiError =>
   error instanceof ApiError
-
-/* ---------- Pemetaan status HTTP ---------- */
 
 export function codeFromStatus(status: number): ApiErrorCode {
   if (status === 400) return "bad_request"
@@ -92,23 +78,11 @@ export function codeFromStatus(status: number): ApiErrorCode {
   return "unknown"
 }
 
-/* ---------- Membaca body error dari backend ---------- */
-
-/*
- * Format body error backend belum final, jadi pembacaan dibuat longgar dan
- * mendukung format umum berikut:
- *   { message: "…" }                                   umum
- *   { error: "…" } / { error: { message, code } }      Express/Nest
- *   { errors: { email: ["…"] } }                       Laravel
- *   { errors: [{ field|path|param: "email", message|msg: "…" }] }
- *   { code: "EMAIL_TAKEN" }                            kode error backend
- * Sesuaikan fungsi ini setelah format backend disepakati.
- */
-
 type ParsedBody = {
   message?: string
   fieldErrors: Record<string, string>
   serverCode?: string
+  details?: unknown
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -117,69 +91,31 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const nonEmpty = (value: unknown): string | undefined =>
   typeof value === "string" && value.trim() !== "" ? value : undefined
 
-function firstMessage(value: unknown): string | undefined {
-  if (Array.isArray(value)) return firstMessage(value[0])
-  if (isRecord(value)) return nonEmpty(value.message) ?? nonEmpty(value.msg)
-  return nonEmpty(value)
-}
-
-function parseFieldErrors(errors: unknown): Record<string, string> {
+function parseFieldErrors(details: unknown): Record<string, string> {
   const result: Record<string, string> = {}
+  if (!Array.isArray(details)) return result
 
-  if (Array.isArray(errors)) {
-    for (const item of errors) {
-      if (!isRecord(item)) continue
-      const rawField = item.field ?? item.path ?? item.param ?? item.property
-      const field = Array.isArray(rawField)
-        ? rawField.join(".")
-        : nonEmpty(rawField)
-      const message = firstMessage(item)
-      if (field && message && !(field in result)) result[field] = message
-    }
-  } else if (isRecord(errors)) {
-    for (const [field, value] of Object.entries(errors)) {
-      const message = firstMessage(value)
-      if (message) result[field] = message
-    }
+  for (const item of details) {
+    if (!isRecord(item)) continue
+    const field = nonEmpty(item.field)
+    const message = nonEmpty(item.message)
+    if (field && message && !(field in result)) result[field] = message
   }
-
   return result
 }
 
 export function parseErrorBody(data: unknown): ParsedBody {
-  if (typeof data === "string") {
-    /* Hindari menampilkan halaman HTML error (mis. dari proxy/nginx) */
-    const looksLikeHtml = /^\s*</.test(data)
-    return {
-      message: looksLikeHtml ? undefined : nonEmpty(data)?.slice(0, 300),
-      fieldErrors: {},
-    }
-  }
-  if (!isRecord(data)) return { fieldErrors: {} }
-
-  const nested = isRecord(data.error) ? data.error : undefined
-  const fieldErrors = parseFieldErrors(
-    data.errors ?? nested?.errors ?? nested?.details
-  )
+  const error = isRecord(data) && isRecord(data.error) ? data.error : undefined
+  if (!error) return { fieldErrors: {} }
 
   return {
-    message:
-      nonEmpty(data.message) ??
-      nonEmpty(data.error) ??
-      nonEmpty(nested?.message) ??
-      /* Tanpa pesan umum: pakai pesan validasi pertama */
-      Object.values(fieldErrors)[0],
-    fieldErrors,
-    serverCode: nonEmpty(data.code) ?? nonEmpty(nested?.code),
+    message: nonEmpty(error.message),
+    fieldErrors: parseFieldErrors(error.details),
+    serverCode: nonEmpty(error.code),
+    details: error.details,
   }
 }
 
-/* ---------- Normalisasi ---------- */
-
-/*
- * Ubah error apa pun menjadi ApiError. Dipakai interceptor `httpClient`,
- * tetapi aman juga dipanggil langsung untuk error dari sumber lain.
- */
 export function toApiError(error: unknown): ApiError {
   if (isApiError(error)) return error
 
@@ -190,7 +126,6 @@ export function toApiError(error: unknown): ApiError {
   if (isAxiosError(error)) {
     const response = error.response
 
-    /* Tidak ada respons: timeout atau koneksi gagal */
     if (!response) {
       const timedOut =
         error.code === "ECONNABORTED" || error.code === "ETIMEDOUT"
@@ -203,13 +138,10 @@ export function toApiError(error: unknown): ApiError {
 
     return new ApiError(code, {
       status: response.status,
-      /*
-       * Pesan 5xx dari server sering berisi detail teknis, jadi pengguna
-       * selalu melihat pesan umum; detail asli tetap ada di `cause`.
-       */
       message: code === "server" ? undefined : body.message,
       fieldErrors: body.fieldErrors,
       serverCode: body.serverCode,
+      details: body.details,
       cause: error,
     })
   }
@@ -221,9 +153,6 @@ export function toApiError(error: unknown): ApiError {
   return new ApiError("unknown", { cause: error })
 }
 
-/* ---------- Utilitas untuk UI ---------- */
-
-/* Pesan siap tampil untuk toast/banner dari error apa pun */
 export function getErrorMessage(
   error: unknown,
   fallback = DEFAULT_ERROR_MESSAGES.unknown
@@ -233,15 +162,6 @@ export function getErrorMessage(
   return fallback
 }
 
-/*
- * Teruskan error validasi server ke react-hook-form agar pesan tampil di
- * bawah field masing-masing. Mengembalikan true bila ada field yang diisi;
- * bila false, tampilkan `getErrorMessage(error)` sebagai banner/toast.
- *
- *   catch (error) {
- *     if (!applyFieldErrors(error, form.setError)) toast.error(getErrorMessage(error))
- *   }
- */
 export function applyFieldErrors<T extends FieldValues>(
   error: unknown,
   setError: UseFormSetError<T>,
@@ -258,7 +178,6 @@ export function applyFieldErrors<T extends FieldValues>(
   return applied
 }
 
-/* Error yang layak dicoba ulang otomatis (gangguan sementara) */
 export function isRetryableError(error: unknown): boolean {
   if (!isApiError(error)) return false
   return (

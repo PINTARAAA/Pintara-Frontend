@@ -2,27 +2,14 @@ import axios, { type AxiosInstance } from "axios"
 
 import { toApiError } from "./api-error"
 import { clearAccessToken, getAccessToken } from "./auth-token"
-
-/*
- * Instance axios untuk semua panggilan ke backend.
- *
- *   const { data } = await httpClient.get<Tutor[]>("/pengelola/tutor")
- *
- * Request interceptor  : pasang header Authorization dari token tersimpan.
- * Response interceptor : setiap kegagalan diubah menjadi `ApiError`
- *                        (lihat ./api-error.ts). Respons 401 di luar
- *                        endpoint /auth menghapus token lalu memanggil
- *                        handler sesi berakhir (default: ke halaman masuk).
- */
+import { reviveDates } from "./revive-dates"
 
 declare module "axios" {
   interface AxiosRequestConfig {
-    /* true: respons 401 tidak memicu handler sesi berakhir */
     skipAuthRedirect?: boolean
   }
 }
 
-/* Endpoint autentikasi: 401 berarti kredensial salah, bukan sesi berakhir */
 const AUTH_ENDPOINT = /^\/?auth\//
 
 let unauthorizedHandler = () => {
@@ -30,10 +17,6 @@ let unauthorizedHandler = () => {
   window.location.replace("/masuk?alasan=sesi-berakhir")
 }
 
-/*
- * Ganti perilaku saat sesi berakhir, mis. dari AppProvider agar cache
- * React Query ikut dibuang dan navigasi memakai router.
- */
 export function setUnauthorizedHandler(handler: () => void) {
   unauthorizedHandler = handler
 }
@@ -54,7 +37,10 @@ export function createHttpClient(baseURL?: string): AxiosInstance {
   })
 
   client.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      response.data = reviveDates(response.data)
+      return response
+    },
     (error: unknown) => {
       const apiError = toApiError(error)
       const config = axios.isAxiosError(error) ? error.config : undefined

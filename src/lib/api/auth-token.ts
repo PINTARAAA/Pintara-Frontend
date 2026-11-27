@@ -1,11 +1,3 @@
-/*
- * Penyimpanan token akses untuk header Authorization.
- *
- * Disimpan di localStorage agar tetap login setelah halaman dimuat ulang.
- * TODO(backend): bila backend memakai cookie httpOnly, hapus file ini dan
- * aktifkan `withCredentials: true` di httpClient.
- */
-
 const STORAGE_KEY = "pintara-token"
 
 export function getAccessToken(): string | null {
