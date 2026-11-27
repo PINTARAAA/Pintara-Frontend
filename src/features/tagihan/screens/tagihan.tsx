@@ -17,6 +17,7 @@ import {
   ListItem,
   Tabs,
   TabsContent,
+  TabsCount,
   TabsList,
   TabsTrigger,
 } from "@/components"
@@ -52,6 +53,12 @@ import type {
  * peringatan jatuh tempo, tombol bayar) · "Tagihan lain" · catatan.
  * Tab "Riwayat Pembayaran": transaksi dikelompokkan per bulan.
  * Tab aktif disimpan di ?tab=riwayat.
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): halaman putih, Page header
+ * "Tagihan" (lonceng di sidebar), Tabs 400px dengan jumlah tagihan aktif.
+ * Tab Tagihan: "Segera dibayar" di kolom utama, "Tagihan lain" + catatan di
+ * kolom samping 400px (jarak 40). Riwayat: satu kolom maks. 760px.
+ * Kosong: kartu Data state 480px di tengah halaman.
  */
 type TabValue = "tagihan" | "riwayat"
 
@@ -60,6 +67,9 @@ function Tagihan() {
   const [params, setParams] = useSearchParams()
   const tab: TabValue = params.get("tab") === "riwayat" ? "riwayat" : "tagihan"
   const bills = useQuery(billsQuery())
+  const activeBills = bills.data
+    ? (bills.data.priority ? 1 : 0) + bills.data.others.length
+    : 0
 
   return (
     <Tabs
@@ -79,9 +89,16 @@ function Tagihan() {
             unread={unreadNotifications}
           />
         }
+        desktopHeader="page"
         subheader={
-          <TabsList className="w-full border-b border-grayscale-border-default *:-mb-px">
-            <TabsTrigger value="tagihan">Tagihan</TabsTrigger>
+          <TabsList className="w-full border-b border-grayscale-border-default *:-mb-px lg:w-100">
+            <TabsTrigger value="tagihan">
+              Tagihan
+              {/* Jumlah tagihan aktif: hanya desktop (Figma "Daftar (Desktop)") */}
+              {activeBills > 0 && (
+                <TabsCount className="max-lg:hidden">{activeBills}</TabsCount>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="riwayat">Riwayat Pembayaran</TabsTrigger>
           </TabsList>
         }
@@ -127,33 +144,36 @@ function BillsPanel({ query }: { query: UseQueryResult<BillsOverview> }) {
     )
   }
 
+  /*
+   * Mobile: satu kolom (Segera dibayar · Tagihan lain · catatan). Desktop:
+   * Segera dibayar di kolom kiri membentang dua baris; Tagihan lain dan
+   * catatan mengisi kolom kanan 400px.
+   */
   return (
-    <div className="flex flex-col gap-ns-2xl">
-      <div className="grid gap-ns-2xl lg:grid-cols-2 lg:items-start">
-        <DashboardSection title="Segera dibayar">
-          <PriorityBill bill={priority} />
+    <div className="grid gap-ns-2xl lg:grid-cols-[minmax(0,1fr)_25rem] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-ns-4xl lg:gap-y-ns-l">
+      <DashboardSection title="Segera dibayar" className="lg:row-span-2">
+        <PriorityBill bill={priority} />
+      </DashboardSection>
+
+      {others.length > 0 && (
+        <DashboardSection title="Tagihan lain" className="lg:col-start-2">
+          <DashboardList>
+            {others.map((bill) => (
+              <ListItem
+                key={bill.id}
+                icon={<ReceiptIcon />}
+                title={formatPeriod(bill.period)}
+                description={formatDue(bill, "short")}
+                trailingText={formatRupiah(remainingOf(bill))}
+                chevron
+                render={<Link to={`/wali/tagihan/${bill.id}`} />}
+              />
+            ))}
+          </DashboardList>
         </DashboardSection>
+      )}
 
-        {others.length > 0 && (
-          <DashboardSection title="Tagihan lain">
-            <DashboardList>
-              {others.map((bill) => (
-                <ListItem
-                  key={bill.id}
-                  icon={<ReceiptIcon />}
-                  title={formatPeriod(bill.period)}
-                  description={formatDue(bill, "short")}
-                  trailingText={formatRupiah(remainingOf(bill))}
-                  chevron
-                  render={<Link to={`/wali/tagihan/${bill.id}`} />}
-                />
-              ))}
-            </DashboardList>
-          </DashboardSection>
-        )}
-      </div>
-
-      <p className="text-center text-caption leading-normal text-grayscale-text-caption">
+      <p className="text-center text-caption leading-normal text-grayscale-text-caption lg:col-start-2">
         Tagihan yang sudah lunas tersimpan di Riwayat Pembayaran.
       </p>
     </div>
@@ -229,9 +249,15 @@ function PriorityBill({ bill }: { bill: Bill }) {
 
 /* ---------- Tab Riwayat Pembayaran ---------- */
 
-const PAYMENT_STATUS: Record<PaymentStatus, { label: string; className: string }> = {
+const PAYMENT_STATUS: Record<
+  PaymentStatus,
+  { label: string; className: string }
+> = {
   berhasil: { label: "Berhasil", className: "text-grayscale-text-caption" },
-  kedaluwarsa: { label: "Kedaluwarsa", className: "text-grayscale-text-negative" },
+  kedaluwarsa: {
+    label: "Kedaluwarsa",
+    className: "text-grayscale-text-negative",
+  },
   gagal: { label: "Gagal", className: "text-grayscale-text-negative" },
 }
 
@@ -239,7 +265,9 @@ function PaymentsPanel() {
   const query = useQuery(paymentsQuery())
 
   if (query.isPending) {
-    return <DataState state="loading" loadingLabel="Memuat riwayat pembayaran…" />
+    return (
+      <DataState state="loading" loadingLabel="Memuat riwayat pembayaran…" />
+    )
   }
   if (query.isError) {
     return (
@@ -271,7 +299,7 @@ function PaymentsPanel() {
   }
 
   return (
-    <div className="grid gap-ns-2xl lg:grid-cols-2 lg:items-start">
+    <div className="flex flex-col gap-ns-2xl lg:max-w-190">
       {[...groups].map(([month, items]) => (
         <DashboardSection key={month} title={month}>
           <DashboardList>
