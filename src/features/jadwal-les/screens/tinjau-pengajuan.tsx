@@ -239,13 +239,13 @@ function ReviewForm({ review }: { review: ChangeReview }) {
           disabled={!!conflict}
         >
           <legend className="mb-ns-2xs text-body text-grayscale-text-title leading-normal font-bold">
-            Persetujuan pihak terkait <span className="text-error">*</span>
+            Persetujuan pihak terkait <span className="text-grayscale-text-negative">*</span>
           </legend>
           <p
             id="consent-help"
             className={
               showConsentError && !consented
-                ? "text-caption text-error leading-normal"
+                ? "text-caption text-grayscale-text-negative leading-normal"
                 : "text-caption text-grayscale-text-caption leading-normal"
             }
             role={showConsentError && !consented ? "alert" : undefined}

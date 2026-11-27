@@ -13,8 +13,8 @@ import {
 import { lessonHistoryQuery } from "@/features/absensi/api"
 import type { LessonHistory } from "@/types/absensi"
 import {
-  DashboardList,
   DashboardSection,
+  ExpandableList,
 } from "@/features/dashboard/components"
 import { formatShortWeekdayDate, parseMonth } from "@/lib/format"
 import { cn } from "@/lib/styles"
@@ -31,6 +31,9 @@ import { cn } from "@/lib/styles"
  * Page header "Riwayat Les" tanpa tautan kembali dengan pil filter di kanan;
  * "Riwayat sesi" di kolom utama dan kartu ringkasan 380px di kanan (jarak 32)
  * dengan heading "Riwayat Sesi Terlaksana" (khusus desktop, di luar Figma).
+ *
+ * Riwayat sesi menampilkan 5 sesi pertama + "Lihat selengkapnya" agar
+ * halaman tidak perlu digulir panjang (tambahan di luar Figma).
  */
 const monthKey = (d: Date) => format(d, "yyyy-MM")
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
@@ -126,8 +129,11 @@ function RiwayatLes() {
                 title="Riwayat sesi"
                 className="lg:col-start-1 lg:row-start-1"
               >
-                <DashboardList>
-                  {data.sessions.map((session) => (
+                <ExpandableList
+                  /* Filter berubah → daftar kembali ringkas */
+                  key={`${data.studentId}-${monthKey(data.month)}`}
+                  items={data.sessions}
+                  renderItem={(session) => (
                     <ListItem
                       key={session.id}
                       title={`${session.subject} · ${formatShortWeekdayDate(session.start)}`}
@@ -138,13 +144,16 @@ function RiwayatLes() {
                       }
                       badge={
                         session.cancelReason ? undefined : (
-                          <StatusBadge category="presensi" status={session.status} />
+                          <StatusBadge
+                            category="presensi"
+                            status={session.status}
+                          />
                         )
                       }
                       render={<Link to={`/wali/riwayat/${session.id}`} />}
                     />
-                  ))}
-                </DashboardList>
+                  )}
+                />
               </DashboardSection>
             </div>
           ) : (
@@ -195,12 +204,20 @@ function SummaryCard({
       </div>
       {bySubject.length > 0 && (
         <>
-          <div aria-hidden="true" className="h-px bg-grayscale-border-disabled" />
+          <div
+            aria-hidden="true"
+            className="h-px bg-grayscale-border-disabled"
+          />
           <dl className="flex flex-col gap-ns-m text-subtitle">
             {bySubject.map(({ subject, count }) => (
-              <div key={subject} className="flex items-start justify-between gap-ns-m">
+              <div
+                key={subject}
+                className="flex items-start justify-between gap-ns-m"
+              >
                 <dt className="text-grayscale-text-body">{subject}</dt>
-                <dd className="font-bold text-grayscale-text-title">{count} sesi</dd>
+                <dd className="font-bold text-grayscale-text-title">
+                  {count} sesi
+                </dd>
               </div>
             ))}
           </dl>

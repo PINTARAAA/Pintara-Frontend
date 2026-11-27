@@ -18,6 +18,7 @@ import {
   TaskActionList,
   TaskList,
 } from "@/features/dashboard/components"
+import { ThemeButton } from "@/features/akun/components"
 import type { PengelolaDashboardData } from "@/types/dashboard"
 
 import {
@@ -48,8 +49,12 @@ function PengelolaDashboard() {
     <TabScreen
       subtitle={formatGreeting()}
       title={data?.admin.name ?? <Skeleton className="h-6 w-48" />}
+      /* Mobile: shortcut tema di samping notifikasi (desktop: di sidebar) */
       action={
-        <NotificationButton to="/pengelola/notifikasi" unread={unread} />
+        <div className="flex items-center gap-ns-s">
+          <ThemeButton className="lg:hidden" />
+          <NotificationButton to="/pengelola/notifikasi" unread={unread} />
+        </div>
       }
       className={data ? "lg:bg-grayscale-surface-default" : undefined}
     >

@@ -27,6 +27,10 @@ import { formatRupiah } from "@/lib/format"
  * "Kualifikasi & ketersediaan": Mata pelajaran · Jenjang · Hari · Tarif,
  * hanya baca, dikelola Pengelola LBB) → Bantuan (Hubungi Pengelola LBB,
  * Tentang PINTARA) → Keluar (Confirmation modal seperti W8).
+ *
+ * Desktop (≥ lg, frame "Akun / Tutor (Desktop)"): halaman putih, Page header
+ * "Akun" (notifikasi di sidebar); Profil · Profil mengajar di kolom utama,
+ * Bantuan + Keluar 380px di kanan (jarak 32, gap tiap kolom 24).
  */
 function AkunTutor() {
   const query = useQuery(tutorAccountQuery())
@@ -37,6 +41,7 @@ function AkunTutor() {
     <TabScreen
       title="Akun"
       action={<NotificationButton to="/tutor/notifikasi" unread={unread} />}
+      desktopHeader="page"
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat akun…" />
@@ -48,7 +53,7 @@ function AkunTutor() {
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : account ? (
-        <div className="grid gap-ns-2xl lg:grid-cols-2 lg:items-start">
+        <div className="grid gap-ns-2xl lg:grid-cols-[minmax(0,1fr)_23.75rem] lg:items-start lg:gap-x-ns-3xl">
           <div className="flex flex-col gap-ns-2xl">
             <AccountProfile
               name={account.name}

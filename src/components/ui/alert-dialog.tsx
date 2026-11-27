@@ -46,7 +46,7 @@ function AlertDialogOverlay({
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-neutral-black/30 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 isolate z-50 bg-neutral-black/30 dark:bg-neutral-black/60 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className
       )}
       {...props}
@@ -89,9 +89,9 @@ function AlertDialogHeader({
 }
 
 const mediaTone: Record<Tone, string> = {
-  default: "bg-primary-surface-subtitle text-primary-surface-default",
+  default: "bg-primary-surface-subtitle text-primary-text-link",
   warning: "bg-warning-subtle text-warning",
-  destructive: "bg-error-subtle text-error",
+  destructive: "bg-error-subtle text-grayscale-text-negative",
 }
 
 const toneIcon: Record<Tone, React.ReactNode> = {

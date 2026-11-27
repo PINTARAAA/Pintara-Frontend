@@ -103,6 +103,8 @@ export function tutorDashboardData(): TutorDashboardData {
         title: "Isi presensi 1 sesi",
         description: `IPA · Dimas Pratama · ${format(at(-1, 16), "EEEE, d MMM", { locale: localeId })}`,
         to: "/tutor/presensi",
+        actionLabel: "Isi Presensi",
+        primary: true,
       },
       {
         id: "keberatan",
@@ -110,6 +112,7 @@ export function tutorDashboardData(): TutorDashboardData {
         title: "1 presensi dikeberatan wali",
         description: "Matematika · Aisyah Putri · 19 Nov",
         to: "/tutor/presensi",
+        actionLabel: "Tinjau",
       },
     ],
     upcoming: [

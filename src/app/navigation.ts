@@ -53,9 +53,20 @@ export const ROLE_NAV: Record<
       { label: "Beranda", to: "/tutor", icon: HouseIcon, end: true },
       { label: "Jadwal", to: "/tutor/jadwal", icon: CalendarIcon },
       { label: "Presensi", to: "/tutor/presensi", icon: ClipboardCheckIcon },
-      { label: "Riwayat", to: "/tutor/riwayat", icon: BookOpenIcon },
+      {
+        label: "Riwayat",
+        sidebarLabel: "Riwayat les",
+        to: "/tutor/riwayat",
+        icon: BookOpenIcon,
+      },
     ],
     utility: [{ label: "Akun", to: "/tutor/akun", icon: UserIcon }],
+    /* Figma → Sidebar (Tutor / Beranda (Desktop)): Notifikasi di atas Akun */
+    sidebarExtra: {
+      utility: [
+        { label: "Notifikasi", to: "/tutor/notifikasi", icon: BellIcon },
+      ],
+    },
   },
   pengelola: {
     main: [

@@ -33,6 +33,8 @@ type NavItem = {
   icon: LucideIcon
   /* true = aktif hanya bila URL sama persis (untuk Beranda/index) */
   end?: boolean
+  /* Label di sidebar desktop bila berbeda dari bottom navigation, mis. "Riwayat les" */
+  sidebarLabel?: string
 }
 
 /* Grup menu sidebar desktop; label opsional tampil sebagai judul kecil */
@@ -61,7 +63,7 @@ function SideItem({ item }: { item: NavItem }) {
   return (
     <SidebarNavItem
       icon={<Icon />}
-      label={item.label}
+      label={item.sidebarLabel ?? item.label}
       active={useIsActive(item)}
       render={<NavLink to={item.to} end={item.end} />}
     />
@@ -76,6 +78,7 @@ function AppShell({
   sidebarGroups,
   sidebarUtilityItems,
   sidebarFooter,
+  sidebarUtilityLead,
 }: {
   /* Menu utama (Beranda, Jadwal, …) */
   items: NavItem[]
@@ -97,6 +100,11 @@ function AppShell({
   sidebarUtilityItems?: NavItem[]
   /* Elemen tambahan di grup bawah sidebar berkelompok, mis. tombol Keluar */
   sidebarFooter?: React.ReactNode
+  /*
+   * Elemen di awal grup bawah sidebar tanpa grup (wali, tutor), sebelum
+   * Notifikasi/Akun, mis. pemilih tema
+   */
+  sidebarUtilityLead?: React.ReactNode
 }) {
   const hideBottomNav = useMatches().some(
     (match) => (match.handle as RouteHandle | undefined)?.hideBottomNav
@@ -146,8 +154,9 @@ function AppShell({
               <SideItem key={item.to} item={item} />
             ))}
           </SidebarNav>
-          {sidebarUtilityList.length > 0 && (
+          {(sidebarUtilityList.length > 0 || sidebarUtilityLead) && (
             <SidebarNav aria-label="Menu lainnya">
+              {sidebarUtilityLead}
               {sidebarUtilityList.map((item) => (
                 <SideItem key={item.to} item={item} />
               ))}

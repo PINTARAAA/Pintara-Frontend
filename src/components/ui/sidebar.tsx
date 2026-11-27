@@ -192,7 +192,7 @@ function SidebarToggle({
         )}
         {...props}
       >
-        <span className="flex size-9 items-center justify-center rounded-(--comp-radius-sm) text-primary-surface-default transition-colors group-hover/toggle:bg-primary-surface-subtitle group-focus-visible/toggle:ring-2 group-focus-visible/toggle:ring-primary-border-lighter">
+        <span className="flex size-9 items-center justify-center rounded-(--comp-radius-sm) text-primary-text-link transition-colors group-hover/toggle:bg-primary-surface-subtitle group-focus-visible/toggle:ring-2 group-focus-visible/toggle:ring-primary-border-lighter">
           <Icon className="size-5" />
         </span>
         {!collapsed && <span className="whitespace-nowrap">{collapseLabel}</span>}

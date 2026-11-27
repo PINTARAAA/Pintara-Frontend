@@ -130,7 +130,7 @@ function DataState({
           aria-hidden="true"
           className={cn(
             "flex size-10 items-center justify-center rounded-md bg-grayscale-surface-subtitle [&_svg]:size-5",
-            state === "error" ? "text-error" : "text-grayscale-text-body"
+            state === "error" ? "text-grayscale-text-negative" : "text-grayscale-text-body"
           )}
         >
           {shownIcon}

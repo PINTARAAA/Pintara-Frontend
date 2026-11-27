@@ -216,7 +216,7 @@ function FileUpload({
       )}
 
       {error ? (
-        <p id={errorId} role="alert" className="text-caption leading-normal text-error">
+        <p id={errorId} role="alert" className="text-caption leading-normal text-grayscale-text-negative">
           {error}
         </p>
       ) : (

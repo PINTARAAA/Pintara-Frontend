@@ -64,6 +64,13 @@
 
   --color-primary-text-label: var(--color-neutral-white);
   --color-primary-text-primary: var(--color-primary-700);
+  /*
+   * Di luar Figma: teks/ikon aksi berwarna primary di atas permukaan
+   * (tombol Secondary/Tertiary/Link). Light = Primary/Surface/default seperti
+   * Figma; dipisah agar mode gelap bisa lebih terang tanpa mengubah latar
+   * tombol Primary.
+   */
+  --color-primary-text-link: var(--color-primary-500);
 
   --color-secondary-surface-subtitle: var(--color-secondary-100);
   --color-secondary-surface-lighter: var(--color-secondary-400);
@@ -136,4 +143,145 @@
   --comp-icon-sm: 20px;
   --comp-icon-md: 24px;
   --comp-icon-lg: 32px;
+}
+
+/*
+ * Mode gelap (di luar Figma: variabel Figma baru punya satu mode).
+ * Aktif lewat kelas `.dark` pada <html> (lihat src/app/theme.tsx).
+ * Hanya Style Tokens (semantik) yang ditimpa; Primitive tetap.
+ *
+ * Prinsip (bukan sekadar membalik warna mode terang):
+ * - Abu-abu hampir netral (rona biru sangat tipis), bukan navy.
+ * - Kedalaman lewat tingkat terang, bukan garis tepi: halaman paling
+ *   gelap → kartu → `--surface-raised` (menu, dialog). Garis tepi kartu
+ *   diredam; kontrol formulir memakai `--control-border` agar tetap jelas.
+ * - Teks diredupkan agar tidak silau: judul 14:1, isi 11:1, caption 5,5:1.
+ * - Biru dihemat: tombol Primary tetap biru brand (#2557d6), biru muda
+ *   hanya untuk teks tautan/aksi.
+ * - Latar status = tint tipis warna status di atas kartu, bukan warna
+ *   pekat yang keruh.
+ */
+.dark {
+  color-scheme: dark;
+
+  /* Khusus mode gelap (tidak ada padanan di Figma) */
+  --surface-raised: #20242c;
+  --control-border: #4a515c;
+
+  --color-grayscale-text-title: #e8eaed;
+  --color-grayscale-text-body: #c9cdd4;
+  --color-grayscale-text-subtitle: #8b929c;
+  --color-grayscale-text-caption: #8b929c;
+  --color-grayscale-text-negative: #f28b82;
+  --color-grayscale-text-disabled: #5c636e;
+
+  --color-grayscale-surface-default: #181b21;
+  --color-grayscale-surface-subtitle: #111318;
+  --color-grayscale-surface-disabled: #22262d;
+
+  --color-grayscale-border-default: #2a2f37;
+  --color-grayscale-border-darker: #5a616d;
+  --color-grayscale-border-disabled: #22262d;
+
+  --color-primary-surface-subtitle: #1e2433;
+  --color-primary-surface-lighter: #2a3a6e;
+  --color-primary-surface-default: var(--color-primary-500);
+  --color-primary-surface-darker: var(--color-primary-600);
+
+  --color-primary-border-lighter: #2f4a99;
+  --color-primary-border-default: #5b7be6;
+  --color-primary-border-darker: #8fa6f7;
+
+  --color-primary-text-label: #ffffff;
+  --color-primary-text-primary: #b4c3fb;
+  --color-primary-text-link: #8fa6f7;
+
+  --color-secondary-surface-subtitle: color-mix(
+    in oklab,
+    var(--color-secondary-500) 14%,
+    var(--color-grayscale-surface-default)
+  );
+  --color-secondary-surface-lighter: var(--color-secondary-600);
+  --color-secondary-surface-default: var(--color-secondary-500);
+  --color-secondary-surface-darker: var(--color-secondary-400);
+
+  --color-secondary-border-lighter: var(--color-secondary-700);
+  --color-secondary-border-default: color-mix(
+    in oklab,
+    var(--color-secondary-500) 30%,
+    var(--color-grayscale-surface-default)
+  );
+  --color-secondary-border-darker: var(--color-secondary-300);
+  /* Satu-satunya pemakaian: teks di atas Secondary/Surface/subtitle */
+  --color-secondary-text-label: var(--color-secondary-200);
+
+  --color-error-subtle: color-mix(
+    in oklab,
+    var(--color-error) 14%,
+    var(--color-grayscale-surface-default)
+  );
+  --color-info-subtle: color-mix(
+    in oklab,
+    var(--color-info) 14%,
+    var(--color-grayscale-surface-default)
+  );
+  --color-success-subtle: color-mix(
+    in oklab,
+    var(--color-success) 14%,
+    var(--color-grayscale-surface-default)
+  );
+  --color-warning-subtle: color-mix(
+    in oklab,
+    var(--color-warning) 14%,
+    var(--color-grayscale-surface-default)
+  );
+}
+
+/*
+ * Penimpaan token per area (mode gelap). Komponen tidak perlu diubah:
+ * utilitasnya tetap memakai token yang sama, nilainya yang diganti.
+ */
+
+/* Kontrol formulir: garis tepi lebih jelas daripada garis tepi kartu */
+.dark
+  :is(
+    [data-slot="input"],
+    [data-slot="textarea"],
+    [data-slot="select-trigger"],
+    [data-slot="date-picker-trigger"],
+    [data-slot="checkbox"],
+    [data-slot="radio-group-item"],
+    [data-slot="file-upload"]
+  ) {
+  --color-grayscale-border-default: var(--control-border);
+}
+
+/* Menu, popover, dialog, sheet: satu lapis di atas kartu */
+.dark
+  :is(
+    [data-slot="dropdown-menu-content"],
+    [data-slot="dropdown-menu-sub-content"],
+    [data-slot="popover-content"],
+    [data-slot="select-content"],
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"]
+  ) {
+  --color-grayscale-surface-default: var(--surface-raised);
+  --color-grayscale-surface-subtitle: #2a2f38;
+  --color-grayscale-border-default: #30353e;
+}
+
+/* Navigasi aktif: blok abu terang + teks putih, bukan blok biru */
+.dark
+  :is(
+      [data-slot="sidebar-nav-item"],
+      [data-slot="bottom-navigation-item"]
+    )[data-active] {
+  --color-primary-surface-subtitle: var(--surface-raised);
+  --color-primary-text-primary: var(--color-grayscale-text-title);
+}
+
+:root:not(.dark) {
+  color-scheme: light;
 }

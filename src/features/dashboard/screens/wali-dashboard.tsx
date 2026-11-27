@@ -1,7 +1,6 @@
 import * as React from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { format, isToday, isTomorrow } from "date-fns"
-import { id as localeId } from "date-fns/locale"
+import { isToday, isTomorrow } from "date-fns"
 import { CalendarIcon, UserPlusIcon } from "lucide-react"
 import { Link } from "react-router"
 
@@ -15,6 +14,7 @@ import {
 } from "@/components"
 import { waliDashboardQuery } from "@/features/dashboard/api"
 import {
+  AgendaDate,
   DashboardSkeleton,
   EmptyNote,
   DashboardList,
@@ -27,6 +27,7 @@ import {
   TaskActionList,
   TaskList,
 } from "@/features/dashboard/components"
+import { ThemeButton } from "@/features/akun/components"
 import type { WaliDashboardData } from "@/types/dashboard"
 import { ongoingRegistrationsQuery } from "@/features/pendaftaran/api"
 import type { Registration } from "@/types/pendaftaran"
@@ -74,11 +75,15 @@ function WaliDashboard() {
     <TabScreen
       subtitle={formatGreeting()}
       title={data?.parent.name ?? <Skeleton className="h-6 w-48" />}
+      /* Mobile: shortcut tema di samping notifikasi (desktop: di sidebar) */
       action={
-        <NotificationButton
-          to="/wali/notifikasi"
-          unread={unreadNotifications}
-        />
+        <div className="flex items-center gap-ns-s">
+          <ThemeButton />
+          <NotificationButton
+            to="/wali/notifikasi"
+            unread={unreadNotifications}
+          />
+        </div>
       }
       desktopHeader="page"
       desktopHeaderActions={
@@ -236,7 +241,7 @@ function DesktopDashboard({ data }: { data: WaliDashboardData }) {
             <>
               Perlu tindakan
               {taskCount > 0 && (
-                <span className="rounded-full bg-error-subtle px-ns-s py-ns-3xs text-caption leading-normal font-bold text-error">
+                <span className="rounded-full bg-error-subtle px-ns-s py-ns-3xs text-caption leading-normal font-bold text-grayscale-text-negative">
                   <span className="sr-only">(</span>
                   {taskCount}
                   <span className="sr-only"> tugas)</span>
@@ -374,26 +379,6 @@ function OngoingRegistrations({ variant }: { variant: "list" | "rows" }) {
         </ul>
       )}
     </DashboardSection>
-  )
-}
-
-/* Kotak tanggal agenda 64×72: hari singkat kapital ("RAB") di atas tanggal H4 */
-function AgendaDate({ date, className }: { date: Date; className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "flex h-18 w-16 shrink-0 flex-col items-center justify-center rounded-(--comp-radius-md) font-bold",
-        className
-      )}
-    >
-      <span className="text-caption leading-normal text-primary-text-primary uppercase">
-        {format(date, "EEE", { locale: localeId })}
-      </span>
-      <span className="text-h4 text-grayscale-text-title">
-        {format(date, "d")}
-      </span>
-    </span>
   )
 }
 

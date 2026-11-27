@@ -50,8 +50,19 @@ import { firstName, formatDateTime, formatTimeRange } from "@/lib/format"
  * siswa, materi (wajib), catatan, dokumentasi; tidak terlaksana → alasan
  * (wajib) + info "tidak dihitung dalam rekap honor".
  * Setiap sesi hanya bisa dipresensi sekali.
+ *
+ * Desktop (≥ lg, frame "… (Desktop)"): halaman putih, Page header (kembali
+ * "Presensi", judul "Isi Presensi"). Form: ringkasan sesi selebar halaman,
+ * isian dua kolom (jarak 40) — kiri status/waktu/kehadiran (pilihan radio
+ * berdampingan), kanan materi/catatan/dokumentasi atau alasan + info —
+ * lalu [Batal] [Simpan Presensi] rata kanan di bawah garis. Sudah terisi:
+ * selebar 720px, tombol di bawah garis. Tersimpan: hasil di tengah halaman.
  */
 const NOTES_MAX = 500
+/* Grup isian: desktop tanpa garis atas FormGroup (Figma T2) */
+const GROUP = "gap-ns-m lg:border-t-0 lg:pt-0"
+/* Pilihan radio: bertumpuk di mobile, berdampingan di desktop */
+const RADIOS = "gap-ns-m lg:grid-cols-2 lg:gap-ns-2xl"
 
 function IsiPresensi() {
   const { sessionId = "" } = useParams()
@@ -69,6 +80,10 @@ function IsiPresensi() {
   return (
     <DetailScreen
       title="Isi Presensi"
+      desktopHeader="page"
+      backLabel="Presensi"
+      desktopWidth="form"
+      className="lg:pt-ns-3xl"
       footer={
         session?.record && (
           <Button
@@ -140,7 +155,12 @@ type DocState = {
   error: string | null
 }
 
-const EMPTY_DOC: DocState = { file: null, status: "idle", progress: 0, error: null }
+const EMPTY_DOC: DocState = {
+  file: null,
+  status: "idle",
+  progress: 0,
+  error: null,
+}
 
 function AttendanceForm({
   session,
@@ -212,7 +232,8 @@ function AttendanceForm({
       else if (end <= start) next.time = "Jam selesai harus setelah jam mulai."
       if (!topic.trim()) next.topic = "Materi pembelajaran wajib diisi."
       if (doc.status === "error") next.file = doc.error ?? "Unggahan gagal."
-      if (doc.status === "uploading") next.file = "Tunggu hingga file selesai diunggah."
+      if (doc.status === "uploading")
+        next.file = "Tunggu hingga file selesai diunggah."
     } else if (!reason.trim()) {
       next.cancelReason = "Alasan tidak terlaksana wajib diisi."
     }
@@ -238,7 +259,8 @@ function AttendanceForm({
         return
       }
       toast.error("Presensi gagal disimpan", {
-        description: "Isian Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
+        description:
+          "Isian Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
       })
     },
   })
@@ -275,8 +297,13 @@ function AttendanceForm({
     <DetailScreen
       title="Isi Presensi"
       surface="default"
-      className="gap-ns-2xl"
+      className="gap-ns-2xl lg:pt-ns-3xl"
       onBack={() => navigate(-1)}
+      desktopHeader="page"
+      backLabel="Presensi"
+      desktopWidth="wide"
+      /* Desktop: [Batal] [Simpan Presensi] dirender sendiri di akhir form */
+      desktopActions="none"
       footer={
         <Button onClick={handleSubmit} disabled={submit.isPending}>
           {submit.isPending ? "Menyimpan…" : "Simpan Presensi"}
@@ -305,159 +332,180 @@ function AttendanceForm({
         noValidate
         aria-label="Formulir presensi"
         onSubmit={(e) => e.preventDefault()}
-        className="contents"
+        className="contents lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-ns-4xl"
       >
-        <FormGroup title="Status sesi *" className="gap-ns-m">
-          <RadioGroup
-            aria-label="Status sesi"
-            value={held}
-            onValueChange={(v) => {
-              setHeld(v as typeof held)
-              setErrors({})
-            }}
-            className="gap-ns-m"
-          >
-            <RadioGroupItem value="ya" label="Terlaksana" />
-            <RadioGroupItem value="tidak" label="Tidak terlaksana" />
-          </RadioGroup>
-        </FormGroup>
+        {/* Kolom kiri (desktop): status, waktu, kehadiran */}
+        <div className="contents lg:flex lg:flex-col lg:gap-ns-2xl">
+          <FormGroup title="Status sesi *" className={GROUP}>
+            <RadioGroup
+              aria-label="Status sesi"
+              value={held}
+              onValueChange={(v) => {
+                setHeld(v as typeof held)
+                setErrors({})
+              }}
+              className={RADIOS}
+            >
+              <RadioGroupItem value="ya" label="Terlaksana" />
+              <RadioGroupItem value="tidak" label="Tidak terlaksana" />
+            </RadioGroup>
+          </FormGroup>
 
-        {held === "ya" ? (
-          <>
-            <FormGroup title="Waktu pelaksanaan *" className="gap-ns-m">
-              <div className="grid grid-cols-2 gap-ns-m">
-                <Field>
-                  <FieldLabel htmlFor="start">Mulai</FieldLabel>
-                  <TimePicker
-                    id="start"
-                    start="06.00"
-                    end="21.00"
-                    step={15}
-                    value={start || null}
-                    invalid={!!errors.time}
-                    onValueChange={(v) => {
-                      setStart(v ?? "")
-                      clearError("time")
-                    }}
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="end">Selesai</FieldLabel>
-                  <TimePicker
-                    id="end"
-                    start="06.00"
-                    end="22.00"
-                    step={15}
-                    value={end || null}
-                    invalid={!!errors.time}
-                    onValueChange={(v) => {
-                      setEnd(v ?? "")
-                      clearError("time")
-                    }}
-                  />
-                </Field>
-              </div>
-              {errors.time && <FieldError>{errors.time}</FieldError>}
-            </FormGroup>
+          {held === "ya" && (
+            <>
+              <FormGroup title="Waktu pelaksanaan *" className={GROUP}>
+                <div className="grid grid-cols-2 gap-ns-m">
+                  <Field>
+                    <FieldLabel htmlFor="start">Mulai</FieldLabel>
+                    <TimePicker
+                      id="start"
+                      start="06.00"
+                      end="21.00"
+                      step={15}
+                      value={start || null}
+                      invalid={!!errors.time}
+                      onValueChange={(v) => {
+                        setStart(v ?? "")
+                        clearError("time")
+                      }}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="end">Selesai</FieldLabel>
+                    <TimePicker
+                      id="end"
+                      start="06.00"
+                      end="22.00"
+                      step={15}
+                      value={end || null}
+                      invalid={!!errors.time}
+                      onValueChange={(v) => {
+                        setEnd(v ?? "")
+                        clearError("time")
+                      }}
+                    />
+                  </Field>
+                </div>
+                {errors.time && <FieldError>{errors.time}</FieldError>}
+              </FormGroup>
 
-            <FormGroup title="Kehadiran siswa *" className="gap-ns-m">
-              <RadioGroup
-                aria-label="Kehadiran siswa"
-                value={present}
-                onValueChange={(v) => setPresent(v as typeof present)}
-                className="gap-ns-m"
-              >
-                <RadioGroupItem value="hadir" label="Hadir" />
-                <RadioGroupItem value="tidak" label="Tidak hadir" />
-              </RadioGroup>
-            </FormGroup>
-
-            <Field>
-              <FieldLabel htmlFor="topic" required>
-                Materi pembelajaran
-              </FieldLabel>
-              <Input
-                id="topic"
-                placeholder="Contoh: Getaran dan gelombang"
-                value={topic}
-                aria-invalid={errors.topic ? true : undefined}
-                aria-describedby={errors.topic ? "topic-error" : undefined}
-                onChange={(e) => {
-                  setTopic(e.target.value)
-                  clearError("topic")
-                }}
-              />
-              {errors.topic && (
-                <FieldError id="topic-error">{errors.topic}</FieldError>
-              )}
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="notes">Catatan pembelajaran</FieldLabel>
-              <Textarea
-                id="notes"
-                maxLength={NOTES_MAX}
-                placeholder="Contoh: perkembangan siswa dan latihan berikutnya"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-              <FieldDescription counter={`${notes.length}/${NOTES_MAX}`}>
-                Opsional. Dapat dibaca wali murid.
-              </FieldDescription>
-            </Field>
-
-            <FileUpload
-              id="documentation"
-              label="Dokumentasi sesi"
-              accept={DOC_ACCEPT}
-              helper="JPG, PNG, atau PDF · maks. 5 MB"
-              file={doc.file}
-              status={doc.status}
-              progress={doc.progress}
-              error={doc.status === "error" ? doc.error : errors.file}
-              onSelect={selectFile}
-              onRemove={removeFile}
-            />
-          </>
-        ) : (
-          <>
-            <Field>
-              <FieldLabel htmlFor="reason" required>
-                Alasan tidak terlaksana
-              </FieldLabel>
-              <Textarea
-                id="reason"
-                maxLength={NOTES_MAX}
-                placeholder="Contoh: siswa sakit, wali membatalkan pukul 14.00"
-                value={reason}
-                aria-invalid={errors.cancelReason ? true : undefined}
-                aria-describedby={errors.cancelReason ? "reason-error" : undefined}
-                onChange={(e) => {
-                  setReason(e.target.value)
-                  clearError("cancelReason")
-                }}
-              />
-              {errors.cancelReason ? (
-                <FieldError
-                  id="reason-error"
-                  counter={`${reason.length}/${NOTES_MAX}`}
+              <FormGroup title="Kehadiran siswa *" className={GROUP}>
+                <RadioGroup
+                  aria-label="Kehadiran siswa"
+                  value={present}
+                  onValueChange={(v) => setPresent(v as typeof present)}
+                  className={RADIOS}
                 >
-                  {errors.cancelReason}
-                </FieldError>
-              ) : (
-                <FieldDescription counter={`${reason.length}/${NOTES_MAX}`}>
-                  Wajib diisi agar Pengelola LBB dapat menindaklanjuti.
+                  <RadioGroupItem value="hadir" label="Hadir" />
+                  <RadioGroupItem value="tidak" label="Tidak hadir" />
+                </RadioGroup>
+              </FormGroup>
+            </>
+          )}
+        </div>
+
+        {/* Kolom kanan (desktop): isian teks & dokumentasi, atau alasan */}
+        <div className="contents lg:flex lg:flex-col lg:gap-ns-2xl">
+          {held === "ya" ? (
+            <>
+              <Field>
+                <FieldLabel htmlFor="topic" required>
+                  Materi pembelajaran
+                </FieldLabel>
+                <Input
+                  id="topic"
+                  placeholder="Contoh: Getaran dan gelombang"
+                  value={topic}
+                  aria-invalid={errors.topic ? true : undefined}
+                  aria-describedby={errors.topic ? "topic-error" : undefined}
+                  onChange={(e) => {
+                    setTopic(e.target.value)
+                    clearError("topic")
+                  }}
+                />
+                {errors.topic && (
+                  <FieldError id="topic-error">{errors.topic}</FieldError>
+                )}
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="notes">Catatan pembelajaran</FieldLabel>
+                <Textarea
+                  id="notes"
+                  maxLength={NOTES_MAX}
+                  placeholder="Contoh: perkembangan siswa dan latihan berikutnya"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+                <FieldDescription counter={`${notes.length}/${NOTES_MAX}`}>
+                  Opsional. Dapat dibaca wali murid.
                 </FieldDescription>
-              )}
-            </Field>
-            <AlertBanner
-              status="info"
-              title="Tidak dihitung dalam rekap honor"
-              description="Sesi yang tidak terlaksana tercatat di riwayat, tetapi tidak masuk perhitungan honor."
-            />
-          </>
-        )}
+              </Field>
+
+              <FileUpload
+                id="documentation"
+                label="Dokumentasi sesi"
+                accept={DOC_ACCEPT}
+                helper="JPG, PNG, atau PDF · maks. 5 MB"
+                file={doc.file}
+                status={doc.status}
+                progress={doc.progress}
+                error={doc.status === "error" ? doc.error : errors.file}
+                onSelect={selectFile}
+                onRemove={removeFile}
+              />
+            </>
+          ) : (
+            <>
+              <Field>
+                <FieldLabel htmlFor="reason" required>
+                  Alasan tidak terlaksana
+                </FieldLabel>
+                <Textarea
+                  id="reason"
+                  maxLength={NOTES_MAX}
+                  placeholder="Contoh: siswa sakit, wali membatalkan pukul 14.00"
+                  value={reason}
+                  aria-invalid={errors.cancelReason ? true : undefined}
+                  aria-describedby={
+                    errors.cancelReason ? "reason-error" : undefined
+                  }
+                  onChange={(e) => {
+                    setReason(e.target.value)
+                    clearError("cancelReason")
+                  }}
+                />
+                {errors.cancelReason ? (
+                  <FieldError
+                    id="reason-error"
+                    counter={`${reason.length}/${NOTES_MAX}`}
+                  >
+                    {errors.cancelReason}
+                  </FieldError>
+                ) : (
+                  <FieldDescription counter={`${reason.length}/${NOTES_MAX}`}>
+                    Wajib diisi agar Pengelola LBB dapat menindaklanjuti.
+                  </FieldDescription>
+                )}
+              </Field>
+              <AlertBanner
+                status="info"
+                title="Tidak dihitung dalam rekap honor"
+                description="Sesi yang tidak terlaksana tercatat di riwayat, tetapi tidak masuk perhitungan honor."
+              />
+            </>
+          )}
+        </div>
       </form>
+
+      <div className="hidden justify-end gap-ns-m border-t border-grayscale-border-default pt-ns-2xl lg:flex">
+        <Button variant="secondary" onClick={() => navigate(-1)}>
+          Batal
+        </Button>
+        <Button onClick={handleSubmit} disabled={submit.isPending}>
+          {submit.isPending ? "Menyimpan…" : "Simpan Presensi"}
+        </Button>
+      </div>
     </DetailScreen>
   )
 }
@@ -511,6 +559,7 @@ function SavedScreen({ session }: { session: TutorSession }) {
   return (
     <ResultScreen
       title="Presensi tersimpan"
+      pageTitle="Isi Presensi"
       description={
         held
           ? `Menunggu validasi dari ${session.student.parentName}, wali ${firstName(session.student.name)}. Anda akan diberi tahu jika ada keberatan.`
@@ -527,7 +576,9 @@ function SavedScreen({ session }: { session: TutorSession }) {
           <Button
             variant="tertiary"
             onClick={() =>
-              navigate(`/tutor/presensi/status/${session.id}`, { replace: true })
+              navigate(`/tutor/presensi/status/${session.id}`, {
+                replace: true,
+              })
             }
           >
             Lihat status presensi

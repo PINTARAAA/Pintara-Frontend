@@ -23,6 +23,7 @@ import type { TutorNotificationKind } from "@/types/notifikasi"
  * presensi), pengingat jadwal (→ detail jadwal). Sebelumnya: rekap
  * presensi terverifikasi, honor dibayar. Kerangka daftar di
  * NotificationScreen (sama dengan W9).
+ * Desktop: Figma "Notifikasi / Tutor (Desktop)" lewat `desktopPage`.
  */
 const ICONS: Record<TutorNotificationKind, React.ReactNode> = {
   presensi: <ClipboardCheckIcon />,
@@ -42,6 +43,7 @@ function NotifikasiTutor() {
       markRead={markTutorRead}
       markAllRead={markAllTutorRead}
       emptyDescription="Kabar soal jadwal, presensi, dan honor akan muncul di sini."
+      desktopPage
     />
   )
 }

@@ -73,7 +73,7 @@ function AlertBanner({
           type="button"
           aria-label="Tutup"
           onClick={onDismiss}
-          className="flex size-6 shrink-0 items-center justify-center rounded-sm text-grayscale-text-body outline-none hover:bg-neutral-black/5 focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
+          className="flex size-6 shrink-0 items-center justify-center rounded-sm text-grayscale-text-body outline-none hover:bg-grayscale-text-title/5 focus-visible:ring-2 focus-visible:ring-primary-border-lighter"
         >
           <XIcon className="size-5" />
         </button>

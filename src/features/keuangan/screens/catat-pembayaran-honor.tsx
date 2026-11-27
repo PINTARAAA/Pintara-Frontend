@@ -243,7 +243,7 @@ function PaymentForm({
         <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-ns-2xl">
           <fieldset className="gap-ns-m flex flex-col">
             <legend className="mb-ns-m text-body text-grayscale-text-title leading-normal font-bold">
-              Metode pengambilan <span className="text-error">*</span>
+              Metode pengambilan <span className="text-grayscale-text-negative">*</span>
             </legend>
             <RadioGroup
               value={method}

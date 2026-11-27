@@ -149,7 +149,7 @@ function ProfilTutor() {
                 [
                   "Tarif per sesi",
                   tutor.rate === null ? (
-                    <span className="text-error">Belum diatur</span>
+                    <span className="text-grayscale-text-negative">Belum diatur</span>
                   ) : (
                     formatRupiah(tutor.rate)
                   ),

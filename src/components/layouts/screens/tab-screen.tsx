@@ -30,10 +30,16 @@ function TabScreen({
   subheader,
   desktopHeader = "bar",
   desktopHeaderActions,
+  desktopTitle,
   className,
   children,
 }: {
   title: React.ReactNode
+  /*
+   * Khusus desktopHeader="page": judul Page header bila berbeda dari judul
+   * Top app bar mobile, mis. "Riwayat Les" vs "Riwayat"
+   */
+  desktopTitle?: React.ReactNode
   subtitle?: React.ReactNode
   action?: React.ReactNode
   /* Area menempel di bawah top app bar, mis. Tabs ("Tabs wrap" di Figma) */
@@ -61,7 +67,7 @@ function TabScreen({
         {page && (
           <PageHeader
             className="hidden pl-(--gutter) pr-(--gutter-end) pt-ns-3xl lg:flex"
-            title={title}
+            title={desktopTitle ?? title}
             subtitle={subtitle}
             actions={desktopHeaderActions}
           />

@@ -21,7 +21,10 @@ import { cn } from "@/lib/styles"
  *   Grayscale/Surface/subtitle, nominal Body/Bold, garis Border/default,
  *   baris 16px, tombol selebar label. Tugas `urgent` (mis. tagihan lewat
  *   jatuh tempo) tampil paling atas: ikon Semantic/Error, tombol primary.
- * `highlight` tampil tebal Semantic/Error setelah deskripsi.
+ * appearance="tutor" (Figma T1 · Beranda (Desktop)): baris seperti wali,
+ *   ikon Primary/Surface/subtitle (alert: peringatan), tanpa pengurutan.
+ * `highlight` tampil tebal Semantic/Error setelah deskripsi. Tombol primary
+ * untuk tugas `urgent` atau `primary`, selain itu secondary.
  */
 function TaskActionList({
   tasks,
@@ -31,13 +34,15 @@ function TaskActionList({
   className,
 }: {
   tasks: DashboardTask[]
-  appearance?: "pengelola" | "wali"
+  appearance?: "pengelola" | "wali" | "tutor"
   emptyTitle?: string
   emptyDescription?: string
   className?: string
 }) {
   const wali = appearance === "wali"
-  const divider = wali
+  /* Wali & tutor: baris 16px, garis Border/default, tombol selebar label */
+  const roomy = appearance !== "pengelola"
+  const divider = roomy
     ? "border-grayscale-border-default"
     : "border-grayscale-surface-disabled"
 
@@ -72,14 +77,14 @@ function TaskActionList({
             className={cn(
               "flex items-center gap-ns-l border-b",
               divider,
-              wali ? "py-ns-l" : "py-3.5"
+              roomy ? "py-ns-l" : "py-3.5"
             )}
           >
             <span
               className={cn(
                 "flex size-10 shrink-0 items-center justify-center rounded-full",
                 task.urgent
-                  ? "bg-error-subtle text-error"
+                  ? "bg-error-subtle text-grayscale-text-negative"
                   : task.icon === "alert"
                     ? "bg-warning-subtle text-warning"
                     : wali
@@ -92,8 +97,8 @@ function TaskActionList({
             <div
               className={cn(
                 "flex min-w-0 flex-1 flex-col leading-normal",
-                /* Wali: Figma 2px, dilonggarkan ke 4px agar judul tidak menempel */
-                wali ? "gap-ns-2xs" : "gap-ns-s"
+                /* Wali & tutor: Figma 2px, dilonggarkan ke 4px agar judul tidak menempel */
+                roomy ? "gap-ns-2xs" : "gap-ns-s"
               )}
             >
               <p className="text-body font-bold text-grayscale-text-title">{task.title}</p>
@@ -102,7 +107,7 @@ function TaskActionList({
                 {task.highlight && (
                   <>
                     {" · "}
-                    <strong className="font-bold text-error">{task.highlight}</strong>
+                    <strong className="font-bold text-grayscale-text-negative">{task.highlight}</strong>
                   </>
                 )}
               </p>
@@ -111,16 +116,16 @@ function TaskActionList({
               <p
                 className={cn(
                   "text-right font-bold text-grayscale-text-title",
-                  wali ? "text-body leading-normal" : "min-w-10 text-h4"
+                  roomy ? "text-body leading-normal" : "min-w-10 text-h4"
                 )}
               >
                 {value}
               </p>
             )}
             <Button
-              variant={task.urgent ? "primary" : "secondary"}
+              variant={task.urgent || task.primary ? "primary" : "secondary"}
               size="sm"
-              className={wali ? undefined : "w-28"}
+              className={roomy ? undefined : "w-28"}
               nativeButton={false}
               render={<Link to={task.to} />}
             >

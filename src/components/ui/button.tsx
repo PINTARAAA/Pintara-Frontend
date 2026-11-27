@@ -20,7 +20,7 @@ import { cn } from "@/lib/styles"
 const primary =
   "bg-primary-surface-default text-primary-text-label hover:bg-primary-600 disabled:bg-grayscale-surface-disabled"
 const secondary =
-  "border-primary-border-default bg-grayscale-surface-default text-primary-surface-default hover:bg-primary-surface-subtitle aria-expanded:bg-primary-surface-subtitle disabled:border-grayscale-border-disabled disabled:bg-grayscale-surface-default"
+  "border-primary-border-default bg-grayscale-surface-default text-primary-text-link hover:bg-primary-surface-subtitle aria-expanded:bg-primary-surface-subtitle disabled:border-grayscale-border-disabled disabled:bg-grayscale-surface-default"
 
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding leading-none font-normal whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/40 disabled:pointer-events-none disabled:text-grayscale-text-disabled aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -30,13 +30,13 @@ const buttonVariants = cva(
         primary,
         secondary,
         tertiary:
-          "bg-transparent text-primary-surface-default hover:bg-primary-surface-subtitle aria-expanded:bg-primary-surface-subtitle",
+          "bg-transparent text-primary-text-link hover:bg-primary-surface-subtitle aria-expanded:bg-primary-surface-subtitle",
         destructive:
           "bg-error text-primary-text-label hover:bg-error/90 focus-visible:ring-destructive/30 disabled:bg-grayscale-surface-disabled",
         /* Di luar Figma: utilitas netral untuk tombol tutup, navigasi kalender, dll. */
         ghost:
           "text-grayscale-text-body hover:bg-muted aria-expanded:bg-muted",
-        link: "h-auto! p-0! text-primary-surface-default underline-offset-4 hover:underline",
+        link: "h-auto! p-0! text-primary-text-link underline-offset-4 hover:underline",
         /* Alias nama shadcn agar komponen bawaan tetap berfungsi */
         default: primary,
         outline: secondary,

@@ -51,7 +51,7 @@ function DataTutor() {
         <TopAppBarButton
           label="Tambah tutor"
           variant="plain"
-          className="text-primary-surface-default lg:hidden"
+          className="text-primary-text-link lg:hidden"
           onClick={() => navigate("/pengelola/tutor/tambah")}
         >
           <PlusIcon />

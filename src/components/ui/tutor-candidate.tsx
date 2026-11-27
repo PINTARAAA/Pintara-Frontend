@@ -85,7 +85,7 @@ function TutorCandidate({
               {c.met ? (
                 <CheckIcon aria-hidden="true" className="size-4 shrink-0" />
               ) : (
-                <XIcon aria-hidden="true" className="size-4 shrink-0 text-error" />
+                <XIcon aria-hidden="true" className="size-4 shrink-0 text-grayscale-text-negative" />
               )}
               <span className="sr-only">{c.met ? "Terpenuhi:" : "Tidak terpenuhi:"}</span>
               {c.label}

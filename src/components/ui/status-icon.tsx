@@ -19,7 +19,7 @@ const icons = {
   success: { Icon: CircleCheckIcon, color: "text-success" },
   info: { Icon: InfoIcon, color: "text-info" },
   warning: { Icon: TriangleAlertIcon, color: "text-warning" },
-  error: { Icon: CircleXIcon, color: "text-error" },
+  error: { Icon: CircleXIcon, color: "text-grayscale-text-negative" },
 } as const
 
 function StatusIcon({

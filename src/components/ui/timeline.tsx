@@ -29,7 +29,7 @@ const markerClass: Record<TimelineState, string> = {
   done: "bg-primary-surface-default text-primary-text-label",
   current: "bg-primary-surface-subtitle",
   upcoming: "bg-grayscale-surface-disabled",
-  rejected: "bg-error-subtle text-error",
+  rejected: "bg-error-subtle text-grayscale-text-negative",
 }
 
 const stateLabel: Record<TimelineState, string> = {

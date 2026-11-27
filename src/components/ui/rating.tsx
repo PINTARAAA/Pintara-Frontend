@@ -63,7 +63,7 @@ function Rating({
                 filled
                   ? "fill-warning text-warning"
                   : invalid
-                    ? "text-error"
+                    ? "text-grayscale-text-negative"
                     : "text-grayscale-text-body hover:text-warning"
               )}
             />

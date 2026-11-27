@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate, Outlet, type RouteObject } from "react-r
 
 import { ROLE_NAV, ROLE_SIDEBAR, type Role } from "./navigation"
 import { SidebarLogoutItem } from "@/features/akun/components/account-help"
+import { SidebarThemeItem } from "@/features/akun/components/theme-setting"
 import { PageLoader } from "./page-loader"
 import RouteError from "@/pages/error/error"
 import { AppFrame, AppShell } from "@/components"
@@ -392,9 +393,14 @@ function roleRoutes(role: Role): RouteObject {
         sidebarUtilityList={[...(sidebarExtra?.utility ?? []), ...utility]}
         sidebarGroups={sidebar?.groups}
         sidebarUtilityItems={sidebar?.utility}
+        /* Shortcut tema: wali & tutor di atas Notifikasi, pengelola di atas Keluar */
+        sidebarUtilityLead={!sidebar && <SidebarThemeItem />}
         sidebarFooter={
           sidebar && (
-            <SidebarLogoutItem description={sidebar.logoutDescription} />
+            <>
+              <SidebarThemeItem />
+              <SidebarLogoutItem description={sidebar.logoutDescription} />
+            </>
           )
         }
       />

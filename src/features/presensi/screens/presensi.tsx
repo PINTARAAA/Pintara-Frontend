@@ -10,8 +10,8 @@ import {
   ListItem,
 } from "@/components"
 import {
-  DashboardList,
   DashboardSection,
+  ExpandableList,
   NotificationButton,
 } from "@/features/dashboard/components"
 
@@ -26,7 +26,17 @@ import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
  * Perlu diisi (sesi sudah dimulai, belum dipresensi; ketuk → form) ·
  * Nanti hari ini (belum bisa diisi) · Sudah diisi (badge status validasi
  * wali; tautan "Status presensi" ke T3).
+ *
+ * Desktop (≥ lg, frame "Presensi / Daftar (Desktop)" dan "- Kosong
+ * (Desktop)"): halaman putih, Page header "Presensi" (lonceng di sidebar);
+ * Perlu diisi + Nanti hari ini di kolom utama (jarak 32), Sudah diisi 420px
+ * di kanan (jarak 40). Kosong: kartu Data state di tengah halaman.
+ *
+ * Tiap bagian hanya menampilkan PREVIEW baris pertama; sisanya dibuka lewat
+ * "Lihat selengkapnya" · "Ringkas" agar halaman tidak perlu digulir panjang
+ * (tambahan di luar Figma).
  */
+const PREVIEW = 3
 function Presensi() {
   const query = useQuery(tutorSessionsQuery())
   const data = query.data
@@ -36,6 +46,7 @@ function Presensi() {
     <TabScreen
       title="Presensi"
       action={<NotificationButton to="/tutor/notifikasi" unread={unread} />}
+      desktopHeader="page"
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi les…" />
@@ -47,7 +58,7 @@ function Presensi() {
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : data ? (
-        <div className="flex flex-1 flex-col gap-ns-2xl lg:grid lg:grid-cols-2 lg:items-start">
+        <div className="flex flex-1 flex-col gap-ns-2xl lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-x-ns-4xl">
           {data.toFill.length + data.laterToday.length === 0 ? (
             <div className="flex flex-1 flex-col justify-center gap-ns-l lg:col-span-2">
               <DataState
@@ -65,11 +76,13 @@ function Presensi() {
               </Button>
             </div>
           ) : (
-            <div className="flex flex-col gap-ns-2xl">
+            <div className="flex flex-col gap-ns-2xl lg:gap-ns-3xl">
               {data.toFill.length > 0 && (
                 <DashboardSection title="Perlu diisi">
-                  <DashboardList>
-                    {data.toFill.map((s) => (
+                  <ExpandableList
+                    preview={PREVIEW}
+                    items={data.toFill}
+                    renderItem={(s) => (
                       <ListItem
                         key={s.id}
                         icon={<ClipboardCheckIcon />}
@@ -78,22 +91,24 @@ function Presensi() {
                         chevron
                         render={<Link to={`/tutor/presensi/${s.id}`} />}
                       />
-                    ))}
-                  </DashboardList>
+                    )}
+                  />
                 </DashboardSection>
               )}
               {data.laterToday.length > 0 && (
                 <DashboardSection title="Nanti hari ini">
-                  <DashboardList>
-                    {data.laterToday.map((s) => (
+                  <ExpandableList
+                    preview={PREVIEW}
+                    items={data.laterToday}
+                    renderItem={(s) => (
                       <ListItem
                         key={s.id}
                         icon={<ClockIcon />}
                         title={sessionTitle(s)}
                         description={`${formatTimeRange(s.start, s.end)} · bisa diisi setelah sesi dimulai`}
                       />
-                    ))}
-                  </DashboardList>
+                    )}
+                  />
                 </DashboardSection>
               )}
             </div>
@@ -102,10 +117,15 @@ function Presensi() {
           {data.filled.length > 0 && (
             <DashboardSection
               title="Sudah diisi"
-              action={{ label: "Status presensi", to: "/tutor/presensi/status" }}
+              action={{
+                label: "Status presensi",
+                to: "/tutor/presensi/status",
+              }}
             >
-              <DashboardList>
-                {data.filled.map((s) => (
+              <ExpandableList
+                preview={PREVIEW}
+                items={data.filled}
+                renderItem={(s) => (
                   <ListItem
                     key={s.id}
                     icon={<ClipboardCheckIcon />}
@@ -113,13 +133,16 @@ function Presensi() {
                     description={formatWeekdayDate(s.start)}
                     badge={
                       s.record && (
-                        <StatusBadge category="presensi" status={s.record.validation} />
+                        <StatusBadge
+                          category="presensi"
+                          status={s.record.validation}
+                        />
                       )
                     }
                     render={<Link to={`/tutor/presensi/status/${s.id}`} />}
                   />
-                ))}
-              </DashboardList>
+                )}
+              />
             </DashboardSection>
           )}
         </div>

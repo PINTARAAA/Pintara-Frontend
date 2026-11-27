@@ -12,8 +12,11 @@ import {
 } from "@/features/dashboard/components"
 import type { LbbContact } from "@/types/akun"
 
+import { ThemeSetting } from "./theme-setting"
+
 /*
- * Bagian bawah layar Akun (W8 · T6): Bantuan (Hubungi Pengelola LBB via
+ * Bagian bawah layar Akun (W8 · T6): Tampilan (pilihan tema, di luar
+ * Figma) → Bantuan (Hubungi Pengelola LBB via
  * WhatsApp, Tentang PINTARA) → Keluar.
  */
 function AccountHelp({
@@ -29,6 +32,8 @@ function AccountHelp({
 
   return (
     <>
+      <ThemeSetting />
+
       <DashboardSection title="Bantuan">
         <DashboardList>
           <ListItem
