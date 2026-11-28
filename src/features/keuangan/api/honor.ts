@@ -1,7 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
-import { format, startOfMonth, subMonths } from "date-fns"
+import { format, startOfMonth } from "date-fns"
 
-import { finalByTutor, finalProgress } from "@/features/presensi/api"
+import { finalByTutor } from "@/features/presensi/api"
+import { httpClient } from "@/lib/api"
 import { buildHonor, recaps, tutorProfiles } from "@/lib/data/keuangan"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
@@ -17,8 +18,10 @@ import type { TutorSession } from "@/types/presensi"
  * Rekap & Pembayaran Honor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P7 · Rekap & Pembayaran Honor
  *
+ * Sudah memakai BE:
+ *   getHonorRecap(bulan)              → GET /pengelola/honor
+ *
  * TODO(backend):
- *   getHonorRecap(bulan)              → httpClient.get("/pengelola/honor", { params: { bulan } })
  *   calculateHonor(bulan)             → httpClient.post("/pengelola/honor/hitung", { bulan })
  *   getHonorDetail(bulan, tutorId)    → httpClient.get(`/pengelola/honor/${bulan}/${tutorId}`)
  *   recordHonorPayment(bulan, id, …)  → httpClient.post(`/pengelola/honor/${bulan}/${id}/bayar`, form)
@@ -37,61 +40,16 @@ const monthKey = (d: Date) => format(startOfMonth(d), "yyyy-MM")
 
 /* ---------- Rekap per bulan (tab Honor Tutor) ---------- */
 
-const isPaid = (h: TutorHonor) => !!h.payment && h.payment.amount >= h.total
-
+/*
+ * Rekap honor bulan tsb (default bulan berjalan). belum_dihitung: progres
+ * presensi final + tutor tanpa tarif; dihitung: honor per tutor (belum
+ * lunas urut terbesar, lunas urut tanggal bayar terbaru).
+ */
 export async function getHonorRecap(month?: Date): Promise<HonorRecap> {
-  assertMockAllowed()
-  await delay()
-  const current = startOfMonth(new Date())
-  const active = startOfMonth(month ?? current)
-  const months = [current, subMonths(current, 1)]
-  const recap = recaps.get(monthKey(active))
-
-  if (!recap) {
-    const progress = finalProgress(active)
-    const tutorsWithFinals = finalByTutor(active).map((t) => t.tutor)
-    return {
-      state: "belum_dihitung",
-      months,
-      month: active,
-      final: progress.final,
-      total: progress.total,
-      tutorsWithoutRate: tutorProfiles
-        .filter((t) => t.rate === null && tutorsWithFinals.includes(t.name))
-        .map((t) => t.name),
-    }
-  }
-
-  const byAmount = (a: TutorHonor, b: TutorHonor) => b.total - a.total
-  const paidHonors = recap.honors.filter(isPaid)
-  const unpaidHonors = recap.honors.filter((h) => !isPaid(h))
-  const sum = (list: TutorHonor[], pick: (h: TutorHonor) => number) =>
-    list.reduce((acc, h) => acc + pick(h), 0)
-
-  return structuredClone({
-    state: "dihitung" as const,
-    months,
-    month: active,
-    calculatedAt: recap.calculatedAt,
-    total: sum(recap.honors, (h) => h.total),
-    sessions: sum(recap.honors, (h) => h.sessions),
-    paid: {
-      amount: sum(recap.honors, (h) =>
-        Math.min(h.payment?.amount ?? 0, h.total)
-      ),
-      tutors: paidHonors.length,
-    },
-    unpaid: {
-      amount: sum(unpaidHonors, (h) => h.total - (h.payment?.amount ?? 0)),
-      tutors: unpaidHonors.length,
-    },
-    unpaidHonors: unpaidHonors.sort(byAmount),
-    paidHonors: paidHonors.sort(
-      (a, b) =>
-        (b.payment?.paidAt.getTime() ?? 0) - (a.payment?.paidAt.getTime() ?? 0)
-    ),
-    skipped: recap.skipped,
+  const { data } = await httpClient.get<HonorRecap>("/pengelola/honor", {
+    params: month ? { bulan: monthKey(month) } : undefined,
   })
+  return data
 }
 
 export const honorRecapQuery = (month?: Date) =>

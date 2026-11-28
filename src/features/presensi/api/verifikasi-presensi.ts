@@ -1,16 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
-import {
-  format,
-  isAfter,
-  isSameMonth,
-  startOfMonth,
-  subMonths,
-} from "date-fns"
+import { format, isSameMonth, startOfMonth } from "date-fns"
 
-import {
-  isReadyForFinal,
-  snapshotTutorSessions,
-} from "@/features/presensi/api/presensi"
+import { snapshotTutorSessions } from "@/features/presensi/api/presensi"
 import { httpClient } from "@/lib/api"
 import { otherTutors } from "@/lib/data/presensi"
 import type {
@@ -48,65 +39,6 @@ const monthBody = (month?: Date) =>
 const total = (c: Counts) => c.final + c.ready + c.waiting + c.notCollected
 
 /* ---------- Ringkasan per bulan ---------- */
-
-/*
- * Mock ringkasan, hanya dipakai finalProgress() untuk rekap honor (P7)
- * sampai branch keuangan.
- */
-function buildOverview(month: Date): FinalOverview {
-  const now = new Date()
-  const current = startOfMonth(now)
-  const active = startOfMonth(month)
-  const isCurrent = active.getTime() === current.getTime()
-
-  const budi = snapshotTutorSessions().filter(
-    (s) => isSameMonth(s.start, active) && !isAfter(s.start, now)
-  )
-  const budiCounts: Counts = {
-    final: budi.filter((s) => s.record?.finalAt).length,
-    ready: budi.filter(isReadyForFinal).length,
-    waiting: budi.filter((s) => s.record?.validation === "belum_divalidasi")
-      .length,
-    notCollected: budi.filter((s) => !s.record).length,
-  }
-  const objections = budi
-    .filter((s) => s.record?.validation === "keberatan")
-    .sort((a, b) => a.start.getTime() - b.start.getTime())
-
-  /* Bulan lalu: presensi tutor lain sudah final semua */
-  const others = otherTutors.map((t) => ({
-    name: t.name,
-    counts: isCurrent
-      ? t.counts
-      : { final: total(t.counts), ready: 0, waiting: 0, notCollected: 0 },
-  }))
-
-  const sum = (key: keyof Counts) =>
-    budiCounts[key] + others.reduce((acc, t) => acc + t.counts[key], 0)
-
-  return {
-    months: [current, subMonths(current, 1)],
-    month: active,
-    total:
-      sum("final") +
-      sum("ready") +
-      sum("waiting") +
-      sum("notCollected") +
-      objections.length,
-    final: sum("final"),
-    ready: sum("ready"),
-    waiting: sum("waiting"),
-    disputed: objections.length,
-    notCollected: sum("notCollected"),
-    objections,
-    readyByTutor: [
-      { tutor: BUDI.name, count: budiCounts.ready },
-      ...others.map((t) => ({ tutor: t.name, count: t.counts.ready })),
-    ]
-      .filter((t) => t.count > 0)
-      .sort((a, b) => b.count - a.count),
-  }
-}
 
 /*
  * Presensi sesi yang sudah dimulai pada bulan tsb (default bulan berjalan):
@@ -208,10 +140,4 @@ export function finalByTutor(month: Date): FinalByTutor[] {
     { tutor: BUDI.name, bySubject: budiBySubject, sessions: budi },
     ...others,
   ].filter((t) => Object.values(t.bySubject).some((n) => n > 0))
-}
-
-/* Ringkasan singkat untuk P7 · Belum dihitung: "178 dari 186 presensi sudah final" */
-export function finalProgress(month: Date) {
-  const overview = buildOverview(month)
-  return { final: overview.final, total: overview.total }
 }
