@@ -17,7 +17,6 @@ import {
   DataState,
   toast,
 } from "@/components"
-import { NotFoundError } from "@/features/jadwal/api"
 import {
   changeReviewQuery,
   formatRange,
@@ -27,6 +26,8 @@ import {
 } from "@/features/jadwal-les/api"
 import type { ChangeReview } from "@/types/jadwal-les"
 import { SummaryRow } from "@/features/pendaftaran/components"
+import { isNotFoundError } from "@/features/verifikasi/api"
+import { getErrorMessage } from "@/lib/api"
 import { firstName } from "@/lib/format"
 
 /*
@@ -65,11 +66,11 @@ function TinjauPengajuan() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pengajuan…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Pengajuan gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : (

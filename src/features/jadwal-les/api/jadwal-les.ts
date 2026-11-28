@@ -25,7 +25,7 @@ import type {
  * → P5 · Atur Jadwal Les
  *
  * Sudah memakai BE: getScheduleBoard, getScheduleDraft, getPairDraft,
- * saveSchedule.
+ * saveSchedule, getChangeReview.
  *
  * TODO(backend):
  *   reviewChangeRequest(id, ok) → httpClient.post(`/pengelola/pengajuan-jadwal/${id}`, …)
@@ -240,12 +240,14 @@ function buildReview(request: ChangeRequestForReview): ChangeReview {
   })
 }
 
+/* Pengajuan + sesi asal/tujuan + bentrok (dihitung BE); 404 bila tidak ada */
 export async function getChangeReview(
   requestId: string
 ): Promise<ChangeReview> {
-  assertMockAllowed()
-  await delay(300)
-  return buildReview(findRequestForReview(requestId))
+  const { data } = await httpClient.get<ChangeReview>(
+    `/pengelola/pengajuan-jadwal/${encodeURIComponent(requestId)}`
+  )
+  return data
 }
 
 export const changeReviewQuery = (requestId: string) =>
