@@ -96,7 +96,17 @@ export type TutorSchedule = {
   freeDays: string[]
 }
 
-export type TutorScheduleDetail = TutorScheduleSession & {
+/*
+ * Detail sesi dari GET /tutor/jadwal/:id. BE memakai bentuk detail presensi,
+ * jadi kelas siswa dan alamat belum dikirim (temuan #23 di api-docs).
+ */
+export type TutorScheduleDetail = {
+  id: string
+  subject: string
+  start: Date
+  end: Date
+  student: { name: string; grade?: string }
+  address?: string
   parent: TutorRoutine["parent"] & { whatsapp: string }
   previous: {
     date: Date

@@ -14,9 +14,10 @@ import {
   DataState,
 } from "@/components";
 import {
-  NotFoundError,
+  isNotFoundError,
   tutorScheduleSessionQuery,
 } from "@/features/jadwal/api";
+import { getErrorMessage } from "@/lib/api";
 import type { TutorScheduleDetail } from "@/types/jadwal";
 
 import { SummaryRow } from "@/features/pendaftaran/components";
@@ -83,7 +84,7 @@ function DetailJadwalTutor() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat jadwal…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Jadwal tidak ditemukan"
@@ -97,7 +98,7 @@ function DetailJadwalTutor() {
           <DataState
             state="error"
             title="Jadwal gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )
@@ -123,11 +124,15 @@ function DetailJadwalTutor() {
               <CardContent>
                 <dl className="flex flex-col gap-ns-m">
                   <SummaryRow label="Siswa" labelClassName="w-[104px]">
-                    {session.student.name} · {session.student.grade}
+                    {session.student.grade
+                      ? `${session.student.name} · ${session.student.grade}`
+                      : session.student.name}
                   </SummaryRow>
-                  <SummaryRow label="Alamat" labelClassName="w-[104px]">
-                    {session.address}
-                  </SummaryRow>
+                  {session.address && (
+                    <SummaryRow label="Alamat" labelClassName="w-[104px]">
+                      {session.address}
+                    </SummaryRow>
+                  )}
                   <SummaryRow label="Wali" labelClassName="w-[104px]">
                     {session.parent.name} ·{" "}
                     <span className="whitespace-nowrap">

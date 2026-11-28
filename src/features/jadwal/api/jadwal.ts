@@ -62,17 +62,9 @@ export const waliScheduleQuery = (studentId?: string) =>
 
 /* ---------- Detail jadwal rutin ---------- */
 
-export class NotFoundError extends Error {
-  constructor(what: string) {
-    super(`${what} tidak ditemukan.`)
-    this.name = "NotFoundError"
-  }
-}
-
-/* 404 dari BE (atau dari mock yang belum diintegrasikan) */
+/* 404 dari BE: jadwal/pengajuan tidak ada atau bukan milik pengguna ini */
 export const isNotFoundError = (error: unknown) =>
-  (isApiError(error) && error.code === "not_found") ||
-  error instanceof NotFoundError
+  isApiError(error) && error.code === "not_found"
 
 /* Jadwal rutin + sesi berikutnya + pengajuan terbuka; 404 bila bukan milik wali */
 export async function getRoutine(id: string): Promise<RoutineDetail> {

@@ -1,13 +1,9 @@
 import { queryOptions } from "@tanstack/react-query"
-import { format, getDay, isValid, parse, startOfDay } from "date-fns"
+import { format, getDay, startOfDay } from "date-fns"
 
-import { NotFoundError } from "@/features/jadwal/api/jadwal"
-import { findLastHeldSession } from "@/features/presensi/api"
 import { parseTime } from "@/lib/data/jadwal"
 import { routines } from "@/lib/data/jadwal-tutor"
 import { httpClient } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
-import { normalizePhone } from "@/lib/format"
 import type {
   TutorRoutine,
   TutorSchedule,
@@ -18,13 +14,9 @@ import type {
 /*
  * Jadwal tutor · Figma PINTARA → UI Screen → Tutor → T5 · Jadwal
  *
- * Sudah memakai BE: getTutorSchedule.
- *
- * TODO(backend):
- *   getTutorScheduleSession(id) → httpClient.get(`/tutor/jadwal/${id}`)
- *
- * Selama backend belum ada (mode development) sesi dibentuk dari jadwal
- * rutin mingguan tutor di bawah.
+ * Sudah memakai BE: getTutorSchedule, getTutorScheduleSession.
+ * `tutorSessionsOn` (data mock `@/lib/data/jadwal-tutor`) masih dibaca mock
+ * pengingat notifikasi tutor sampai branch integrasinya.
  */
 
 /* ---------- Utilitas ---------- */
@@ -76,35 +68,14 @@ export const tutorScheduleQuery = (week = 0) =>
 
 /* ---------- Detail sesi ---------- */
 
+/* 404 bila sesi tidak ada atau bukan milik tutor ini */
 export async function getTutorScheduleSession(
   id: string
 ): Promise<TutorScheduleDetail> {
-  assertMockAllowed()
-  await delay(300)
-
-  const [routineId, dateKey = ""] = id.split("_")
-  const routine = routines.find((r) => r.id === routineId)
-  const day = parse(dateKey, "yyyyMMdd", new Date())
-  if (!routine || !isValid(day) || getDay(day) !== routine.weekday) {
-    throw new NotFoundError("Jadwal")
-  }
-
-  const session = toSession(routine, day)
-  const last = findLastHeldSession(routine.student.name, session.start)
-  return {
-    ...session,
-    parent: {
-      ...routine.parent,
-      /* "0813-5566-7788" → "6281355667788" (nomor kanonis untuk wa.me) */
-      whatsapp: normalizePhone(routine.parent.phone) ?? "",
-    },
-    previous: last && {
-      date: last.start,
-      subject: last.subject,
-      topic: last.record?.topic,
-      notes: last.record?.notes || undefined,
-    },
-  }
+  const { data } = await httpClient.get<TutorScheduleDetail>(
+    `/tutor/jadwal/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const tutorScheduleSessionQuery = (id: string) =>
