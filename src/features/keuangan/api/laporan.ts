@@ -3,8 +3,6 @@ import { addMonths, startOfMonth, subMonths } from "date-fns"
 
 import { monthKey } from "@/features/keuangan/api/honor"
 import { httpClient, isApiError } from "@/lib/api"
-import { bills } from "@/lib/data/keuangan"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type { BillStatus } from "@/types/tagihan"
 import type {
   FinanceSummary,
@@ -25,9 +23,7 @@ import type {
  *   generateReport(input)             → POST /pengelola/laporan-keuangan/unduh
  *   getStudentBills(bulan)            → GET /pengelola/tagihan
  *   getStudentBill(id)                → GET /pengelola/tagihan/:id
- *
- * TODO(backend):
- *   recordManualPayment(id, form)     → httpClient.post(`/pengelola/tagihan/${id}/pembayaran`, form)
+ *   recordManualPayment(id, input)    → POST /pengelola/tagihan/:id/pembayaran
  *
  * Bagian lembaga = total tagihan siswa − total honor tutor pada periode itu.
  * Tambahkan ?unduh=gagal pada layar laporan untuk menguji "Gagal dibuat".
@@ -107,23 +103,9 @@ export const studentBillsQuery = (month?: Date) =>
 
 /* ---------- Rincian satu tagihan ---------- */
 
-export class ReportNotFoundError extends Error {
-  constructor() {
-    super("Tagihan tidak ditemukan.")
-    this.name = "ReportNotFoundError"
-  }
-}
-
-/* 404 dari BE, atau dari mock pembayaran manual */
+/* 404 dari BE (tagihan tidak ada) */
 export const isReportNotFoundError = (error: unknown) =>
-  (isApiError(error) && error.code === "not_found") ||
-  error instanceof ReportNotFoundError
-
-function findBill(id: string) {
-  const bill = bills.find((b) => b.id === id)
-  if (!bill) throw new ReportNotFoundError()
-  return bill
-}
+  isApiError(error) && error.code === "not_found"
 
 /* Rincian tagihan + semua transaksi (gateway & manual) */
 export async function getStudentBill(id: string): Promise<StudentBill> {
@@ -139,27 +121,25 @@ export const studentBillQuery = (id: string) =>
     queryFn: () => getStudentBill(id),
   })
 
-/* Catat pembayaran yang diterima di luar payment gateway */
+/*
+ * Catat pembayaran yang diterima di luar payment gateway. Bukti hanya
+ * dicatat nama & ukurannya (BE tidak menerima file). 422 bila nominal ≤ 0
+ * atau melebihi sisa; wali mendapat notifikasi dari BE.
+ */
 export async function recordManualPayment(
   id: string,
   input: ManualPaymentInput
 ): Promise<StudentBill> {
-  assertMockAllowed()
-  await delay(800)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const bill = findBill(id)
-  if (input.amount <= 0 || input.amount > billRemaining(bill)) {
-    throw new Error("Nominal pembayaran tidak valid.")
-  }
-  bill.payments.push({
-    id: `TRX-MANUAL-${Date.now()}`,
-    amount: input.amount,
-    method: input.method,
-    status: "berhasil",
-    createdAt: input.paidAt,
-    manual: { proof: input.proof },
-  })
-  return structuredClone(bill)
+  const { data } = await httpClient.post<StudentBill>(
+    `/pengelola/tagihan/${encodeURIComponent(id)}/pembayaran`,
+    {
+      amount: input.amount,
+      paidAt: input.paidAt.toISOString(),
+      method: input.method,
+      ...(input.proof && { proof: input.proof }),
+    }
+  )
+  return data
 }
 
 /* ---------- Unduh laporan ---------- */
