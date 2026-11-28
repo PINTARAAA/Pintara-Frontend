@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { endOfMonth, isSameMonth } from "date-fns"
 
 import { countUpcomingSessions } from "@/features/jadwal/api"
+import { httpClient } from "@/lib/api"
 import { sessions } from "@/lib/data/absensi"
 import { STUDENTS } from "@/lib/data/dashboard"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
@@ -14,9 +15,10 @@ import type {
 /*
  * Validasi Absensi & Ulasan · Figma PINTARA → UI Screen → Wali Murid → W5
  *
+ * Sudah memakai BE: getAttendance() → GET /wali/presensi
+ *
  * TODO(backend):
- *   getAttendance()          → httpClient.get("/wali/presensi")
- *   getSession(id)           → httpClient.get(`/wali/presensi/${id}`)
+ *   getSession(id)          → httpClient.get(`/wali/presensi/${id}`)
  *   approveSession(id)       → httpClient.post(`/wali/presensi/${id}/setujui`)
  *   submitObjection(id, …)   → httpClient.post(`/wali/presensi/${id}/keberatan`, …)
  *   submitReview(id, …)      → httpClient.post(`/wali/presensi/${id}/ulasan`, …)
@@ -31,23 +33,14 @@ import type {
 const byNewest = (a: AttendanceSession, b: AttendanceSession) =>
   b.start.getTime() - a.start.getTime()
 
+/*
+ * Sesi yang sudah dimulai dan diisi tutor (sesi batal tidak ikut).
+ * pending = belum divalidasi, history = sudah divalidasi / keberatan;
+ * keduanya urut terbaru dulu dari BE.
+ */
 export async function getAttendance(): Promise<AttendanceOverview> {
-  assertMockAllowed()
-  await delay()
-
-  /* Sesi yang tidak terlaksana tidak perlu divalidasi */
-  const held = sessions.filter((s) => !s.cancelReason)
-
-  return {
-    pending: held
-      .filter((s) => s.status === "belum_divalidasi")
-      .sort(byNewest),
-    history: held
-      .filter((s) => s.status !== "belum_divalidasi")
-      .sort(byNewest),
-    multipleStudents: STUDENTS.length > 1,
-    unreadNotifications: 2,
-  }
+  const { data } = await httpClient.get<AttendanceOverview>("/wali/presensi")
+  return data
 }
 
 export const attendanceQuery = () =>
