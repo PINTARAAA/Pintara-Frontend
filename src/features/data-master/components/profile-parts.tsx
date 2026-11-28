@@ -19,10 +19,11 @@ import {
   toast,
   TopAppBarButton,
 } from "@/components"
-import { ActiveScheduleError } from "@/features/data-master/api"
+import { activeSchedulesOf } from "@/features/data-master/api"
 import type { AccountStatus } from "@/types/data-master"
 import { InitialsAvatar } from "@/features/dashboard/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
+import { getErrorMessage } from "@/lib/api"
 
 /*
  * Potongan layar Profil Tutor / Profil Siswa (P9): kartu identitas (avatar
@@ -159,10 +160,11 @@ function StatusToggle({
       )
     },
     onError: (error) => {
-      if (error instanceof ActiveScheduleError) setBlocked(error.schedules)
+      const schedules = activeSchedulesOf(error)
+      if (schedules !== null) setBlocked(schedules)
       else
         toast.error("Status gagal diubah", {
-          description: "Periksa koneksi Anda, lalu coba lagi.",
+          description: getErrorMessage(error),
         })
     },
   })

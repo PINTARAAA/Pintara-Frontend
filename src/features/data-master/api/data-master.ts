@@ -5,7 +5,6 @@ import {
   LEVEL_GRADES,
   LEVELS,
   students,
-  tutors,
 } from "@/lib/data/data-master"
 import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
@@ -28,10 +27,9 @@ import type {
  *   getTutors(filter)            → GET /pengelola/tutor
  *   saveTutor(input, id?)        → POST /pengelola/tutor · PUT /pengelola/tutor/:id
  *   getTutor(id)                 → GET /pengelola/tutor/:id
+ *   setTutorStatus(id, status)   → PATCH /pengelola/tutor/:id/status
  *
  * TODO(backend):
- *   setTutorStatus(id, status)   → httpClient.patch(`/pengelola/tutor/${id}/status`, { status })
- *                                  (409 bila masih ada jadwal les aktif)
  *   getStudents(filter)          → httpClient.get("/pengelola/siswa", { params: filter })
  *   getStudent(id)               → httpClient.get(`/pengelola/siswa/${id}`)
  *   setStudentStatus(id, status) → httpClient.patch(`/pengelola/siswa/${id}/status`, { status })
@@ -119,12 +117,6 @@ export const isNotFoundError = (error: unknown) =>
   (isApiError(error) && error.code === "not_found") ||
   error instanceof NotFoundError
 
-function findTutor(id: string) {
-  const tutor = tutors.find((t) => t.id === id)
-  if (!tutor) throw new NotFoundError("Tutor")
-  return tutor
-}
-
 /* Profil lengkap + jumlah siswa & jadwal aktif */
 export async function getTutor(id: string): Promise<Tutor> {
   const { data } = await httpClient.get<Tutor>(
@@ -176,19 +168,28 @@ export class ActiveScheduleError extends Error {
   }
 }
 
+/*
+ * Jumlah jadwal aktif dari 409 active_schedule (BE: details.schedules), atau
+ * dari mock status siswa; null untuk error lain.
+ */
+export function activeSchedulesOf(error: unknown): number | null {
+  if (error instanceof ActiveScheduleError) return error.schedules
+  if (!isApiError(error) || error.serverCode !== "active_schedule") return null
+  const schedules = (error.details as { schedules?: unknown } | undefined)
+    ?.schedules
+  return typeof schedules === "number" ? schedules : 0
+}
+
+/* Menonaktifkan tutor juga menonaktifkan akun loginnya (BE) */
 export async function setTutorStatus(
   id: string,
   status: AccountStatus
 ): Promise<Tutor> {
-  assertMockAllowed()
-  await delay(600)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const tutor = findTutor(id)
-  if (status === "nonaktif" && tutor.activeSchedules > 0) {
-    throw new ActiveScheduleError(tutor.activeSchedules)
-  }
-  tutor.status = status
-  return structuredClone(tutor)
+  const { data } = await httpClient.patch<Tutor>(
+    `/pengelola/tutor/${encodeURIComponent(id)}/status`,
+    { status }
+  )
+  return data
 }
 
 /* ---------- Siswa ---------- */
