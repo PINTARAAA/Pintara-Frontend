@@ -11,7 +11,7 @@ import {
   routines,
   WEEKDAYS,
 } from "@/lib/data/jadwal"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   ChangeRequest,
@@ -23,10 +23,9 @@ import type {
 /*
  * Jadwal Les & Perubahan Jadwal · Figma PINTARA → UI Screen → Wali Murid → W4
  *
- * Sudah memakai BE: getWaliSchedule.
+ * Sudah memakai BE: getWaliSchedule, getRoutine.
  *
  * TODO(backend):
- *   getRoutine(id)           → httpClient.get(`/wali/jadwal/${id}`)
  *   getChangeRequest(id)     → httpClient.get(`/wali/pengajuan-jadwal/${id}`)
  *   submitScheduleChange()   → httpClient.post("/wali/pengajuan-jadwal", input)
  *
@@ -78,21 +77,17 @@ export class NotFoundError extends Error {
   }
 }
 
-export async function getRoutine(id: string): Promise<RoutineDetail> {
-  assertMockAllowed()
-  await delay(300)
+/* 404 dari BE (atau dari mock yang belum diintegrasikan) */
+export const isNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof NotFoundError
 
-  const routine = routines.find((r) => r.id === id)
-  if (!routine) throw new NotFoundError("Jadwal")
-  return {
-    ...routine,
-    studentName:
-      STUDENTS.find((s) => s.id === routine.studentId)?.name ?? "Siswa",
-    nextSession: nextSessionStart(routine.weekday, routine.startTime),
-    pendingRequest:
-      changeRequests.find((r) => r.routineId === id && isOpenRequest(r)) ??
-      null,
-  }
+/* Jadwal rutin + sesi berikutnya + pengajuan terbuka; 404 bila bukan milik wali */
+export async function getRoutine(id: string): Promise<RoutineDetail> {
+  const { data } = await httpClient.get<RoutineDetail>(
+    `/wali/jadwal/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const routineQuery = (id: string) =>

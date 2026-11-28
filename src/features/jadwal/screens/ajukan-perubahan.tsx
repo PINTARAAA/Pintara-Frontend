@@ -29,10 +29,11 @@ import {
   toast,
 } from "@/components"
 import {
-  NotFoundError,
+  isNotFoundError,
   routineQuery,
   submitScheduleChange,
 } from "@/features/jadwal/api"
+import { getErrorMessage } from "@/lib/api"
 import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import type { ChangeRequest, RoutineDetail } from "@/types/jadwal"
 import {
@@ -112,7 +113,7 @@ function AjukanPerubahan() {
         {query.isPending ? (
           <DataState state="loading" loadingLabel="Memuat jadwal…" />
         ) : query.isError ? (
-          query.error instanceof NotFoundError ? (
+          isNotFoundError(query.error) ? (
             <DataState
               state="empty"
               title="Jadwal tidak ditemukan"
@@ -126,7 +127,7 @@ function AjukanPerubahan() {
             <DataState
               state="error"
               title="Jadwal gagal dimuat"
-              description="Periksa koneksi Anda, lalu coba lagi."
+              description={getErrorMessage(query.error)}
               action={{ label: "Coba lagi", onClick: () => query.refetch() }}
             />
           )

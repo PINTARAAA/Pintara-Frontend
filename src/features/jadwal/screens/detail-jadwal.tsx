@@ -13,10 +13,11 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import { NotFoundError, routineQuery } from "@/features/jadwal/api"
+import { isNotFoundError, routineQuery } from "@/features/jadwal/api"
 import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import { formatChangeTitle } from "@/features/jadwal/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
+import { getErrorMessage } from "@/lib/api"
 import { formatDate } from "@/lib/format"
 
 /*
@@ -79,7 +80,7 @@ function DetailJadwal() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat jadwal…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Jadwal tidak ditemukan"
@@ -93,7 +94,7 @@ function DetailJadwal() {
           <DataState
             state="error"
             title="Jadwal gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )
