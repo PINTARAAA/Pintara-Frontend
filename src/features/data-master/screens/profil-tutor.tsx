@@ -8,7 +8,7 @@ import {
   formatDays,
   formatLevelsLong,
   initialsOf,
-  NotFoundError,
+  isNotFoundError,
   setTutorStatus,
   tutorQuery,
 } from "@/features/data-master/api"
@@ -89,7 +89,7 @@ function ProfilTutor() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat profil tutor…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Tutor tidak ditemukan"

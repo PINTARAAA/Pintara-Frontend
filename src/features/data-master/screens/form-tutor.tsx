@@ -25,7 +25,7 @@ import {
 } from "@/components"
 import {
   isDuplicateEmailError,
-  NotFoundError,
+  isNotFoundError,
   saveTutor,
   tutorQuery,
 } from "@/features/data-master/api"
@@ -80,7 +80,7 @@ function FormTutor() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat profil tutor…" />
-      ) : query.error instanceof NotFoundError ? (
+      ) : isNotFoundError(query.error) ? (
         <DataState
           state="empty"
           title="Tutor tidak ditemukan"

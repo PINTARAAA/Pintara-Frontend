@@ -28,9 +28,9 @@ import type {
  * Sudah memakai BE:
  *   getTutors(filter)            → GET /pengelola/tutor
  *   saveTutor(input)             → POST /pengelola/tutor (tambah)
+ *   getTutor(id)                 → GET /pengelola/tutor/:id
  *
  * TODO(backend):
- *   getTutor(id)                 → httpClient.get(`/pengelola/tutor/${id}`)
  *   saveTutor(input, id)         → httpClient.put(`/pengelola/tutor/${id}`, input)
  *   setTutorStatus(id, status)   → httpClient.patch(`/pengelola/tutor/${id}/status`, { status })
  *                                  (409 bila masih ada jadwal les aktif)
@@ -116,16 +116,23 @@ export class NotFoundError extends Error {
   }
 }
 
+/* 404 dari BE, atau dari mock (ubah/status tutor, siswa) */
+export const isNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof NotFoundError
+
 function findTutor(id: string) {
   const tutor = tutors.find((t) => t.id === id)
   if (!tutor) throw new NotFoundError("Tutor")
   return tutor
 }
 
+/* Profil lengkap + jumlah siswa & jadwal aktif */
 export async function getTutor(id: string): Promise<Tutor> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(findTutor(id))
+  const { data } = await httpClient.get<Tutor>(
+    `/pengelola/tutor/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const tutorQuery = (id: string) =>
