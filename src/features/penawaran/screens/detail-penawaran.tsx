@@ -30,8 +30,9 @@ import {
   OfferSummaryCard,
   ResultOfferCard,
 } from "@/features/penawaran/components"
+import { getErrorMessage } from "@/lib/api"
 import { firstName } from "@/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api"
+import { isNotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Detail Penawaran · Figma "Penawaran / Detail - Menunggu" dan
@@ -108,7 +109,7 @@ function DetailPenawaran() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat penawaran…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Penawaran tidak ditemukan"
@@ -123,7 +124,7 @@ function DetailPenawaran() {
           <DataState
             state="error"
             title="Penawaran gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )

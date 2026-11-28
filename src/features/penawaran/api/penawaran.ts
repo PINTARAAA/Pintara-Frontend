@@ -16,10 +16,9 @@ import type {
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P4 · Penawaran Tutor
  *
- * Sudah memakai BE: getOffers, getOfferDraft, sendOffer.
+ * Sudah memakai BE: getOffers, getOfferDraft, sendOffer, getOffer.
  *
  * TODO(backend):
- *   getOffer(id)                → httpClient.get(`/pengelola/penawaran/${id}`)
  *   recordAccepted(id)          → httpClient.post(`/pengelola/penawaran/${id}/diterima`)
  *   recordDeclined(id, input)   → httpClient.post(`/pengelola/penawaran/${id}/ditolak`, input)
  *   Petakan "slot tutor sudah terisi" ke OfferError("tutor_unavailable").
@@ -136,9 +135,10 @@ function find(id: string) {
 }
 
 export async function getOffer(id: string): Promise<Offer> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(find(id))
+  const { data } = await httpClient.get<Offer>(
+    `/pengelola/penawaran/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const offerQuery = (id: string) =>
