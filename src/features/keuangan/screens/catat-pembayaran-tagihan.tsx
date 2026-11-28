@@ -28,7 +28,7 @@ import {
   billRemaining,
   billStatus,
   MANUAL_METHODS,
-  ReportNotFoundError,
+  isReportNotFoundError,
   recordManualPayment,
   studentBillQuery,
 } from "@/features/keuangan/api"
@@ -83,7 +83,7 @@ function CatatPembayaranTagihan() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat tagihan…" />
-      ) : query.isError && !(query.error instanceof ReportNotFoundError) ? (
+      ) : query.isError && !isReportNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Tagihan gagal dimuat"

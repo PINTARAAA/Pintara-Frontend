@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { addMonths, startOfMonth, subMonths } from "date-fns"
 
 import { monthKey } from "@/features/keuangan/api/honor"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { bills } from "@/lib/data/keuangan"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type { BillStatus } from "@/types/tagihan"
@@ -24,9 +24,9 @@ import type {
  *   getFinanceSummary(bulan)          → GET /pengelola/laporan-keuangan
  *   generateReport(input)             → POST /pengelola/laporan-keuangan/unduh
  *   getStudentBills(bulan)            → GET /pengelola/tagihan
+ *   getStudentBill(id)                → GET /pengelola/tagihan/:id
  *
  * TODO(backend):
- *   getStudentBill(id)                → httpClient.get(`/pengelola/tagihan/${id}`)
  *   recordManualPayment(id, form)     → httpClient.post(`/pengelola/tagihan/${id}/pembayaran`, form)
  *
  * Bagian lembaga = total tagihan siswa − total honor tutor pada periode itu.
@@ -114,16 +114,23 @@ export class ReportNotFoundError extends Error {
   }
 }
 
+/* 404 dari BE, atau dari mock pembayaran manual */
+export const isReportNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof ReportNotFoundError
+
 function findBill(id: string) {
   const bill = bills.find((b) => b.id === id)
   if (!bill) throw new ReportNotFoundError()
   return bill
 }
 
+/* Rincian tagihan + semua transaksi (gateway & manual) */
 export async function getStudentBill(id: string): Promise<StudentBill> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(findBill(id))
+  const { data } = await httpClient.get<StudentBill>(
+    `/pengelola/tagihan/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const studentBillQuery = (id: string) =>
