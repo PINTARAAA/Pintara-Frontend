@@ -21,7 +21,7 @@ import {
 } from "@/components"
 import {
   declineLabel,
-  OfferError,
+  offerErrorCode,
   offerQuery,
   recordAccepted,
 } from "@/features/penawaran/api"
@@ -30,8 +30,9 @@ import {
   OfferSummaryCard,
   ResultOfferCard,
 } from "@/features/penawaran/components"
+import { getErrorMessage } from "@/lib/api"
 import { firstName } from "@/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api"
+import { isNotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Detail Penawaran · Figma "Penawaran / Detail - Menunggu" dan
@@ -71,7 +72,7 @@ function DetailPenawaran() {
       setAccepted(updated)
     },
     onError: (error) => {
-      if (error instanceof OfferError && error.code === "already_answered") {
+      if (offerErrorCode(error) === "already_answered") {
         toast.error("Jawaban tutor sudah dicatat", {
           description: "Status terbaru ditampilkan.",
         })
@@ -79,7 +80,7 @@ function DetailPenawaran() {
         return
       }
       toast.error("Jawaban gagal dicatat", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       })
     },
   })
@@ -108,7 +109,7 @@ function DetailPenawaran() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat penawaran…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Penawaran tidak ditemukan"
@@ -123,7 +124,7 @@ function DetailPenawaran() {
           <DataState
             state="error"
             title="Penawaran gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )

@@ -11,6 +11,7 @@ import {
 } from "@/features/dashboard/components"
 import { declineLabel } from "@/features/penawaran/api"
 import type { Offer, OfferList } from "@/types/penawaran"
+import { getErrorMessage } from "@/lib/api"
 import { firstName, formatDayMonth } from "@/lib/format"
 
 /*
@@ -42,7 +43,7 @@ function OffersPanel({ query }: { query: UseQueryResult<OfferList> }) {
       <DataState
         state="error"
         title="Penawaran gagal dimuat"
-        description="Periksa koneksi Anda, lalu coba lagi."
+        description={getErrorMessage(query.error)}
         action={{ label: "Coba lagi", onClick: () => query.refetch() }}
       />
     )

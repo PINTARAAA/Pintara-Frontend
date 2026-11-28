@@ -1,8 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 
 import { httpClient } from "@/lib/api"
-import { tutors } from "@/lib/data/pencocokan"
-import type { MatchingCandidates, OfferTutorInfo } from "@/types/pencocokan"
+import type { MatchingCandidates } from "@/types/pencocokan"
 import type { PengelolaRegistration } from "@/types/verifikasi"
 
 /*
@@ -13,8 +12,6 @@ import type { PengelolaRegistration } from "@/types/verifikasi"
  *
  * Kandidat dinilai BE dari 3 kriteria — mapel & jenjang, ketersediaan
  * hari/jam, dan jarak (maks. MAX_DISTANCE_KM) — ditambah rating tutor.
- * Data tutor mock (`@/lib/data/pencocokan`) masih dipakai getOfferTutorInfo
- * untuk modul penawaran sampai branch integrasinya.
  */
 export const MAX_DISTANCE_KM = 5
 
@@ -72,25 +69,4 @@ export async function selectTutor(
     { tutorId }
   )
   return data
-}
-
-/* ---------- Untuk penawaran (P4) ---------- */
-
-export function getOfferTutorInfo(
-  tutorId: string,
-  registration: PengelolaRegistration
-): OfferTutorInfo {
-  const tutor = tutors.find((t) => t.id === tutorId)
-  if (!tutor) throw new Error("Tutor tidak ditemukan.")
-  const slots = registration.needs.days.map(
-    (d) => `${d} ${registration.needs.startTime}`
-  )
-  return {
-    id: tutor.id,
-    name: tutor.name,
-    shortName: tutor.shortName,
-    rate: tutor.rate,
-    distanceKm: tutor.distanceKm[registration.id] ?? tutor.defaultDistanceKm,
-    takenSlot: slots.find((slot) => tutor.takenSlots?.includes(slot)) ?? null,
-  }
 }
