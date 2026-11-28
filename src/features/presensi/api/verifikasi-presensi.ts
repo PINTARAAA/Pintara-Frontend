@@ -10,7 +10,6 @@ import {
 import { addNotification } from "@/features/notifikasi/api"
 import {
   isReadyForFinal,
-  NotFoundError,
   resolveObjection,
   snapshotTutorSessions,
 } from "@/features/presensi/api/presensi"
@@ -32,16 +31,16 @@ import type {
  * Sudah memakai BE:
  *   getFinalOverview(bulan)       → GET /pengelola/presensi
  *   finalizeAttendance(bulan)     → POST /pengelola/presensi/final
+ *   getObjection(sessionId)       → GET /pengelola/presensi/:id/keberatan
  *
  * TODO(backend):
- *   getObjection(sessionId)       → httpClient.get(`/pengelola/presensi/${id}/keberatan`)
  *   reviewObjection(sessionId, …) → httpClient.post(`/pengelola/presensi/${id}/keberatan`, …)
  *
  * Selama backend belum ada (mode development): presensi Kak Budi diambil
  * dari data presensi tutor (T2–T4, termasuk keberatan Aisyah), tutor lain
  * berupa angka contoh per bulan.
  */
-export const BUDI = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
+const BUDI = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
 
 /* "Kak Budi" dari "Kak Budi Santoso"; null bila BE tidak mengirim tutor */
 export const tutorShortName = (s: TutorSession) =>
@@ -146,12 +145,12 @@ export async function finalizeAttendance(month: Date): Promise<number> {
 
 /* ---------- Tinjau keberatan ---------- */
 
+/* 404 bila sesi tidak ada; record.validation menentukan masih perlu ditinjau */
 export async function getObjection(sessionId: string): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(300)
-  const session = snapshotTutorSessions().find((s) => s.id === sessionId)
-  if (!session) throw new NotFoundError()
-  return session
+  const { data } = await httpClient.get<TutorSession>(
+    `/pengelola/presensi/${encodeURIComponent(sessionId)}/keberatan`
+  )
+  return data
 }
 
 export const objectionQuery = (sessionId: string) =>

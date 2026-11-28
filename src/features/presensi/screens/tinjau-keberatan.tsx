@@ -24,10 +24,10 @@ import {
 import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   AttendanceError,
-  NotFoundError,
-  BUDI,
+  isNotFoundError,
   objectionQuery,
   reviewObjection,
+  tutorShortName,
 } from "@/features/presensi/api"
 import type { TutorSession } from "@/types/presensi"
 
@@ -69,7 +69,7 @@ function TinjauKeberatan() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat keberatan…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Keberatan gagal dimuat"
@@ -109,6 +109,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
     {}
   )
   const changed = start !== tutorStart || end !== tutorEnd
+  const tutor = tutorShortName(session)
 
   const save = useMutation({
     mutationFn: (corrected: boolean) =>
@@ -187,7 +188,8 @@ function ReviewForm({ session }: { session: TutorSession }) {
     >
       <div className="gap-ns-s bg-grayscale-surface-subtitle px-ns-l py-ns-m flex flex-col items-start rounded-(--comp-radius-md) leading-normal">
         <p className="text-subtitle text-grayscale-text-title font-bold">
-          {session.subject} · {session.student.name} × {BUDI.shortName}
+          {session.subject} · {session.student.name}
+          {tutor && ` × ${tutor}`}
         </p>
         <p className="text-caption text-grayscale-text-caption">
           {formatLongDate(session.start)} · jadwal{" "}
@@ -220,7 +222,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
           <CardHeader className="gap-ns-2xs">
             <CardTitle>Data dari tutor</CardTitle>
             <p className="text-caption text-grayscale-text-caption leading-normal">
-              Diisi {BUDI.shortName} · {stamp(record.submittedAt)}
+              Diisi {tutor ?? "tutor"} · {stamp(record.submittedAt)}
             </p>
           </CardHeader>
           <CardContent>
@@ -302,7 +304,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
                 setNote(e.target.value)
                 setErrors((er) => ({ ...er, note: undefined }))
               }}
-              placeholder={`Contoh: Sudah dikonfirmasi dengan ${BUDI.shortName}…`}
+              placeholder={`Contoh: Sudah dikonfirmasi dengan ${tutor ?? "tutor"}…`}
               aria-invalid={errors.note ? true : undefined}
               aria-describedby={errors.note ? "note-error" : "note-help"}
             />
