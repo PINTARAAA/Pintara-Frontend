@@ -85,13 +85,6 @@ export type AttendanceInput =
     }
   | { held: false; cancelReason: string }
 
-export type Counts = {
-  final: number
-  ready: number
-  waiting: number
-  notCollected: number
-}
-
 export type FinalOverview = {
   months: Date[]
   month: Date
@@ -103,10 +96,4 @@ export type FinalOverview = {
   notCollected: number
   objections: TutorSession[]
   readyByTutor: { tutor: string; count: number }[]
-}
-
-export type FinalByTutor = {
-  tutor: string
-  bySubject: Record<string, number>
-  sessions?: TutorSession[]
 }

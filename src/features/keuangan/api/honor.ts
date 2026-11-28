@@ -1,9 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
 import { format, startOfMonth } from "date-fns"
 
-import { finalByTutor } from "@/features/presensi/api"
 import { httpClient } from "@/lib/api"
-import { buildHonor, recaps, tutorProfiles } from "@/lib/data/keuangan"
+import { recaps } from "@/lib/data/keuangan"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   HonorDetail,
@@ -12,7 +11,6 @@ import type {
   HonorPaymentMethod,
   TutorHonor,
 } from "@/types/keuangan"
-import type { TutorSession } from "@/types/presensi"
 
 /*
  * Rekap & Pembayaran Honor · Figma PINTARA → UI Screen → Pengelola LBB →
@@ -20,9 +18,9 @@ import type { TutorSession } from "@/types/presensi"
  *
  * Sudah memakai BE:
  *   getHonorRecap(bulan)              → GET /pengelola/honor
+ *   calculateHonor(bulan)             → POST /pengelola/honor/hitung
  *
  * TODO(backend):
- *   calculateHonor(bulan)             → httpClient.post("/pengelola/honor/hitung", { bulan })
  *   getHonorDetail(bulan, tutorId)    → httpClient.get(`/pengelola/honor/${bulan}/${tutorId}`)
  *   recordHonorPayment(bulan, id, …)  → httpClient.post(`/pengelola/honor/${bulan}/${id}/bayar`, form)
  *
@@ -58,43 +56,19 @@ export const honorRecapQuery = (month?: Date) =>
     queryFn: () => getHonorRecap(month),
   })
 
-/* Hitung rekap dari presensi final; tutor tanpa tarif dilewati */
-export async function calculateHonor(month: Date) {
-  assertMockAllowed()
-  await delay(900)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const active = startOfMonth(month)
-  const previous = recaps.get(monthKey(active))
-  const sources = finalByTutor(active)
-  const skipped: string[] = []
-  const sessionsByTutor: Record<string, TutorSession[]> = {}
-
-  const honors = sources.flatMap((source) => {
-    const profile = tutorProfiles.find((t) => t.name === source.tutor)
-    if (!profile || profile.rate === null) {
-      skipped.push(source.tutor)
-      return []
-    }
-    if (source.sessions) sessionsByTutor[profile.id] = source.sessions
-    const honor = buildHonor(profile, source.bySubject)
-    /* Hitung ulang: pembayaran yang sudah tercatat tetap dipertahankan */
-    honor.payment = previous?.honors.find(
-      (h) => h.tutorId === profile.id
-    )?.payment
-    return [honor]
-  })
-
-  recaps.set(monthKey(active), {
-    month: active,
-    calculatedAt: new Date(),
-    honors,
-    skipped,
-    sessionsByTutor,
-  })
-  return {
-    tutors: honors.length,
-    total: honors.reduce((acc, h) => acc + h.total, 0),
-  }
+/*
+ * Hitung (ulang) rekap dari presensi final bulan tsb; tutor tanpa tarif
+ * dilewati, pembayaran yang sudah tercatat dipertahankan. Tutor mendapat
+ * notifikasi dari BE.
+ */
+export async function calculateHonor(
+  month: Date
+): Promise<{ tutors: number; total: number }> {
+  const { data } = await httpClient.post<{ tutors: number; total: number }>(
+    "/pengelola/honor/hitung",
+    { bulan: monthKey(month) }
+  )
+  return data
 }
 
 /* ---------- Rincian honor satu tutor ---------- */

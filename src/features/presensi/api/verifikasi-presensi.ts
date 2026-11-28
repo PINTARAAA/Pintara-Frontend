@@ -1,12 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
-import { format, isSameMonth, startOfMonth } from "date-fns"
+import { format, startOfMonth } from "date-fns"
 
-import { snapshotTutorSessions } from "@/features/presensi/api/presensi"
 import { httpClient } from "@/lib/api"
-import { otherTutors } from "@/lib/data/presensi"
 import type {
-  Counts,
-  FinalByTutor,
   FinalOverview,
   ObjectionResolution,
   TutorSession,
@@ -21,12 +17,7 @@ import type {
  *   finalizeAttendance(bulan)     → POST /pengelola/presensi/final
  *   getObjection(sessionId)       → GET /pengelola/presensi/:id/keberatan
  *   reviewObjection(sessionId, …) → POST /pengelola/presensi/:id/keberatan
- *
- * Selama backend belum ada (mode development): presensi Kak Budi diambil
- * dari data presensi tutor (T2–T4, termasuk keberatan Aisyah), tutor lain
- * berupa angka contoh per bulan.
  */
-const BUDI = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
 
 /* "Kak Budi" dari "Kak Budi Santoso"; null bila BE tidak mengirim tutor */
 export const tutorShortName = (s: TutorSession) =>
@@ -35,8 +26,6 @@ export const tutorShortName = (s: TutorSession) =>
 /* "bulan" = "2026-11" */
 const monthBody = (month?: Date) =>
   month ? { bulan: format(month, "yyyy-MM") } : {}
-
-const total = (c: Counts) => c.final + c.ready + c.waiting + c.notCollected
 
 /* ---------- Ringkasan per bulan ---------- */
 
@@ -107,37 +96,4 @@ export async function reviewObjection(
     body
   )
   return data
-}
-
-/* ---------- P7 · Sumber rekap honor ---------- */
-
-/* Presensi terverifikasi final per tutor pada bulan tsb (dibaca tanpa jeda) */
-export function finalByTutor(month: Date): FinalByTutor[] {
-  const now = new Date()
-  const active = startOfMonth(month)
-  const isCurrent = isSameMonth(active, now)
-
-  const budi = snapshotTutorSessions().filter(
-    (s) => isSameMonth(s.start, active) && s.record?.finalAt
-  )
-  const budiBySubject: Record<string, number> = {}
-  budi.forEach((s) => {
-    budiBySubject[s.subject] = (budiBySubject[s.subject] ?? 0) + 1
-  })
-
-  const others = otherTutors.map((t) => {
-    const finals = isCurrent ? t.counts.final : total(t.counts)
-    const bySubject: Record<string, number> = {}
-    t.subjects.forEach((subject, i) => {
-      const share = Math.floor(finals / t.subjects.length)
-      bySubject[subject] =
-        i === 0 ? finals - share * (t.subjects.length - 1) : share
-    })
-    return { tutor: t.name, bySubject }
-  })
-
-  return [
-    { tutor: BUDI.name, bySubject: budiBySubject, sessions: budi },
-    ...others,
-  ].filter((t) => Object.values(t.bySubject).some((n) => n > 0))
 }

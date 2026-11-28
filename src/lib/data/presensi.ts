@@ -12,7 +12,7 @@ import {
 } from "date-fns"
 
 import { at } from "@/lib/data/mock"
-import type { Counts, TutorSession } from "@/types/presensi"
+import type { TutorSession } from "@/types/presensi"
 
 /* ---------- Data contoh ---------- */
 
@@ -132,28 +132,4 @@ export const sessions: TutorSession[] = [
   verified("ts-v10", "IPA", RIZKY, subWeeks(previousTuesday(today), 2), "Besaran dan satuan"),
   verified("ts-v11", "Matematika", DIMAS, subWeeks(previousThursday(today), 2), "Himpunan"),
   verified("ts-v12", "IPA", AISYAH, subWeeks(previousFriday(today), 3), "Klasifikasi makhluk hidup"),
-]
-
-/* Angka contoh tutor lain untuk bulan berjalan (bulan lalu: semua final) */
-export const otherTutors: { name: string; subjects: string[]; counts: Counts }[] = [
-  {
-    name: "Kak Laila Fitri",
-    subjects: ["Matematika"],
-    counts: { final: 52, ready: 7, waiting: 1, notCollected: 1 },
-  },
-  {
-    name: "Kak Dimas Arya",
-    subjects: ["Fisika", "Matematika"],
-    counts: { final: 48, ready: 5, waiting: 1, notCollected: 1 },
-  },
-  {
-    name: "Kak Nadia Safitri",
-    subjects: ["Bahasa Inggris"],
-    counts: { final: 41, ready: 0, waiting: 1, notCollected: 0 },
-  },
-  {
-    name: "Kak Yoga Pratama",
-    subjects: ["Fisika"],
-    counts: { final: 6, ready: 0, waiting: 0, notCollected: 0 },
-  },
 ]

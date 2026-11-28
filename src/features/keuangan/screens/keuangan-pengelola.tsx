@@ -52,6 +52,7 @@ import {
   formatRupiahCompact,
   formatDayMonth,
 } from "@/lib/format"
+import { getErrorMessage } from "@/lib/api"
 import { cn } from "@/lib/styles"
 
 /*
@@ -193,9 +194,9 @@ function useCalculateHonor() {
         description: `${result.tutors} tutor · total ${formatRupiah(result.total)}.`,
       })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Rekap gagal dihitung", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 }
