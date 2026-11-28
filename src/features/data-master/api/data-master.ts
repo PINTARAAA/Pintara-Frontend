@@ -4,10 +4,8 @@ import {
   DAYS,
   LEVEL_GRADES,
   LEVELS,
-  students,
 } from "@/lib/data/data-master"
 import { httpClient, isApiError } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AccountStatus,
   Level,
@@ -30,9 +28,7 @@ import type {
  *   setTutorStatus(id, status)   → PATCH /pengelola/tutor/:id/status
  *   getStudents(filter)          → GET /pengelola/siswa
  *   getStudent(id)               → GET /pengelola/siswa/:id
- *
- * TODO(backend):
- *   setStudentStatus(id, status) → httpClient.patch(`/pengelola/siswa/${id}/status`, { status })
+ *   setStudentStatus(id, status) → PATCH /pengelola/siswa/:id/status
  *
  * Tutor/siswa tidak dihapus, hanya dinonaktifkan agar riwayat les, presensi,
  * dan keuangan tetap utuh. Penonaktifan ditolak selama masih ada jadwal aktif.
@@ -98,17 +94,9 @@ export const tutorsQuery = (filter: MasterFilter) =>
     queryFn: () => getTutors(filter),
   })
 
-export class NotFoundError extends Error {
-  constructor(what = "Data") {
-    super(`${what} tidak ditemukan.`)
-    this.name = "NotFoundError"
-  }
-}
-
-/* 404 dari BE, atau dari mock (ubah/status tutor, siswa) */
+/* 404 dari BE (tutor/siswa tidak ada) */
 export const isNotFoundError = (error: unknown) =>
-  (isApiError(error) && error.code === "not_found") ||
-  error instanceof NotFoundError
+  isApiError(error) && error.code === "not_found"
 
 /* Profil lengkap + jumlah siswa & jadwal aktif */
 export async function getTutor(id: string): Promise<Tutor> {
@@ -152,21 +140,11 @@ export async function saveTutor(input: TutorInput, id?: string): Promise<Tutor> 
   return data
 }
 
-export class ActiveScheduleError extends Error {
-  readonly schedules: number
-  constructor(schedules: number) {
-    super(`Masih ada ${schedules} jadwal les aktif.`)
-    this.schedules = schedules
-    this.name = "ActiveScheduleError"
-  }
-}
-
 /*
- * Jumlah jadwal aktif dari 409 active_schedule (BE: details.schedules), atau
- * dari mock status siswa; null untuk error lain.
+ * Jumlah jadwal aktif dari 409 active_schedule (BE: details.schedules);
+ * null untuk error lain.
  */
 export function activeSchedulesOf(error: unknown): number | null {
-  if (error instanceof ActiveScheduleError) return error.schedules
   if (!isApiError(error) || error.serverCode !== "active_schedule") return null
   const schedules = (error.details as { schedules?: unknown } | undefined)
     ?.schedules
@@ -203,12 +181,6 @@ export const studentsQuery = (filter: MasterFilter) =>
     queryFn: () => getStudents(filter),
   })
 
-function findStudent(id: string) {
-  const student = students.find((s) => s.id === id)
-  if (!student) throw new NotFoundError("Siswa")
-  return student
-}
-
 /* Profil siswa + wali + jadwal les (semua pasangan tutor) */
 export async function getStudent(id: string): Promise<Student> {
   const { data } = await httpClient.get<Student>(
@@ -223,18 +195,14 @@ export const studentQuery = (id: string) =>
     queryFn: () => getStudent(id),
   })
 
+/* 409 active_schedule bila siswa masih punya jadwal les aktif */
 export async function setStudentStatus(
   id: string,
   status: AccountStatus
 ): Promise<Student> {
-  assertMockAllowed()
-  await delay(600)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const student = findStudent(id)
-  if (status === "nonaktif" && student.lessons.length > 0) {
-    throw new ActiveScheduleError(student.lessons.length)
-  }
-  student.status = status
-  student.endedAt = status === "nonaktif" ? new Date() : undefined
-  return structuredClone(student)
+  const { data } = await httpClient.patch<Student>(
+    `/pengelola/siswa/${encodeURIComponent(id)}/status`,
+    { status }
+  )
+  return data
 }
