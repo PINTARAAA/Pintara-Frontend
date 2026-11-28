@@ -18,13 +18,14 @@ import {
   toast,
 } from "@/components"
 import {
-  NotFoundError,
+  isNotFoundError,
   sessionQuery,
   submitReview,
 } from "@/features/absensi/api"
 import type { AttendanceSession } from "@/types/absensi"
 import { formatSessionTitle, RATING_LABELS } from "@/features/absensi/lib"
 import { InitialsAvatar } from "@/features/dashboard/components"
+import { getErrorMessage } from "@/lib/api"
 
 /*
  * W5 · Validasi Absensi / Rating & ulasan ("Beri Ulasan")
@@ -57,7 +58,7 @@ function BeriUlasan() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Sesi gagal dimuat"
@@ -103,9 +104,9 @@ function ReviewForm({ session }: { session: AttendanceSession }) {
       })
       navigate("/wali/absensi", { replace: true })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Ulasan gagal dikirim", {
-        description: "Periksa koneksi lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 

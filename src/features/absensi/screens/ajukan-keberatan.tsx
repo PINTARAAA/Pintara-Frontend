@@ -16,12 +16,13 @@ import {
   toast,
 } from "@/components"
 import {
-  NotFoundError,
+  isNotFoundError,
   sessionQuery,
   submitObjection,
 } from "@/features/absensi/api"
 import type { AttendanceSession } from "@/types/absensi"
 import { formatSessionTitle } from "@/features/absensi/lib"
+import { getErrorMessage } from "@/lib/api"
 import { formatTimeRange } from "@/lib/format"
 
 /*
@@ -63,7 +64,7 @@ function AjukanKeberatan() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Sesi gagal dimuat"
@@ -111,10 +112,10 @@ function ObjectionForm({ session }: { session: AttendanceSession }) {
       })
       navigate(`/wali/absensi/${session.id}`, { replace: true })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Keberatan gagal dikirim", {
-        description:
-          "Data Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
+        /* Pesan BE tidak selalu diakhiri titik */
+        description: `${getErrorMessage(error).replace(/\.?$/, ".")} Data Anda tetap tersimpan di formulir.`,
       }),
   })
 

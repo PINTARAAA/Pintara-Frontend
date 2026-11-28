@@ -1,14 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
-import { addDays } from "date-fns"
 
 import type { ScheduleChangeInput } from "@/features/jadwal/schemas"
 import { STUDENTS } from "@/lib/data/dashboard"
-import {
-  changeRequests,
-  nextSessionStart,
-  OPEN_STATUSES,
-  routines,
-} from "@/lib/data/jadwal"
+import { changeRequests, OPEN_STATUSES } from "@/lib/data/jadwal"
 import { httpClient, isApiError } from "@/lib/api"
 import type {
   ChangeRequest,
@@ -21,28 +15,12 @@ import type {
  * Jadwal Les & Perubahan Jadwal · Figma PINTARA → UI Screen → Wali Murid → W4
  *
  * Semua endpoint jadwal wali sudah memakai BE. Data mock `@/lib/data/jadwal`
- * masih dibaca helper di bawah untuk modul riwayat les (absensi) dan
- * notifikasi pengelola sampai branch integrasinya.
+ * masih dibaca helper di bawah untuk notifikasi pengelola sampai branch
+ * integrasinya.
  */
 
 export const isOpenRequest = (r: ChangeRequest) =>
   OPEN_STATUSES.includes(r.status)
-
-/* Jumlah sesi terjadwal anak dari sekarang sampai `until` (W7 · Riwayat Les) */
-export function countUpcomingSessions(studentId: string, until: Date) {
-  const now = new Date()
-  let count = 0
-  for (const r of routines.filter((r) => r.studentId === studentId)) {
-    for (
-      let start = nextSessionStart(r.weekday, r.startTime, now);
-      start <= until;
-      start = addDays(start, 7)
-    ) {
-      count++
-    }
-  }
-  return count
-}
 
 /* ---------- Daftar jadwal ---------- */
 

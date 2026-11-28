@@ -14,7 +14,7 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import { NotFoundError, sessionQuery } from "@/features/absensi/api"
+import { isNotFoundError, sessionQuery } from "@/features/absensi/api"
 import type { Attendance, AttendanceSession } from "@/types/absensi"
 import { NotesCard, ReviewCard } from "@/features/absensi/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
@@ -52,7 +52,7 @@ function DetailRiwayat() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Sesi tidak ditemukan"
