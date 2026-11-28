@@ -9,7 +9,8 @@ import {
   CardTitle,
   DataState,
 } from "@/components"
-import { changeRequestQuery, NotFoundError } from "@/features/jadwal/api"
+import { changeRequestQuery, isNotFoundError } from "@/features/jadwal/api"
+import { getErrorMessage } from "@/lib/api"
 import {
   ChangeProgressCard,
   ChangeSummaryCard,
@@ -48,7 +49,7 @@ function DetailPengajuan() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat pengajuan…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Pengajuan tidak ditemukan"
@@ -62,7 +63,7 @@ function DetailPengajuan() {
           <DataState
             state="error"
             title="Pengajuan gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )

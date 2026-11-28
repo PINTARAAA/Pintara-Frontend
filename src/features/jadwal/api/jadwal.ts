@@ -10,7 +10,6 @@ import {
   routines,
 } from "@/lib/data/jadwal"
 import { httpClient, isApiError } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   ChangeRequest,
   ChangeRequestForReview,
@@ -21,13 +20,9 @@ import type {
 /*
  * Jadwal Les & Perubahan Jadwal · Figma PINTARA → UI Screen → Wali Murid → W4
  *
- * Sudah memakai BE: getWaliSchedule, getRoutine, submitScheduleChange.
- *
- * TODO(backend):
- *   getChangeRequest(id)     → httpClient.get(`/wali/pengajuan-jadwal/${id}`)
- *
- * Selama backend belum ada (mode development) data disimpan di memori:
- * pengajuan yang dikirim langsung tampil di daftar "Pengajuan perubahan".
+ * Semua endpoint jadwal wali sudah memakai BE. Data mock `@/lib/data/jadwal`
+ * masih dibaca helper di bawah untuk modul riwayat les (absensi) dan
+ * notifikasi pengelola sampai branch integrasinya.
  */
 
 export const isOpenRequest = (r: ChangeRequest) =>
@@ -96,12 +91,10 @@ export const routineQuery = (id: string) =>
 /* ---------- Pengajuan perubahan ---------- */
 
 export async function getChangeRequest(id: string): Promise<ChangeRequest> {
-  assertMockAllowed()
-  await delay(300)
-
-  const request = changeRequests.find((r) => r.id === id)
-  if (!request) throw new NotFoundError("Pengajuan")
-  return request
+  const { data } = await httpClient.get<ChangeRequest>(
+    `/wali/pengajuan-jadwal/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const changeRequestQuery = (id: string) =>
