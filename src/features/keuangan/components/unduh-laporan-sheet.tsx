@@ -43,8 +43,11 @@ import { cn } from "@/lib/styles"
  * layar (tanpa handle), format PDF/Excel dua kolom.
  */
 const monthLabel = (d: Date) => format(d, "MMMM yyyy", { locale: localeId })
+/* "1,2 MB" atau "84 KB" (laporan dari BE sering di bawah 1 MB) */
 const fileSize = (bytes: number) =>
-  `${(bytes / (1024 * 1024)).toLocaleString("id-ID", { maximumFractionDigits: 1 })} MB`
+  bytes >= 1024 * 1024
+    ? `${(bytes / (1024 * 1024)).toLocaleString("id-ID", { maximumFractionDigits: 1 })} MB`
+    : `${Math.max(1, Math.round(bytes / 1024)).toLocaleString("id-ID")} KB`
 
 function openReport(file: ReportFile) {
   const link = document.createElement("a")

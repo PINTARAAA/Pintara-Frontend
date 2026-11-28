@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { addMonths, format, startOfMonth, subMonths } from "date-fns"
+import { addMonths, startOfMonth, subMonths } from "date-fns"
 
 import { monthKey } from "@/features/keuangan/api/honor"
 import { httpClient } from "@/lib/api"
@@ -23,13 +23,12 @@ import type {
  *
  * Sudah memakai BE:
  *   getFinanceSummary(bulan)          → GET /pengelola/laporan-keuangan
+ *   generateReport(input)             → POST /pengelola/laporan-keuangan/unduh
  *
  * TODO(backend):
  *   getStudentBills(bulan)            → httpClient.get("/pengelola/tagihan", { params: { bulan } })
  *   getStudentBill(id)                → httpClient.get(`/pengelola/tagihan/${id}`)
  *   recordManualPayment(id, form)     → httpClient.post(`/pengelola/tagihan/${id}/pembayaran`, form)
- *   generateReport(input)             → httpClient.post("/pengelola/laporan-keuangan/unduh", input)
- *                                       (mengembalikan URL file)
  *
  * Bagian lembaga = total tagihan siswa − total honor tutor pada periode itu.
  * Tambahkan ?unduh=gagal pada layar laporan untuk menguji "Gagal dibuat".
@@ -189,32 +188,23 @@ export const REPORT_TYPES: Record<ReportType, string> = {
   lengkap: "Lengkap (semua rincian)",
 }
 
+/*
+ * BE menyusun file PDF/Excel, menyimpannya, lalu mengembalikan nama, ukuran,
+ * dan URL relatif (/uploads/…) yang dijadikan absolut ke host BE.
+ * simulateFailure (hanya development, ?unduh=gagal) tidak memanggil BE.
+ */
 export async function generateReport(
   input: ReportInput,
   options: { simulateFailure?: boolean } = {}
 ): Promise<ReportFile> {
-  assertMockAllowed()
-  await delay(1200)
-  if (!navigator.onLine || options.simulateFailure) {
+  if (import.meta.env.DEV && options.simulateFailure) {
     throw new Error("Laporan gagal dibuat.")
   }
-  const summary = await getFinanceSummary(input.month)
-  /* SEMENTARA: berkas teks pengganti sampai backend menyusun PDF/Excel */
-  const lines =
-    summary.state === "ada"
-      ? [
-          `Laporan Keuangan · ${format(input.month, "MM/yyyy")}`,
-          `Jenis: ${REPORT_TYPES[input.type]}`,
-          `Total tagihan siswa: ${summary.bills.total}`,
-          `Total honor tutor: ${summary.honor.total}`,
-          `Bagian lembaga: ${summary.institutionShare}`,
-        ]
-      : [`Laporan Keuangan · ${format(input.month, "MM/yyyy")}`, "Belum ada data."]
-  const blob = new Blob([lines.join("\n")], { type: "text/plain" })
-  const label = format(input.month, "MMMyyyy").replace(/^./, (c) => c.toUpperCase())
-  return {
-    name: `Laporan_Keuangan_${label}.${input.format}`,
-    size: input.type === "lengkap" ? 1_260_000 : 420_000,
-    url: URL.createObjectURL(blob),
-  }
+  const { data } = await httpClient.post<ReportFile>(
+    "/pengelola/laporan-keuangan/unduh",
+    { month: monthKey(input.month), type: input.type, format: input.format },
+    /* Menyusun laporan lengkap bisa lebih lama dari batas umum 15 detik */
+    { timeout: 60_000 }
+  )
+  return { ...data, url: new URL(data.url, httpClient.defaults.baseURL).href }
 }
