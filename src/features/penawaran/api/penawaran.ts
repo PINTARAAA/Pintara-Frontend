@@ -7,6 +7,7 @@ import {
   snapshotRegistrations,
 } from "@/features/verifikasi/api"
 import { formatRequestedSchedule, formatShortAddress } from "@/features/verifikasi/lib"
+import { httpClient } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { DECLINE_REASONS, offers } from "@/lib/data/penawaran"
 import type {
@@ -22,8 +23,9 @@ import type { PengelolaRegistration } from "@/types/verifikasi"
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P4 · Penawaran Tutor
  *
+ * Sudah memakai BE: getOffers (GET /pengelola/penawaran).
+ *
  * TODO(backend):
- *   getOffers()                 → httpClient.get("/pengelola/penawaran")
  *   getOfferDraft(regId)        → httpClient.get(`/pengelola/penawaran/draf/${regId}`)
  *   sendOffer(regId, message)   → httpClient.post("/pengelola/penawaran", …)
  *   getOffer(id)                → httpClient.get(`/pengelola/penawaran/${id}`)
@@ -58,36 +60,10 @@ function ensureOnline() {
 
 /* ---------- Daftar (tab Penawaran) ---------- */
 
+/* Belum dikirim · menunggu jawaban (paling lama dulu) · riwayat (terbaru dulu) */
 export async function getOffers(): Promise<OfferList> {
-  assertMockAllowed()
-  await delay()
-
-  const sentFor = new Set(
-    offers
-      .filter((o) => o.status !== "ditolak")
-      .map((o) => `${o.registrationId}:${o.tutor.id}`)
-  )
-  const unsent = snapshotRegistrations()
-    .filter(
-      (r) =>
-        r.status === "terverifikasi" &&
-        r.match &&
-        !sentFor.has(`${r.id}:${r.match.tutorId}`)
-    )
-    .map((r) => ({ registration: r, tutorName: r.match?.tutorName ?? "" }))
-
-  const byNewest = (a: Offer, b: Offer) =>
-    (b.answeredAt ?? b.sentAt).getTime() - (a.answeredAt ?? a.sentAt).getTime()
-
-  return structuredClone({
-    unsent,
-    waiting: offers
-      .filter((o) => o.status === "menunggu_konfirmasi")
-      .sort((a, b) => a.sentAt.getTime() - b.sentAt.getTime()),
-    history: offers
-      .filter((o) => o.status !== "menunggu_konfirmasi")
-      .sort(byNewest),
-  })
+  const { data } = await httpClient.get<OfferList>("/pengelola/penawaran")
+  return data
 }
 
 export const offersQuery = () =>
