@@ -1,7 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
 import { httpClient, isApiError } from "@/lib/api"
-import { registrations } from "@/lib/data/verifikasi"
 import type {
   Level,
   PengelolaRegistration,
@@ -137,9 +136,4 @@ export class AlreadyProcessedError extends Error {
     super("Pendaftaran sudah diproses.")
     this.name = "AlreadyProcessedError"
   }
-}
-
-/* Salinan pendaftaran mock untuk jadwal-les (dibaca tanpa jeda) */
-export function snapshotRegistrations() {
-  return structuredClone(registrations)
 }

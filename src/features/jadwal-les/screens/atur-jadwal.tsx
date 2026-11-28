@@ -42,7 +42,7 @@ import {
   pairDraftQuery,
   saveSchedule,
   scheduleDraftQuery,
-  ScheduleConflictError,
+  scheduleConflictOf,
   SESSION_MINUTES,
   suggestFreeSlot,
 } from "@/features/jadwal-les/api"
@@ -53,8 +53,9 @@ import type {
   ScheduleSession,
 } from "@/types/jadwal-les"
 import { SummaryRow } from "@/features/pendaftaran/components"
+import { getErrorMessage } from "@/lib/api"
 import { firstName } from "@/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api"
+import { isNotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P5 · Atur Jadwal Les · Figma "Atur Jadwal / Atur jadwal",
@@ -100,7 +101,7 @@ function AturJadwal() {
     <DetailScreen title="Atur Jadwal Les" backLabel="Les" desktopHeader="page">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Menyiapkan jadwal…" />
-      ) : query.error instanceof NotFoundError ? (
+      ) : isNotFoundError(query.error) ? (
         <DataState
           state="empty"
           title={
@@ -116,7 +117,7 @@ function AturJadwal() {
         <DataState
           state="error"
           title="Jadwal gagal disiapkan"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       )}
@@ -190,14 +191,14 @@ function ScheduleForm({
       onSaved(pair)
     },
     onError: (error) => {
-      if (error instanceof ScheduleConflictError) {
-        setConflict(error.conflict)
+      const found = scheduleConflictOf(error)
+      if (found) {
+        setConflict(found)
         window.scrollTo({ top: 0, behavior: "smooth" })
         return
       }
       toast.error("Jadwal gagal disimpan", {
-        description:
-          "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Isian Anda tetap tersimpan.`,
       })
     },
   })
