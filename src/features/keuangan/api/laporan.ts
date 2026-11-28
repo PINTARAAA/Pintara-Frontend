@@ -14,7 +14,6 @@ import type {
   ReportType,
   StudentBill,
   StudentBillList,
-  StudentBillRow,
 } from "@/types/keuangan"
 
 /*
@@ -24,9 +23,9 @@ import type {
  * Sudah memakai BE:
  *   getFinanceSummary(bulan)          → GET /pengelola/laporan-keuangan
  *   generateReport(input)             → POST /pengelola/laporan-keuangan/unduh
+ *   getStudentBills(bulan)            → GET /pengelola/tagihan
  *
  * TODO(backend):
- *   getStudentBills(bulan)            → httpClient.get("/pengelola/tagihan", { params: { bulan } })
  *   getStudentBill(id)                → httpClient.get(`/pengelola/tagihan/${id}`)
  *   recordManualPayment(id, form)     → httpClient.post(`/pengelola/tagihan/${id}/pembayaran`, form)
  *
@@ -66,9 +65,6 @@ export function availableMonths() {
   return [addMonths(current, 1), current, subMonths(current, 1)]
 }
 
-const billsOf = (month: Date) =>
-  bills.filter((b) => monthKey(b.period) === monthKey(month))
-
 /* ---------- Ringkasan (layar Laporan Keuangan) ---------- */
 
 /*
@@ -92,35 +88,15 @@ export const financeSummaryQuery = (month?: Date) =>
 
 /* ---------- Daftar tagihan siswa ---------- */
 
+/*
+ * Tagihan siswa bulan tsb dikelompokkan: belum bayar & sebagian (sisa
+ * terbesar dulu), lunas (urut nama).
+ */
 export async function getStudentBills(month?: Date): Promise<StudentBillList> {
-  assertMockAllowed()
-  await delay()
-  const active = startOfMonth(month ?? new Date())
-  const rows: StudentBillRow[] = billsOf(active).map((b) => ({
-    id: b.id,
-    studentName: b.studentName,
-    sessions: billSessions(b),
-    dueDate: b.dueDate,
-    total: billTotal(b),
-    remaining: billRemaining(b),
-    status: billStatus(b),
-  }))
-  const byRemaining = (a: StudentBillRow, b: StudentBillRow) =>
-    b.remaining - a.remaining
-  const total = rows.reduce((sum, r) => sum + r.total, 0)
-  const remaining = rows.reduce((sum, r) => sum + r.remaining, 0)
-  return {
-    months: availableMonths(),
-    month: active,
-    total,
-    paid: total - remaining,
-    remaining,
-    unpaid: rows.filter((r) => r.status === "belum_bayar").sort(byRemaining),
-    partial: rows.filter((r) => r.status === "sebagian").sort(byRemaining),
-    paidOff: rows
-      .filter((r) => r.status === "lunas")
-      .sort((a, b) => a.studentName.localeCompare(b.studentName)),
-  }
+  const { data } = await httpClient.get<StudentBillList>("/pengelola/tagihan", {
+    params: month ? { bulan: monthKey(month) } : undefined,
+  })
+  return data
 }
 
 export const studentBillsQuery = (month?: Date) =>
