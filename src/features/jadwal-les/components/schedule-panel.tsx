@@ -10,6 +10,7 @@ import {
 import { formatChangeTitle } from "@/features/jadwal/lib"
 import { formatSessions } from "@/features/jadwal-les/api"
 import type { ScheduleBoard } from "@/types/jadwal-les"
+import { getErrorMessage } from "@/lib/api"
 import { formatDaysAgo, formatDayMonth } from "@/lib/format"
 
 /*
@@ -34,7 +35,7 @@ function SchedulePanel({ query }: { query: UseQueryResult<ScheduleBoard> }) {
       <DataState
         state="error"
         title="Jadwal gagal dimuat"
-        description="Periksa koneksi Anda, lalu coba lagi."
+        description={getErrorMessage(query.error)}
         action={{ label: "Coba lagi", onClick: () => query.refetch() }}
       />
     )

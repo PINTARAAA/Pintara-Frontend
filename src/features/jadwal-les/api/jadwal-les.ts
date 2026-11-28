@@ -4,12 +4,12 @@ import { addDays, getDay, isBefore, startOfDay } from "date-fns"
 import {
   decideChangeRequest,
   findRequestForReview,
-  listRequestsForReview,
 } from "@/features/jadwal/api"
 import { snapshotOffers } from "@/features/penawaran/api"
 import { NotFoundError, snapshotRegistrations } from "@/features/verifikasi/api"
 import { addMinutesToTime, parseTime, WEEKDAYS } from "@/lib/data/jadwal"
 import { pairs } from "@/lib/data/jadwal-les"
+import { httpClient } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type { ChangeRequestForReview } from "@/types/jadwal"
 import type {
@@ -26,8 +26,9 @@ import type {
  * Atur Jadwal Les (pengelola) · Figma PINTARA → UI Screen → Pengelola LBB
  * → P5 · Atur Jadwal Les
  *
+ * Sudah memakai BE: getScheduleBoard.
+ *
  * TODO(backend):
- *   getScheduleBoard()          → httpClient.get("/pengelola/jadwal")
  *   getScheduleDraft(offerId)   → httpClient.get(`/pengelola/jadwal/draf/${offerId}`)
  *   getPair(pairId)             → httpClient.get(`/pengelola/jadwal/${pairId}`)
  *   saveSchedule(input)         → httpClient.put("/pengelola/jadwal", input)
@@ -78,22 +79,10 @@ export function nextDate(day: string, from = new Date()) {
 
 /* ---------- Papan jadwal (tab Jadwal) ---------- */
 
+/* Perlu dijadwalkan · pengajuan perubahan (paling lama dulu) · jadwal aktif */
 export async function getScheduleBoard(): Promise<ScheduleBoard> {
-  assertMockAllowed()
-  await delay()
-  const scheduled = new Set(pairs.map((p) => p.offerId).filter(Boolean))
-  return structuredClone({
-    toSchedule: snapshotOffers()
-      .filter((o) => o.status === "diterima" && !scheduled.has(o.id))
-      .sort(
-        (a, b) =>
-          (a.answeredAt?.getTime() ?? 0) - (b.answeredAt?.getTime() ?? 0)
-      ),
-    requests: listRequestsForReview(),
-    active: [...pairs].sort((a, b) =>
-      a.student.name.localeCompare(b.student.name)
-    ),
-  })
+  const { data } = await httpClient.get<ScheduleBoard>("/pengelola/jadwal")
+  return data
 }
 
 export const scheduleBoardQuery = () =>
