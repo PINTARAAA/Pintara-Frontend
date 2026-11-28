@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { endOfMonth, isSameMonth } from "date-fns"
 
 import { countUpcomingSessions } from "@/features/jadwal/api"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { sessions } from "@/lib/data/absensi"
 import { STUDENTS } from "@/lib/data/dashboard"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
@@ -15,10 +15,11 @@ import type {
 /*
  * Validasi Absensi & Ulasan · Figma PINTARA → UI Screen → Wali Murid → W5
  *
- * Sudah memakai BE: getAttendance() → GET /wali/presensi
+ * Sudah memakai BE:
+ *   getAttendance()          → GET /wali/presensi
+ *   getSession(id)           → GET /wali/presensi/:id
  *
  * TODO(backend):
- *   getSession(id)          → httpClient.get(`/wali/presensi/${id}`)
  *   approveSession(id)       → httpClient.post(`/wali/presensi/${id}/setujui`)
  *   submitObjection(id, …)   → httpClient.post(`/wali/presensi/${id}/keberatan`, …)
  *   submitReview(id, …)      → httpClient.post(`/wali/presensi/${id}/ulasan`, …)
@@ -115,6 +116,15 @@ export class NotFoundError extends Error {
   }
 }
 
+/*
+ * 404 (sesi tidak ada) atau 403 (sesi milik wali lain) dari BE, atau dari
+ * mock aksi. Keduanya ditampilkan "Sesi tidak ditemukan" agar tidak bocor.
+ */
+export const isNotFoundError = (error: unknown) =>
+  (isApiError(error) &&
+    (error.code === "not_found" || error.code === "forbidden")) ||
+  error instanceof NotFoundError
+
 function find(id: string) {
   const session = sessions.find((s) => s.id === id)
   if (!session) throw new NotFoundError()
@@ -122,9 +132,10 @@ function find(id: string) {
 }
 
 export async function getSession(id: string): Promise<AttendanceSession> {
-  assertMockAllowed()
-  await delay(300)
-  return { ...find(id) }
+  const { data } = await httpClient.get<AttendanceSession>(
+    `/wali/presensi/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const sessionQuery = (id: string) =>

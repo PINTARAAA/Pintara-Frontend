@@ -16,7 +16,7 @@ import {
 } from "@/components"
 import {
   approveSession,
-  NotFoundError,
+  isNotFoundError,
   sessionQuery,
 } from "@/features/absensi/api"
 import type { AttendanceSession } from "@/types/absensi"
@@ -99,7 +99,7 @@ function DetailSesi() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Sesi tidak ditemukan"

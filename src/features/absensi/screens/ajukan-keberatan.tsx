@@ -16,7 +16,7 @@ import {
   toast,
 } from "@/components"
 import {
-  NotFoundError,
+  isNotFoundError,
   sessionQuery,
   submitObjection,
 } from "@/features/absensi/api"
@@ -63,7 +63,7 @@ function AjukanKeberatan() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Sesi gagal dimuat"
