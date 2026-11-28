@@ -19,9 +19,9 @@ import type {
  *   getAttendance()          → GET /wali/presensi
  *   getSession(id)           → GET /wali/presensi/:id
  *   approveSession(id)       → POST /wali/presensi/:id/setujui
+ *   submitObjection(id, …)   → POST /wali/presensi/:id/keberatan
  *
  * TODO(backend):
- *   submitObjection(id, …)   → httpClient.post(`/wali/presensi/${id}/keberatan`, …)
  *   submitReview(id, …)      → httpClient.post(`/wali/presensi/${id}/ulasan`, …)
  *
  * Selama backend belum ada (mode development) data disimpan di memori:
@@ -156,14 +156,16 @@ export async function approveSession(id: string): Promise<AttendanceSession> {
   return data
 }
 
-export async function submitObjection(id: string, reason: string) {
-  assertMockAllowed()
-  await delay(800)
-  assertOnline()
-  const session = find(id)
-  session.status = "keberatan"
-  session.objection = { reason: reason.trim(), submittedAt: new Date() }
-  return { ...session }
+/* Status jadi keberatan; tutor & pengelola mendapat notifikasi dari BE */
+export async function submitObjection(
+  id: string,
+  reason: string
+): Promise<AttendanceSession> {
+  const { data } = await httpClient.post<AttendanceSession>(
+    `/wali/presensi/${encodeURIComponent(id)}/keberatan`,
+    { reason: reason.trim() }
+  )
+  return data
 }
 
 export async function submitReview(
