@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { format, isSameMonth } from "date-fns"
+import { format } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
 import { getErrorMessage, httpClient, isApiError } from "@/lib/api"
@@ -7,7 +7,6 @@ import type {
   AttendanceErrorCode,
   AttendanceInput,
   AttendanceStatusOverview,
-  ObjectionResolution,
   TutorHistory,
   TutorSession,
   TutorSessionList,
@@ -81,39 +80,6 @@ export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
 export const isReadyForFinal = (s: TutorSession) =>
   !!s.record && s.record.validation === "sudah_divalidasi" && !s.record.finalAt
 
-/* Tandai final semua presensi lengkap pada bulan tsb; kembalikan jumlahnya */
-export function finalizeReadySessions(month: Date) {
-  const now = new Date()
-  const ready = sessions.filter(
-    (s) => isReadyForFinal(s) && isSameMonth(s.start, month)
-  )
-  ready.forEach((s) => {
-    if (s.record) s.record.finalAt = now
-  })
-  return ready.length
-}
-
-/* Tinjauan keberatan: presensi kembali lengkap (siap diverifikasi final) */
-export function resolveObjection(id: string, input: ObjectionResolution) {
-  const session = find(id)
-  const record = session.record
-  if (!record || record.validation !== "keberatan") {
-    throw new AttendanceError("already_filled")
-  }
-  if (input.corrected) {
-    record.actualStart = input.actualStart
-    record.actualEnd = input.actualEnd
-  }
-  record.validation = "sudah_divalidasi"
-  record.validatedAt = new Date()
-  record.review = {
-    corrected: input.corrected,
-    note: input.note.trim(),
-    at: new Date(),
-  }
-  return structuredClone(session)
-}
-
 /* ---------- T7 · Sumber notifikasi tutor ---------- */
 
 /* Salinan semua sesi tutor (notifikasi presensi terlewat & keberatan) */
@@ -123,16 +89,11 @@ export function snapshotTutorSessions() {
 
 /* ---------- Detail ---------- */
 
-export class NotFoundError extends Error {
-  constructor() {
-    super("Sesi tidak ditemukan.")
-    this.name = "NotFoundError"
-  }
-}
-
-/* already_filled (409) / not_started (400) dari BE, atau dari mock pengelola */
+/*
+ * already_filled (409; juga "keberatan sudah ditinjau" di endpoint pengelola)
+ * / not_started (400) dari BE
+ */
 export function attendanceErrorCode(error: unknown): AttendanceErrorCode | null {
-  if (error instanceof AttendanceError) return error.code
   if (!isApiError(error)) return null
   return error.serverCode === "already_filled" ||
     error.serverCode === "not_started"
@@ -140,25 +101,9 @@ export function attendanceErrorCode(error: unknown): AttendanceErrorCode | null 
     : null
 }
 
-/* 404 dari BE (sesi tidak ada / bukan milik tutor) atau dari mock pengelola */
+/* 404 dari BE (sesi tidak ada / bukan milik tutor) */
 export const isNotFoundError = (error: unknown) =>
-  (isApiError(error) && error.code === "not_found") ||
-  error instanceof NotFoundError
-
-export class AttendanceError extends Error {
-  code: AttendanceErrorCode
-  constructor(code: AttendanceErrorCode) {
-    super(code)
-    this.name = "AttendanceError"
-    this.code = code
-  }
-}
-
-function find(id: string) {
-  const session = sessions.find((s) => s.id === id)
-  if (!session) throw new NotFoundError()
-  return session
-}
+  isApiError(error) && error.code === "not_found"
 
 export async function getTutorSession(id: string): Promise<TutorSession> {
   const { data } = await httpClient.get<TutorSession>(

@@ -33,6 +33,8 @@ export type TutorSession = {
   start: Date
   end: Date
   record: AttendanceRecord | null
+  /* Hanya relevan untuk pengelola; BE belum mengirimnya (temuan #31) */
+  tutor?: { name: string }
 }
 
 export type TutorSessionList = {

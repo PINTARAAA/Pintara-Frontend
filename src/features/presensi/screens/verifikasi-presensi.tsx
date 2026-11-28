@@ -30,11 +30,12 @@ import {
   DashboardSection,
 } from "@/features/dashboard/components"
 import {
-  BUDI,
   finalizeAttendance,
   finalOverviewQuery,
+  tutorShortName,
 } from "@/features/presensi/api"
 import type { FinalOverview } from "@/types/presensi"
+import { getErrorMessage } from "@/lib/api"
 import { firstName, formatWeekdayDate, parseMonth } from "@/lib/format"
 import { cn } from "@/lib/styles"
 
@@ -96,9 +97,9 @@ function VerifikasiPresensi() {
         description: `Rekap honor ${monthName(data?.month ?? new Date())} siap dihitung.`,
       })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Verifikasi gagal", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 
@@ -159,7 +160,12 @@ function VerifikasiPresensi() {
                       <ListItem
                         key={s.id}
                         icon={<TriangleAlertIcon />}
-                        title={`${s.subject} · ${firstName(s.student.name)} × ${BUDI.shortName}`}
+                        title={[
+                          `${s.subject} · ${firstName(s.student.name)}`,
+                          tutorShortName(s),
+                        ]
+                          .filter(Boolean)
+                          .join(" × ")}
                         description={`${formatWeekdayDate(s.start)} · “${shortReason(s.record?.objection?.reason)}”`}
                         chevron
                         render={

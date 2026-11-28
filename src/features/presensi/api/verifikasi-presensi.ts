@@ -1,16 +1,18 @@
 import { queryOptions } from "@tanstack/react-query"
-import { isAfter, isSameMonth, startOfMonth, subMonths } from "date-fns"
-
-import { addNotification } from "@/features/notifikasi/api"
 import {
-  finalizeReadySessions,
+  format,
+  isAfter,
+  isSameMonth,
+  startOfMonth,
+  subMonths,
+} from "date-fns"
+
+import {
   isReadyForFinal,
-  NotFoundError,
-  resolveObjection,
   snapshotTutorSessions,
 } from "@/features/presensi/api/presensi"
+import { httpClient } from "@/lib/api"
 import { otherTutors } from "@/lib/data/presensi"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   Counts,
   FinalByTutor,
@@ -23,22 +25,34 @@ import type {
  * Verifikasi Final Presensi (pengelola) · Figma PINTARA → UI Screen →
  * Pengelola LBB → P6 · Verifikasi Final Presensi
  *
- * TODO(backend):
- *   getFinalOverview(bulan)       → httpClient.get("/pengelola/presensi", { params: { bulan } })
- *   finalizeAttendance(bulan)     → httpClient.post("/pengelola/presensi/final", { bulan })
- *   getObjection(sessionId)       → httpClient.get(`/pengelola/presensi/${id}/keberatan`)
- *   reviewObjection(sessionId, …) → httpClient.post(`/pengelola/presensi/${id}/keberatan`, …)
+ * Sudah memakai BE:
+ *   getFinalOverview(bulan)       → GET /pengelola/presensi
+ *   finalizeAttendance(bulan)     → POST /pengelola/presensi/final
+ *   getObjection(sessionId)       → GET /pengelola/presensi/:id/keberatan
+ *   reviewObjection(sessionId, …) → POST /pengelola/presensi/:id/keberatan
  *
  * Selama backend belum ada (mode development): presensi Kak Budi diambil
  * dari data presensi tutor (T2–T4, termasuk keberatan Aisyah), tutor lain
  * berupa angka contoh per bulan.
  */
-export const BUDI = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
+const BUDI = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
+
+/* "Kak Budi" dari "Kak Budi Santoso"; null bila BE tidak mengirim tutor */
+export const tutorShortName = (s: TutorSession) =>
+  s.tutor ? s.tutor.name.split(" ").slice(0, 2).join(" ") : null
+
+/* "bulan" = "2026-11" */
+const monthBody = (month?: Date) =>
+  month ? { bulan: format(month, "yyyy-MM") } : {}
 
 const total = (c: Counts) => c.final + c.ready + c.waiting + c.notCollected
 
 /* ---------- Ringkasan per bulan ---------- */
 
+/*
+ * Mock ringkasan, hanya dipakai finalProgress() untuk rekap honor (P7)
+ * sampai branch keuangan.
+ */
 function buildOverview(month: Date): FinalOverview {
   const now = new Date()
   const current = startOfMonth(now)
@@ -94,10 +108,15 @@ function buildOverview(month: Date): FinalOverview {
   }
 }
 
+/*
+ * Presensi sesi yang sudah dimulai pada bulan tsb (default bulan berjalan):
+ * final, siap difinalkan, menunggu wali, keberatan, belum dikumpulkan.
+ */
 export async function getFinalOverview(month?: Date): Promise<FinalOverview> {
-  assertMockAllowed()
-  await delay()
-  return buildOverview(month ?? new Date())
+  const { data } = await httpClient.get<FinalOverview>("/pengelola/presensi", {
+    params: monthBody(month),
+  })
+  return data
 }
 
 export const finalOverviewQuery = (month?: Date) =>
@@ -112,29 +131,21 @@ export const finalOverviewQuery = (month?: Date) =>
 
 /* Verifikasi final semua presensi lengkap di bulan tsb; kembalikan jumlahnya */
 export async function finalizeAttendance(month: Date): Promise<number> {
-  assertMockAllowed()
-  await delay(900)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const isCurrent = isSameMonth(month, new Date())
-  let count = finalizeReadySessions(month)
-  if (isCurrent) {
-    otherTutors.forEach((t) => {
-      count += t.counts.ready
-      t.counts.final += t.counts.ready
-      t.counts.ready = 0
-    })
-  }
-  return count
+  const { data } = await httpClient.post<number>(
+    "/pengelola/presensi/final",
+    monthBody(month)
+  )
+  return data
 }
 
 /* ---------- Tinjau keberatan ---------- */
 
+/* 404 bila sesi tidak ada; record.validation menentukan masih perlu ditinjau */
 export async function getObjection(sessionId: string): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(300)
-  const session = snapshotTutorSessions().find((s) => s.id === sessionId)
-  if (!session) throw new NotFoundError()
-  return session
+  const { data } = await httpClient.get<TutorSession>(
+    `/pengelola/presensi/${encodeURIComponent(sessionId)}/keberatan`
+  )
+  return data
 }
 
 export const objectionQuery = (sessionId: string) =>
@@ -143,23 +154,27 @@ export const objectionQuery = (sessionId: string) =>
     queryFn: () => getObjection(sessionId),
   })
 
+/*
+ * Presensi kembali sudah_divalidasi (siap difinalkan); wali mendapat
+ * notifikasi dari BE. 409 already_filled bila keberatan sudah ditinjau.
+ */
 export async function reviewObjection(
   sessionId: string,
   input: ObjectionResolution
 ): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(800)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const session = resolveObjection(sessionId, input)
-  addNotification({
-    kind: "validasi",
-    title: "Keberatan presensi sudah ditinjau",
-    body: input.corrected
-      ? `${session.subject} · waktu dikoreksi ${input.actualStart}–${input.actualEnd}`
-      : `${session.subject} · data tutor dinyatakan sesuai`,
-    to: "/wali/riwayat",
-  })
-  return session
+  const body = input.corrected
+    ? {
+        corrected: true,
+        actualStart: input.actualStart,
+        actualEnd: input.actualEnd,
+        note: input.note.trim(),
+      }
+    : { corrected: false, note: input.note.trim() }
+  const { data } = await httpClient.post<TutorSession>(
+    `/pengelola/presensi/${encodeURIComponent(sessionId)}/keberatan`,
+    body
+  )
+  return data
 }
 
 /* ---------- P7 · Sumber rekap honor ---------- */

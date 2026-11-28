@@ -23,15 +23,16 @@ import {
 } from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import {
-  AttendanceError,
-  NotFoundError,
-  BUDI,
+  attendanceErrorCode,
+  isNotFoundError,
   objectionQuery,
   reviewObjection,
+  tutorShortName,
 } from "@/features/presensi/api"
 import type { TutorSession } from "@/types/presensi"
 
 import { formatLongDate } from "@/features/presensi/lib"
+import { getErrorMessage } from "@/lib/api"
 import { formatTimeRange } from "@/lib/format"
 
 /*
@@ -69,7 +70,7 @@ function TinjauKeberatan() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat keberatan…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Keberatan gagal dimuat"
@@ -84,7 +85,11 @@ function TinjauKeberatan() {
               ? "Presensi tidak ditemukan"
               : "Keberatan sudah ditinjau"
           }
-          description="Presensi ini sudah kembali ke daftar siap diverifikasi."
+          description={
+            query.isError
+              ? "Sesi ini mungkin sudah tidak tersedia."
+              : "Presensi ini sudah kembali ke daftar siap diverifikasi."
+          }
           action={{
             label: "Kembali ke Verifikasi Presensi",
             onClick: () => navigate(BACK, { replace: true }),
@@ -109,6 +114,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
     {}
   )
   const changed = start !== tutorStart || end !== tutorEnd
+  const tutor = tutorShortName(session)
 
   const save = useMutation({
     mutationFn: (corrected: boolean) =>
@@ -133,7 +139,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
       navigate(BACK, { replace: true })
     },
     onError: (error) => {
-      if (error instanceof AttendanceError) {
+      if (attendanceErrorCode(error) === "already_filled") {
         toast.error("Keberatan sudah ditinjau", {
           description: "Status terbaru ditampilkan.",
         })
@@ -142,8 +148,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
         return
       }
       toast.error("Hasil tinjauan gagal disimpan", {
-        description:
-          "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error).replace(/\.?$/, ".")} Isian Anda tetap tersimpan.`,
       })
     },
   })
@@ -187,7 +192,8 @@ function ReviewForm({ session }: { session: TutorSession }) {
     >
       <div className="gap-ns-s bg-grayscale-surface-subtitle px-ns-l py-ns-m flex flex-col items-start rounded-(--comp-radius-md) leading-normal">
         <p className="text-subtitle text-grayscale-text-title font-bold">
-          {session.subject} · {session.student.name} × {BUDI.shortName}
+          {session.subject} · {session.student.name}
+          {tutor && ` × ${tutor}`}
         </p>
         <p className="text-caption text-grayscale-text-caption">
           {formatLongDate(session.start)} · jadwal{" "}
@@ -220,7 +226,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
           <CardHeader className="gap-ns-2xs">
             <CardTitle>Data dari tutor</CardTitle>
             <p className="text-caption text-grayscale-text-caption leading-normal">
-              Diisi {BUDI.shortName} · {stamp(record.submittedAt)}
+              Diisi {tutor ?? "tutor"} · {stamp(record.submittedAt)}
             </p>
           </CardHeader>
           <CardContent>
@@ -302,7 +308,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
                 setNote(e.target.value)
                 setErrors((er) => ({ ...er, note: undefined }))
               }}
-              placeholder={`Contoh: Sudah dikonfirmasi dengan ${BUDI.shortName}…`}
+              placeholder={`Contoh: Sudah dikonfirmasi dengan ${tutor ?? "tutor"}…`}
               aria-invalid={errors.note ? true : undefined}
               aria-describedby={errors.note ? "note-error" : "note-help"}
             />
