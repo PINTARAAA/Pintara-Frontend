@@ -36,6 +36,7 @@ import {
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import { tutorHistoryQuery } from "@/features/presensi/api"
+import { getErrorMessage } from "@/lib/api"
 import { DESKTOP_QUERY, useMediaQuery } from "@/hooks"
 import type { TutorHistory, TutorSession } from "@/types/presensi"
 import { firstName, parseMonth, formatShortWeekdayDate } from "@/lib/format"
@@ -110,7 +111,7 @@ function RiwayatTutor() {
         <DataState
           state="error"
           title="Riwayat gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : data ? (

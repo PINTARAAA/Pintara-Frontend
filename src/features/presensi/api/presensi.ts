@@ -1,9 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
-import { format, isAfter, isSameMonth } from "date-fns"
+import { format, isSameMonth } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
 import { getErrorMessage, httpClient, isApiError } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AttendanceErrorCode,
   AttendanceInput,
@@ -17,13 +16,10 @@ import type {
 /*
  * Presensi & Dokumentasi (tutor) · Figma PINTARA → UI Screen → Tutor → T2
  *
- * Sudah memakai BE: getTutorSessions, getAttendanceStatus, getTutorSession,
- * uploadDocumentation, submitAttendance.
- *
- * TODO(backend):
- *   getTutorSession(id)       → httpClient.get(`/tutor/presensi/${id}`)
- *
- * Selama backend belum ada (mode development) data disimpan di memori.
+ * Semua endpoint tutor (/tutor/presensi, /tutor/dokumentasi, /tutor/riwayat)
+ * sudah memakai BE. Data mock `@/lib/data/presensi` masih dibaca helper
+ * bagian P6/T7 di bawah (verifikasi presensi pengelola & notifikasi) sampai
+ * branch integrasinya.
  */
 
 /* ---------- Daftar ---------- */
@@ -38,8 +34,6 @@ export const tutorSessionsQuery = () =>
   queryOptions({ queryKey: ["presensi", "daftar"], queryFn: getTutorSessions })
 
 /* ---------- T3 · Status presensi per bulan ---------- */
-
-const monthStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1)
 
 /* "2026-11" untuk query `bulan` */
 const monthParam = (month?: Date) =>
@@ -64,54 +58,15 @@ export const attendanceStatusQuery = (month?: Date) =>
 
 /* ---------- T4 · Riwayat les tutor ---------- */
 
-/* TODO(backend): httpClient.get("/tutor/riwayat", { params: { bulan, siswa } }) */
+/* Riwayat bulan tsb; `siswa` = nama siswa (sama dengan daftar `students`) */
 export async function getTutorHistory(
   month?: Date,
   student?: string | null
 ): Promise<TutorHistory> {
-  assertMockAllowed()
-  await delay()
-
-  const now = new Date()
-  const current = monthStart(now)
-  const active = monthStart(month ?? current)
-  const keys = new Set([current.getTime(), active.getTime()])
-  sessions.forEach((s) => keys.add(monthStart(s.start).getTime()))
-  const months = [...keys].sort((a, b) => b - a).map((t) => new Date(t))
-
-  const students = [...new Set(sessions.map((s) => s.student.name))].sort()
-  const selected = student && students.includes(student) ? student : null
-
-  const inMonth = sessions
-    .filter(
-      (s) =>
-        isSameMonth(s.start, active) &&
-        !isAfter(s.start, now) &&
-        (!selected || s.student.name === selected)
-    )
-    .sort((a, b) => b.start.getTime() - a.start.getTime())
-
-  const held = inMonth.filter((s) => s.record?.held)
-  const byStudent = new Map<string, number>()
-  held.forEach((s) =>
-    byStudent.set(s.student.name, (byStudent.get(s.student.name) ?? 0) + 1)
-  )
-
-  return {
-    months,
-    month: active,
-    students,
-    student: selected,
-    sessions: inMonth,
-    summary: {
-      held: held.length,
-      cancelled: inMonth.filter((s) => s.record && !s.record.held).length,
-      studentCount: new Set(inMonth.map((s) => s.student.name)).size,
-      byStudent: [...byStudent]
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
-    },
-  }
+  const { data } = await httpClient.get<TutorHistory>("/tutor/riwayat", {
+    params: { ...monthParam(month), ...(student && { siswa: student }) },
+  })
+  return data
 }
 
 export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
@@ -164,18 +119,6 @@ export function resolveObjection(id: string, input: ObjectionResolution) {
 /* Salinan semua sesi tutor (notifikasi presensi terlewat & keberatan) */
 export function snapshotTutorSessions() {
   return structuredClone(sessions)
-}
-
-/* ---------- T5 · Pertemuan sebelumnya ---------- */
-
-/* Sesi terlaksana terakhir bersama siswa sebelum `before` (semua mapel) */
-export function findLastHeldSession(studentName: string, before: Date) {
-  const last = sessions
-    .filter(
-      (s) => s.student.name === studentName && s.record?.held && s.start < before
-    )
-    .sort((a, b) => b.start.getTime() - a.start.getTime())[0]
-  return last ? structuredClone(last) : null
 }
 
 /* ---------- Detail ---------- */
