@@ -2,8 +2,6 @@ import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
 import { httpClient, isApiError } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
-import { payments } from "@/lib/data/tagihan"
 import type {
   Bill,
   BillsOverview,
@@ -19,9 +17,9 @@ import type {
  *   getBills()               → GET /wali/tagihan
  *   getBill(id)              → GET /wali/tagihan/:id
  *   createPayment(id, nominal) → POST /wali/tagihan/:id/bayar
+ *   getPayments()            → GET /wali/pembayaran
  *
  * TODO(backend):
- *   getPayments()            → httpClient.get("/wali/pembayaran")
  *   getPaymentResult(trxId)  → httpClient.get(`/wali/pembayaran/${trxId}`)
  *                              (dipanggil saat kembali dari payment gateway)
  *
@@ -54,12 +52,10 @@ export async function getBills(): Promise<BillsOverview> {
 export const billsQuery = () =>
   queryOptions({ queryKey: ["tagihan", "daftar"], queryFn: getBills })
 
+/* Riwayat transaksi semua tagihan wali, terbaru dulu (dari BE) */
 export async function getPayments(): Promise<Payment[]> {
-  assertMockAllowed()
-  await delay()
-  return [...payments].sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-  )
+  const { data } = await httpClient.get<Payment[]>("/wali/pembayaran")
+  return data
 }
 
 export const paymentsQuery = () =>
