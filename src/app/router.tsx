@@ -272,6 +272,12 @@ const EXTRA_ROUTES: Partial<Record<Role, RouteObject[]>> = {
       handle: { title: "Detail Jadwal", hideBottomNav: true },
       lazy: () => import("@/pages/jadwal/detail-jadwal-tutor").then(toRoute),
     },
+    {
+      path: "jadwal/:sessionId/ubah",
+      handle: { title: "Ajukan Perubahan", hideBottomNav: true },
+      lazy: () =>
+        import("@/pages/jadwal/ajukan-perubahan-tutor").then(toRoute),
+    },
     /* T2 · Presensi & Dokumentasi */
     /* T3 · Status Presensi (?bulan=YYYY-MM) */
     {

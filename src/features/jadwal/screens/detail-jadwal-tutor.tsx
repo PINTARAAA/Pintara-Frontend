@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { format, isAfter, isToday } from "date-fns";
 import { id as localeId } from "date-fns/locale";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 
 import {
   DetailScreen,
@@ -65,19 +65,30 @@ function DetailJadwalTutor() {
       className="lg:pt-ns-3xl"
       footer={
         session && (
-          <Button
-            variant="secondary"
-            nativeButton={false}
-            render={
-              <a
-                href={toWhatsAppUrl(session.parent.whatsapp) ?? undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-              />
-            }
-          >
-            Hubungi Wali
-          </Button>
+          <>
+            {session.routineId && (
+              <Button
+                variant="secondary"
+                nativeButton={false}
+                render={<Link to={`/tutor/jadwal/${session.id}/ubah`} />}
+              >
+                Ajukan Perubahan
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              nativeButton={false}
+              render={
+                <a
+                  href={toWhatsAppUrl(session.parent.whatsapp) ?? undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
+            >
+              Hubungi Wali
+            </Button>
+          </>
         )
       }
     >

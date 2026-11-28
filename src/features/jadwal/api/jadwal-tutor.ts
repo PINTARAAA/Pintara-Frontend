@@ -1,10 +1,12 @@
 import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, format, getDay, startOfDay } from "date-fns"
 
+import type { ScheduleChangeInput } from "@/features/jadwal/schemas"
 import { parseTime } from "@/lib/data/jadwal"
 import { routines } from "@/lib/data/jadwal-tutor"
 import { httpClient } from "@/lib/api"
 import type {
+  ChangeRequest,
   TutorRoutine,
   TutorSchedule,
   TutorScheduleDetail,
@@ -14,7 +16,8 @@ import type {
 /*
  * Jadwal tutor · Figma PINTARA → UI Screen → Tutor → T5 · Jadwal
  *
- * Sudah memakai BE: getTutorSchedule, getTutorScheduleSession.
+ * Sudah memakai BE: getTutorSchedule, getTutorScheduleSession,
+ * submitTutorScheduleChange.
  * `tutorSessionsOn` (data mock `@/lib/data/jadwal-tutor`) masih dibaca mock
  * pengingat notifikasi tutor sampai branch integrasinya.
  */
@@ -105,3 +108,26 @@ export const tutorScheduleSessionQuery = (id: string) =>
     queryKey: ["jadwal", "tutor", "sesi", id],
     queryFn: () => getTutorScheduleSession(id),
   })
+
+/* ---------- Ajukan perubahan (tutor) ---------- */
+
+/*
+ * routineId = ID pasangan tutor–siswa (routineId pada item jadwal tutor).
+ * Pengajuan masuk ke Pengelola (ditinjau_pengelola), sama seperti dari wali.
+ */
+export async function submitTutorScheduleChange(
+  routineId: string,
+  input: ScheduleChangeInput
+): Promise<ChangeRequest> {
+  const { data } = await httpClient.post<ChangeRequest>(
+    "/tutor/pengajuan-jadwal",
+    {
+      routineId,
+      scope: input.scope,
+      day: input.day,
+      startTime: input.startTime,
+      reason: input.reason.trim(),
+    }
+  )
+  return data
+}

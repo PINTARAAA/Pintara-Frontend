@@ -1,4 +1,5 @@
 export * from "./ajukan-perubahan"
+export * from "./ajukan-perubahan-tutor"
 export * from "./detail-jadwal-tutor"
 export * from "./detail-jadwal"
 export * from "./detail-pengajuan"
