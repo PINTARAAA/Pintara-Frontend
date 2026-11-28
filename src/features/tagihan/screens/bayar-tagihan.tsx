@@ -112,6 +112,8 @@ function BayarTagihan() {
     },
     onError: (error) => {
       setStage({ name: "form" })
+      /* Sisa tagihan mungkin sudah berubah (mis. 400 nominal tidak valid) */
+      void queryClient.invalidateQueries({ queryKey: billQuery(billId).queryKey })
       toast.error("Pembayaran gagal dimulai", {
         /* Pesan BE tidak selalu diakhiri titik */
         description: `${getErrorMessage(error).replace(/\.?$/, ".")} Tidak ada dana yang ditarik.`,
