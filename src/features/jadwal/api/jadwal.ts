@@ -2,14 +2,12 @@ import { queryOptions } from "@tanstack/react-query"
 import { addDays } from "date-fns"
 
 import type { ScheduleChangeInput } from "@/features/jadwal/schemas"
-import { addNotification } from "@/features/notifikasi/api"
 import { STUDENTS } from "@/lib/data/dashboard"
 import {
   changeRequests,
   nextSessionStart,
   OPEN_STATUSES,
   routines,
-  WEEKDAYS,
 } from "@/lib/data/jadwal"
 import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
@@ -23,11 +21,10 @@ import type {
 /*
  * Jadwal Les & Perubahan Jadwal · Figma PINTARA → UI Screen → Wali Murid → W4
  *
- * Sudah memakai BE: getWaliSchedule, getRoutine.
+ * Sudah memakai BE: getWaliSchedule, getRoutine, submitScheduleChange.
  *
  * TODO(backend):
  *   getChangeRequest(id)     → httpClient.get(`/wali/pengajuan-jadwal/${id}`)
- *   submitScheduleChange()   → httpClient.post("/wali/pengajuan-jadwal", input)
  *
  * Selama backend belum ada (mode development) data disimpan di memori:
  * pengajuan yang dikirim langsung tampil di daftar "Pengajuan perubahan".
@@ -113,48 +110,22 @@ export const changeRequestQuery = (id: string) =>
     queryFn: () => getChangeRequest(id),
   })
 
+/* Pengajuan masuk ke Pengelola (status ditinjau_pengelola) */
 export async function submitScheduleChange(
   routineId: string,
   input: ScheduleChangeInput
 ): Promise<ChangeRequest> {
-  assertMockAllowed()
-  await delay(800)
-
-  if (!navigator.onLine) {
-    throw new Error("Tidak ada koneksi internet.")
-  }
-  const routine = routines.find((r) => r.id === routineId)
-  if (!routine) throw new NotFoundError("Jadwal")
-
-  const next = nextSessionStart(routine.weekday, routine.startTime)
-  const request: ChangeRequest = {
-    id: `pj-${Date.now()}`,
-    routineId,
-    studentId: routine.studentId,
-    subject: routine.subject,
-    tutor: routine.tutor,
-    durationMinutes: routine.durationMinutes,
-    from: { weekday: routine.weekday, startTime: routine.startTime },
-    to: {
-      weekday: WEEKDAYS.indexOf(input.day as (typeof WEEKDAYS)[number]),
+  const { data } = await httpClient.post<ChangeRequest>(
+    "/wali/pengajuan-jadwal",
+    {
+      routineId,
+      scope: input.scope,
+      day: input.day,
       startTime: input.startTime,
-    },
-    scope: input.scope as ChangeRequest["scope"],
-    effectiveDate: input.scope === "sekali" ? next : addDays(next, 7),
-    reason: input.reason.trim(),
-    status: "ditinjau_pengelola",
-    submittedAt: new Date(),
-  }
-  changeRequests.push(request)
-  const from = WEEKDAYS[request.from.weekday]
-  const to = WEEKDAYS[request.to.weekday]
-  addNotification({
-    kind: "jadwal",
-    title: "Pengajuan perubahan jadwal terkirim",
-    body: `${from === to ? from : `${from} → ${to}`}, ${request.to.startTime} · menunggu Pengelola`,
-    to: `/wali/jadwal/pengajuan/${request.id}`,
-  })
-  return request
+      reason: input.reason.trim(),
+    }
+  )
+  return data
 }
 
 /* ---------- P5 · Tinjau pengajuan (pengelola) ---------- */

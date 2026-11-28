@@ -195,10 +195,9 @@ function ChangeForm({
       window.scrollTo({ top: 0 })
       onSent(request)
     },
-    onError: () => {
+    onError: (error) => {
       toast.error("Pengajuan gagal dikirim", {
-        description:
-          "Data Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Data Anda tetap tersimpan di formulir.`,
       })
     },
   })
