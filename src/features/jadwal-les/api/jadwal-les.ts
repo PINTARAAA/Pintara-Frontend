@@ -1,11 +1,10 @@
 import { queryOptions } from "@tanstack/react-query"
-import { addDays, getDay, isBefore, startOfDay } from "date-fns"
+import { addDays, getDay, startOfDay } from "date-fns"
 
 import {
   decideChangeRequest,
   findRequestForReview,
 } from "@/features/jadwal/api"
-import { NotFoundError } from "@/features/verifikasi/api"
 import { addMinutesToTime, parseTime, WEEKDAYS } from "@/lib/data/jadwal"
 import { pairs } from "@/lib/data/jadwal-les"
 import { httpClient } from "@/lib/api"
@@ -25,10 +24,9 @@ import type {
  * Atur Jadwal Les (pengelola) · Figma PINTARA → UI Screen → Pengelola LBB
  * → P5 · Atur Jadwal Les
  *
- * Sudah memakai BE: getScheduleBoard, getScheduleDraft.
+ * Sudah memakai BE: getScheduleBoard, getScheduleDraft, getPairDraft.
  *
  * TODO(backend):
- *   getPair(pairId)             → httpClient.get(`/pengelola/jadwal/${pairId}`)
  *   saveSchedule(input)         → httpClient.put("/pengelola/jadwal", input)
  *   reviewChangeRequest(id, ok) → httpClient.post(`/pengelola/pengajuan-jadwal/${id}`, …)
  *   Petakan respons bentrok ke ScheduleConflictError.
@@ -104,28 +102,12 @@ export const scheduleDraftQuery = (offerId: string) =>
     queryFn: () => getScheduleDraft(offerId),
   })
 
-function draftFromPair(pair: Pair): ScheduleDraft {
-  return structuredClone({
-    pairId: pair.id,
-    offerId: pair.offerId,
-    student: pair.student,
-    parentName: pair.parentName,
-    tutor: pair.tutor,
-    subjects: pair.subjects,
-    sessions: pair.sessions,
-    effectiveFrom: isBefore(pair.effectiveFrom, new Date())
-      ? nextDate(pair.sessions[0]?.day ?? "Senin")
-      : pair.effectiveFrom,
-  })
-}
-
-/* Ubah jadwal aktif */
+/* Ubah jadwal aktif; 404 bila pasangan tidak ditemukan */
 export async function getPairDraft(pairId: string): Promise<ScheduleDraft> {
-  assertMockAllowed()
-  await delay(300)
-  const pair = pairs.find((p) => p.id === pairId)
-  if (!pair) throw new NotFoundError()
-  return draftFromPair(pair)
+  const { data } = await httpClient.get<ScheduleDraft>(
+    `/pengelola/jadwal/${encodeURIComponent(pairId)}`
+  )
+  return data
 }
 
 export const pairDraftQuery = (pairId: string) =>
