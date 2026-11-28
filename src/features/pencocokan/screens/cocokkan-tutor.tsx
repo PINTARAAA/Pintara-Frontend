@@ -29,8 +29,8 @@ import {
 } from "@/features/pencocokan/api"
 import type { Candidate, MatchingCandidates } from "@/types/pencocokan"
 import {
-  AlreadyProcessedError,
   gradeLabel,
+  isAlreadyProcessedError,
   isNotFoundError,
   needsTutor,
 } from "@/features/verifikasi/api"
@@ -151,7 +151,7 @@ function CandidatePicker({
       onSaved(result)
     },
     onError: (error) => {
-      if (error instanceof AlreadyProcessedError) {
+      if (isAlreadyProcessedError(error)) {
         toast.error("Siswa sudah punya tutor", {
           description: "Pencocokan ini sudah disimpan sebelumnya.",
         })
@@ -160,7 +160,7 @@ function CandidatePicker({
         return
       }
       toast.error("Pilihan tutor gagal disimpan", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       })
     },
   })

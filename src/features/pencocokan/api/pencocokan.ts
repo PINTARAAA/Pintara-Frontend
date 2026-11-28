@@ -1,8 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assignTutor } from "@/features/verifikasi/api"
 import { httpClient } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { tutors } from "@/lib/data/pencocokan"
 import type { MatchingCandidates, OfferTutorInfo } from "@/types/pencocokan"
 import type { PengelolaRegistration } from "@/types/verifikasi"
@@ -11,10 +9,7 @@ import type { PengelolaRegistration } from "@/types/verifikasi"
  * Pencocokan Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P3 · Pencocokan Tutor
  *
- * Antrean dan kandidat memakai BE: GET /pengelola/pencocokan(/:id).
- *
- * TODO(backend):
- *   selectTutor(id, tutorId) → httpClient.post(`/pengelola/pencocokan/${id}`, { tutorId })
+ * Antrean, kandidat, dan pilih tutor memakai BE: /pengelola/pencocokan(/:id).
  *
  * Kandidat dinilai BE dari 3 kriteria — mapel & jenjang, ketersediaan
  * hari/jam, dan jarak (maks. MAX_DISTANCE_KM) — ditambah rating tutor.
@@ -67,12 +62,16 @@ export const matchingCandidatesQuery = (id: string) =>
 
 /* ---------- Pilih tutor ---------- */
 
-export async function selectTutor(registrationId: string, tutorId: string) {
-  assertMockAllowed()
-  await delay(800)
-  const tutor = tutors.find((t) => t.id === tutorId)
-  if (!tutor) throw new Error("Tutor tidak ditemukan.")
-  return assignTutor(registrationId, { id: tutor.id, name: tutor.name })
+/* 409 already_processed bila siswa sudah punya tutor; 404 bila tutor tidak ada */
+export async function selectTutor(
+  registrationId: string,
+  tutorId: string
+): Promise<PengelolaRegistration> {
+  const { data } = await httpClient.post<PengelolaRegistration>(
+    `/pengelola/pencocokan/${encodeURIComponent(registrationId)}`,
+    { tutorId }
+  )
+  return data
 }
 
 /* ---------- Untuk penawaran (P4) ---------- */
