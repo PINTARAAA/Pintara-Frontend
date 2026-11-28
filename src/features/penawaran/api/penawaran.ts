@@ -1,8 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { NotFoundError, releaseMatch } from "@/features/verifikasi/api"
 import { httpClient, isApiError } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { DECLINE_REASONS, offers } from "@/lib/data/penawaran"
 import type {
   DeclineInput,
@@ -16,61 +14,39 @@ import type {
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P4 · Penawaran Tutor
  *
- * Sudah memakai BE: getOffers, getOfferDraft, sendOffer, getOffer,
- * recordAccepted.
- *
- * TODO(backend):
- *   recordDeclined(id, input)   → httpClient.post(`/pengelola/penawaran/${id}/ditolak`, input)
- *   Petakan "slot tutor sudah terisi" ke OfferError("tutor_unavailable").
+ * Semua endpoint /pengelola/penawaran sudah memakai BE. `snapshotOffers`
+ * (data mock `@/lib/data/penawaran`) masih dibaca modul jadwal-les sampai
+ * branch integrasinya.
  *
  * Alur: P3 memilih tutor (registration.match) → pengelola mengirim penawaran
  * → tutor menjawab di luar aplikasi → pengelola mencatat jawabannya di sini.
  * Ditolak: tutor dilepas dan siswa kembali ke antrean pencocokan P3.
  */
 
-export class OfferError extends Error {
-  code: "tutor_unavailable" | "already_answered" | "no_match" | "already_sent"
-  /* Penawaran yang sudah ada (already_sent) */
-  offerId?: string
-  constructor(
-    code: OfferError["code"],
-    message: string = code,
-    offerId?: string
-  ) {
-    super(message)
-    this.name = "OfferError"
-    this.code = code
-    this.offerId = offerId
-  }
-}
+/* Kode error 409 dari BE untuk alur penawaran */
+export type OfferErrorCode =
+  "tutor_unavailable" | "already_answered" | "no_match" | "already_sent"
 
-const OFFER_ERROR_CODES: readonly OfferError["code"][] = [
+const OFFER_ERROR_CODES: readonly OfferErrorCode[] = [
   "tutor_unavailable",
   "already_answered",
   "no_match",
   "already_sent",
 ]
 
-/* Kode error penawaran dari BE (409) atau dari mock */
-export function offerErrorCode(error: unknown): OfferError["code"] | null {
-  if (error instanceof OfferError) return error.code
+export function offerErrorCode(error: unknown): OfferErrorCode | null {
   if (!isApiError(error)) return null
-  const code = error.serverCode as OfferError["code"] | undefined
+  const code = error.serverCode as OfferErrorCode | undefined
   return code && OFFER_ERROR_CODES.includes(code) ? code : null
 }
 
 /* 409 already_sent → ID penawaran yang sudah ada (details.offerId) */
 export function alreadySentOfferId(error: unknown): string | null {
-  if (offerErrorCode(error) !== "already_sent") return null
-  if (error instanceof OfferError) return error.offerId ?? null
-  const id = isApiError(error)
-    ? (error.details as { offerId?: unknown } | undefined)?.offerId
-    : undefined
+  if (offerErrorCode(error) !== "already_sent" || !isApiError(error)) {
+    return null
+  }
+  const id = (error.details as { offerId?: unknown } | undefined)?.offerId
   return typeof id === "string" ? id : null
-}
-
-function ensureOnline() {
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
 }
 
 /* ---------- Daftar (tab Penawaran) ---------- */
@@ -128,12 +104,6 @@ export async function chooseAnotherTutor(): Promise<never> {
 
 /* ---------- Detail & jawaban tutor ---------- */
 
-function find(id: string) {
-  const offer = offers.find((o) => o.id === id)
-  if (!offer) throw new NotFoundError()
-  return offer
-}
-
 export async function getOffer(id: string): Promise<Offer> {
   const { data } = await httpClient.get<Offer>(
     `/pengelola/penawaran/${encodeURIComponent(id)}`
@@ -147,15 +117,6 @@ export const offerQuery = (id: string) =>
     queryFn: () => getOffer(id),
   })
 
-function findWaiting(id: string) {
-  ensureOnline()
-  const offer = find(id)
-  if (offer.status !== "menunggu_konfirmasi") {
-    throw new OfferError("already_answered", "Jawaban tutor sudah dicatat.")
-  }
-  return offer
-}
-
 /* 409 already_answered bila jawaban tutor sudah dicatat */
 export async function recordAccepted(id: string): Promise<Offer> {
   const { data } = await httpClient.post<Offer>(
@@ -164,19 +125,19 @@ export async function recordAccepted(id: string): Promise<Offer> {
   return data
 }
 
+/* BE melepas tutor; siswa kembali ke antrean pencocokan tanpa tutor ini */
 export async function recordDeclined(
   id: string,
   input: DeclineInput
 ): Promise<Offer> {
-  assertMockAllowed()
-  await delay(800)
-  const offer = findWaiting(id)
-  offer.status = "ditolak"
-  offer.answeredAt = new Date()
-  offer.decline = { reason: input.reason, note: input.note.trim() || undefined }
-  /* Siswa kembali ke antrean pencocokan; tutor ini tidak dicalonkan lagi */
-  releaseMatch(offer.registrationId, { declined: true })
-  return structuredClone(offer)
+  const { data } = await httpClient.post<Offer>(
+    `/pengelola/penawaran/${encodeURIComponent(id)}/ditolak`,
+    {
+      reason: input.reason,
+      ...(input.note.trim() && { note: input.note.trim() }),
+    }
+  )
+  return data
 }
 
 export const declineLabel = (reason: DeclineReason) =>

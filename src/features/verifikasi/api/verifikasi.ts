@@ -15,8 +15,8 @@ import type {
  * Pengelola LBB → P2 · Verifikasi Pendaftaran
  *
  * Daftar, detail, verifikasi, dan tolak sudah memakai BE (`/pengelola/pendaftaran`).
- * Bagian "P3 · Pencocokan Tutor" di bawah masih mock untuk modul pencocokan,
- * penawaran, dan jadwal-les sampai branch integrasinya masing-masing.
+ * Bagian mock di bawah masih dibaca modul jadwal-les sampai branch
+ * integrasinya.
  */
 
 /*
@@ -123,7 +123,7 @@ export async function rejectRegistration(
   return data
 }
 
-/* ---------- P3 · Pencocokan Tutor (mock, sementara) ---------- */
+/* ---------- Mock sementara (dibaca modul jadwal-les) ---------- */
 
 export class NotFoundError extends Error {
   constructor() {
@@ -139,29 +139,7 @@ export class AlreadyProcessedError extends Error {
   }
 }
 
-function find(id: string) {
-  const registration = registrations.find((r) => r.id === id)
-  if (!registration) throw new NotFoundError()
-  return registration
-}
-
-/* Salinan pendaftaran untuk modul pencocokan (dibaca tanpa jeda) */
+/* Salinan pendaftaran mock untuk jadwal-les (dibaca tanpa jeda) */
 export function snapshotRegistrations() {
   return structuredClone(registrations)
-}
-
-/*
- * Lepas tutor terpilih: penawaran ditolak tutor (declined) atau tutor tidak
- * lagi tersedia saat penawaran akan dikirim. Siswa kembali ke antrean P3.
- */
-export function releaseMatch(id: string, options: { declined?: boolean } = {}) {
-  const registration = find(id)
-  if (registration.match && options.declined) {
-    registration.declinedTutorIds = [
-      ...(registration.declinedTutorIds ?? []),
-      registration.match.tutorId,
-    ]
-  }
-  registration.match = undefined
-  return structuredClone(registration)
 }

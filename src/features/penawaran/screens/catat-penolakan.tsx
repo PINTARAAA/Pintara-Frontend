@@ -22,7 +22,7 @@ import {
   toast,
 } from "@/components"
 import {
-  OfferError,
+  offerErrorCode,
   offerQuery,
   recordDeclined,
 } from "@/features/penawaran/api"
@@ -146,7 +146,7 @@ function DeclineFormScreen({
       onSaved(updated)
     },
     onError: (error) => {
-      if (error instanceof OfferError && error.code === "already_answered") {
+      if (offerErrorCode(error) === "already_answered") {
         toast.error("Jawaban tutor sudah dicatat", {
           description: "Status terbaru ditampilkan.",
         })
@@ -155,8 +155,7 @@ function DeclineFormScreen({
         return
       }
       toast.error("Penolakan gagal disimpan", {
-        description:
-          "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Isian Anda tetap tersimpan.`,
       })
     },
   })
