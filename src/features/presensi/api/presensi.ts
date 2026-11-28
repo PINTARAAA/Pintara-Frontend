@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { format, isAfter, isSameMonth } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
-import { httpClient, isApiError } from "@/lib/api"
+import { getErrorMessage, httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AttendanceErrorCode,
@@ -17,12 +17,11 @@ import type {
 /*
  * Presensi & Dokumentasi (tutor) · Figma PINTARA → UI Screen → Tutor → T2
  *
- * Sudah memakai BE: getTutorSessions, getAttendanceStatus, getTutorSession.
+ * Sudah memakai BE: getTutorSessions, getAttendanceStatus, getTutorSession,
+ * uploadDocumentation.
  *
  * TODO(backend):
  *   getTutorSession(id)       → httpClient.get(`/tutor/presensi/${id}`)
- *   uploadDocumentation(file) → httpClient.post("/tutor/dokumentasi", form,
- *                               { onUploadProgress })
  *   submitAttendance(id, …)   → httpClient.post(`/tutor/presensi/${id}`, …)
  *   Petakan respons "presensi sudah ada" ke AttendanceError("already_filled").
  *
@@ -237,27 +236,44 @@ export function validateDocumentation(file: File): string | null {
   return null
 }
 
-/* Simulasi unggah dengan progres; kembalikan fungsi pembatal */
+export type UploadedDocumentation = { name: string; size: number; url: string }
+
+/* Unggahan besar (maks. 5 MB) butuh waktu lebih lama dari batas umum 15 detik */
+const UPLOAD_TIMEOUT_MS = 120_000
+
+/*
+ * Unggah dokumentasi (multipart, field `file`) dengan progres.
+ * Kembalikan fungsi pembatal; unggahan yang dibatalkan tidak memanggil onError.
+ */
 export function uploadDocumentation(
   file: File,
-  handlers: { onProgress: (percent: number) => void; onDone: () => void; onError: () => void }
+  handlers: {
+    onProgress: (percent: number) => void
+    onDone: (uploaded: UploadedDocumentation) => void
+    onError: (message: string) => void
+  }
 ) {
-  let percent = 0
-  const timer = window.setInterval(() => {
-    if (!navigator.onLine) {
-      window.clearInterval(timer)
-      handlers.onError()
-      return
-    }
-    percent = Math.min(100, percent + 15 + Math.random() * 20)
-    handlers.onProgress(percent)
-    if (percent >= 100) {
-      window.clearInterval(timer)
-      handlers.onDone()
-    }
-  }, 180)
-  void file
-  return () => window.clearInterval(timer)
+  const controller = new AbortController()
+  const form = new FormData()
+  form.append("file", file)
+
+  httpClient
+    .post<UploadedDocumentation>("/tutor/dokumentasi", form, {
+      signal: controller.signal,
+      timeout: UPLOAD_TIMEOUT_MS,
+      onUploadProgress: (event) => {
+        if (event.total) {
+          handlers.onProgress(Math.round((event.loaded / event.total) * 100))
+        }
+      },
+    })
+    .then(({ data }) => handlers.onDone(data))
+    .catch((error: unknown) => {
+      if (isApiError(error) && error.code === "canceled") return
+      handlers.onError(getErrorMessage(error))
+    })
+
+  return () => controller.abort()
 }
 
 /* ---------- Simpan presensi ---------- */

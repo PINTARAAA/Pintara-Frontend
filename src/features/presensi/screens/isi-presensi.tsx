@@ -212,8 +212,8 @@ function AttendanceForm({
     cancelUpload.current = uploadDocumentation(file, {
       onProgress: (progress) => setDoc((d) => ({ ...d, progress })),
       onDone: () => setDoc((d) => ({ ...d, status: "success", progress: 100 })),
-      onError: () => {
-        const message = "Unggahan gagal. Periksa koneksi lalu coba lagi."
+      onError: (reason) => {
+        const message = `Unggahan gagal. ${reason}`
         setDoc((d) => ({ ...d, status: "error", error: message }))
         setErrors((prev) => ({ ...prev, file: message }))
       },
