@@ -2,10 +2,10 @@ import { queryOptions } from "@tanstack/react-query"
 
 import {
   assignTutor,
-  needsTutor,
   NotFoundError,
   snapshotRegistrations,
 } from "@/features/verifikasi/api"
+import { httpClient } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { tutors } from "@/lib/data/pencocokan"
 import type {
@@ -21,8 +21,9 @@ import type { PengelolaRegistration } from "@/types/verifikasi"
  * Pencocokan Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P3 · Pencocokan Tutor
  *
+ * Antrean memakai BE: GET /pengelola/pencocokan.
+ *
  * TODO(backend):
- *   getMatchingQueue()       → httpClient.get("/pengelola/pencocokan")
  *   getMatchingCandidates(id)→ httpClient.get(`/pengelola/pencocokan/${id}`)
  *   selectTutor(id, tutorId) → httpClient.post(`/pengelola/pencocokan/${id}`, { tutorId })
  *
@@ -119,15 +120,12 @@ function evaluate(tutor: MatchingTutor, r: PengelolaRegistration): Candidate {
 
 /* ---------- Antrean ---------- */
 
+/* Terverifikasi & belum punya tutor; BE mengurutkan dari yang paling lama menunggu */
 export async function getMatchingQueue(): Promise<PengelolaRegistration[]> {
-  assertMockAllowed()
-  await delay()
-  /* Yang paling lama menunggu tutor tampil paling atas */
-  return snapshotRegistrations()
-    .filter(needsTutor)
-    .sort(
-      (a, b) => (a.verifiedAt?.getTime() ?? 0) - (b.verifiedAt?.getTime() ?? 0)
-    )
+  const { data } = await httpClient.get<PengelolaRegistration[]>(
+    "/pengelola/pencocokan"
+  )
+  return data
 }
 
 export const matchingQueueQuery = () =>
