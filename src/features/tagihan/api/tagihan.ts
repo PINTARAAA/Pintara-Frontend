@@ -1,11 +1,9 @@
 import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
-import { addNotification } from "@/features/notifikasi/api"
 import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
-import { bills, payments } from "@/lib/data/tagihan"
-import { formatRupiah } from "@/lib/format"
+import { payments } from "@/lib/data/tagihan"
 import type {
   Bill,
   BillsOverview,
@@ -20,17 +18,15 @@ import type {
  * Sudah memakai BE:
  *   getBills()               → GET /wali/tagihan
  *   getBill(id)              → GET /wali/tagihan/:id
+ *   createPayment(id, nominal) → POST /wali/tagihan/:id/bayar
  *
  * TODO(backend):
  *   getPayments()            → httpClient.get("/wali/pembayaran")
- *   createPayment(id, nominal) → httpClient.post(`/wali/tagihan/${id}/bayar`,
- *                              { nominal }) lalu arahkan ke URL payment gateway
  *   getPaymentResult(trxId)  → httpClient.get(`/wali/pembayaran/${trxId}`)
  *                              (dipanggil saat kembali dari payment gateway)
  *
- * Selama backend belum ada (mode development) data disimpan di memori dan
- * payment gateway disimulasikan (memproses ±2 detik, lalu berhasil).
- * Tambahkan ?hasil=gagal pada halaman bayar untuk menguji "Pembayaran gagal".
+ * Payment gateway disimulasikan BE. Tambahkan ?hasil=gagal pada halaman
+ * bayar (mode development) untuk menguji "Pembayaran gagal".
  */
 
 /* ---------- Turunan ---------- */
@@ -71,26 +67,9 @@ export const paymentsQuery = () =>
 
 /* ---------- Detail ---------- */
 
-export class NotFoundError extends Error {
-  constructor() {
-    super("Tagihan tidak ditemukan.")
-    this.name = "NotFoundError"
-  }
-}
-
-/*
- * 404 dari BE (tagihan tidak ada / milik wali lain), atau dari mock
- * pembayaran.
- */
+/* 404 dari BE (tagihan tidak ada / milik wali lain) */
 export const isNotFoundError = (error: unknown) =>
-  (isApiError(error) && error.code === "not_found") ||
-  error instanceof NotFoundError
-
-function findBill(id: string) {
-  const bill = bills.find((b) => b.id === id)
-  if (!bill) throw new NotFoundError()
-  return bill
-}
+  isApiError(error) && error.code === "not_found"
 
 export async function getBill(id: string): Promise<Bill> {
   const { data } = await httpClient.get<Bill>(
@@ -102,47 +81,20 @@ export async function getBill(id: string): Promise<Bill> {
 export const billQuery = (id: string) =>
   queryOptions({ queryKey: ["tagihan", "detail", id], queryFn: () => getBill(id) })
 
-/* ---------- Pembayaran (payment gateway disimulasikan) ---------- */
+/* ---------- Pembayaran ---------- */
 
-let trxCounter = 8841
-
+/*
+ * Payment gateway disimulasikan BE: transaksi langsung berhasil, atau
+ * kedaluwarsa bila simulateFailure. 400 bila nominal ≤ 0 atau melebihi sisa.
+ */
 export async function createPayment(
   billId: string,
   amount: number,
   options: { simulateFailure?: boolean } = {}
 ): Promise<PaymentResult> {
-  assertMockAllowed()
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-
-  const bill = findBill(billId)
-  if (amount <= 0 || amount > remainingOf(bill)) {
-    throw new Error("Nominal pembayaran tidak valid.")
-  }
-
-  /* Waktu "memproses" di payment gateway */
-  await delay(2000)
-
-  const now = new Date()
-  const ymd = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`
-  const payment: Payment = {
-    id: `TRX-${ymd}-${trxCounter++}`,
-    billId,
-    billPeriod: bill.period,
-    amount,
-    method: amount === remainingOf(bill) ? "QRIS" : "Virtual Account BCA",
-    status: options.simulateFailure ? "kedaluwarsa" : "berhasil",
-    createdAt: now,
-  }
-  payments.push(payment)
-  if (payment.status === "berhasil") {
-    bill.paid += amount
-    addNotification({
-      kind: "pembayaran",
-      title: "Pembayaran berhasil",
-      body: `Tagihan ${bill.period.toLocaleDateString("id-ID", { month: "long" })} ${formatRupiah(amount)}`,
-      to: "/wali/tagihan?tab=riwayat",
-    })
-  }
-
-  return { payment, bill: { ...bill } }
+  const { data } = await httpClient.post<PaymentResult>(
+    `/wali/tagihan/${encodeURIComponent(billId)}/bayar`,
+    { nominal: amount, ...(options.simulateFailure && { simulateFailure: true }) }
+  )
+  return data
 }

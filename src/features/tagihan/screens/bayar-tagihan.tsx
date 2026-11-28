@@ -33,6 +33,7 @@ import {
   statusOf,
 } from "@/features/tagihan/api"
 import { formatPeriod } from "@/features/tagihan/lib"
+import { getErrorMessage } from "@/lib/api"
 import { formatRupiah, formatDate, formatDateTime } from "@/lib/format"
 import type { Bill, PaymentResult } from "@/types/tagihan"
 
@@ -82,11 +83,11 @@ function BayarTagihan() {
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] })
       setStage({ name: "result", result })
     },
-    onError: () => {
+    onError: (error) => {
       setStage({ name: "form" })
       toast.error("Pembayaran gagal dimulai", {
-        description:
-          "Periksa koneksi lalu coba lagi. Tidak ada dana yang ditarik.",
+        /* Pesan BE tidak selalu diakhiri titik */
+        description: `${getErrorMessage(error).replace(/\.?$/, ".")} Tidak ada dana yang ditarik.`,
       })
     },
   })
