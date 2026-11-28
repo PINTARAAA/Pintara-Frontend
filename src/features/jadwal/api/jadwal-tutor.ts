@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { format, getDay, startOfDay } from "date-fns"
+import { differenceInCalendarDays, format, getDay, startOfDay } from "date-fns"
 
 import { parseTime } from "@/lib/data/jadwal"
 import { routines } from "@/lib/data/jadwal-tutor"
@@ -68,14 +68,36 @@ export const tutorScheduleQuery = (week = 0) =>
 
 /* ---------- Detail sesi ---------- */
 
-/* 404 bila sesi tidak ada atau bukan milik tutor ini */
+/* Jadwal mingguan BE mencakup 4 minggu (0 = 7 hari mulai hari ini) */
+const SCHEDULE_WEEKS = 4
+
+/*
+ * 404 bila sesi tidak ada atau bukan milik tutor ini. Bila BE belum mengirim
+ * routineId/kelas/alamat (temuan #23), lengkapi dari item jadwal mingguan.
+ */
 export async function getTutorScheduleSession(
   id: string
 ): Promise<TutorScheduleDetail> {
   const { data } = await httpClient.get<TutorScheduleDetail>(
     `/tutor/jadwal/${encodeURIComponent(id)}`
   )
-  return data
+  if (data.routineId) return data
+
+  const week = Math.floor(
+    differenceInCalendarDays(data.start, new Date()) / 7
+  )
+  if (week < 0 || week >= SCHEDULE_WEEKS) return data
+  const schedule = await getTutorSchedule(week)
+  const item = schedule.days
+    .flatMap((day) => day.sessions)
+    .find((session) => session.id === data.id)
+  if (!item) return data
+  return {
+    ...data,
+    routineId: item.routineId,
+    address: data.address ?? item.address,
+    student: { ...data.student, grade: data.student.grade ?? item.student.grade },
+  }
 }
 
 export const tutorScheduleSessionQuery = (id: string) =>

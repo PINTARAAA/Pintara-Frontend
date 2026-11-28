@@ -98,10 +98,14 @@ export type TutorSchedule = {
 
 /*
  * Detail sesi dari GET /tutor/jadwal/:id. BE memakai bentuk detail presensi,
- * jadi kelas siswa dan alamat belum dikirim (temuan #23 di api-docs).
+ * jadi routineId, kelas siswa, dan alamat belum dikirim (temuan #23 di
+ * api-docs); FE melengkapinya dari jadwal mingguan bila sesi masih dalam
+ * 4 minggu ke depan.
  */
 export type TutorScheduleDetail = {
   id: string
+  /* ID pasangan tutor–siswa (dipakai POST /tutor/pengajuan-jadwal) */
+  routineId?: string
   subject: string
   start: Date
   end: Date
