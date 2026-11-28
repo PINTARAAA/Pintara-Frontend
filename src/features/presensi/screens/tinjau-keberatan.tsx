@@ -85,7 +85,11 @@ function TinjauKeberatan() {
               ? "Presensi tidak ditemukan"
               : "Keberatan sudah ditinjau"
           }
-          description="Presensi ini sudah kembali ke daftar siap diverifikasi."
+          description={
+            query.isError
+              ? "Sesi ini mungkin sudah tidak tersedia."
+              : "Presensi ini sudah kembali ke daftar siap diverifikasi."
+          }
           action={{
             label: "Kembali ke Verifikasi Presensi",
             onClick: () => navigate(BACK, { replace: true }),
