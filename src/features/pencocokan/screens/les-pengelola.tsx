@@ -24,6 +24,7 @@ import { OffersPanel } from "@/features/penawaran/components"
 import { matchingQueueQuery } from "@/features/pencocokan/api"
 import { gradeLabel } from "@/features/verifikasi/api"
 import type { PengelolaRegistration } from "@/types/verifikasi"
+import { getErrorMessage } from "@/lib/api"
 import { formatDaysAgo } from "@/lib/format"
 import { usePengelolaUnreadNotifications } from "@/features/notifikasi/api"
 
@@ -120,7 +121,7 @@ function MatchingPanel({
       <DataState
         state="error"
         title="Daftar siswa gagal dimuat"
-        description="Periksa koneksi Anda, lalu coba lagi."
+        description={getErrorMessage(query.error)}
         action={{ label: "Coba lagi", onClick: () => query.refetch() }}
       />
     )

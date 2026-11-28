@@ -139,10 +139,6 @@ export class AlreadyProcessedError extends Error {
   }
 }
 
-function ensureOnline() {
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-}
-
 function find(id: string) {
   const registration = registrations.find((r) => r.id === id)
   if (!registration) throw new NotFoundError()
@@ -152,22 +148,6 @@ function find(id: string) {
 /* Salinan pendaftaran untuk modul pencocokan (dibaca tanpa jeda) */
 export function snapshotRegistrations() {
   return structuredClone(registrations)
-}
-
-/* Tetapkan tutor terpilih; penawaran dikirim terpisah (P4) */
-export function assignTutor(
-  id: string,
-  tutor: { id: string; name: string }
-): PengelolaRegistration {
-  ensureOnline()
-  const registration = find(id)
-  if (!needsTutor(registration)) throw new AlreadyProcessedError()
-  registration.match = {
-    tutorId: tutor.id,
-    tutorName: tutor.name,
-    at: new Date(),
-  }
-  return structuredClone(registration)
 }
 
 /*
