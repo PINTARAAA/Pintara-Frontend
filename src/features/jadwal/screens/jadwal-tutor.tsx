@@ -12,6 +12,7 @@ import {
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api";
 import { tutorScheduleQuery } from "@/features/jadwal/api";
+import { getErrorMessage } from "@/lib/api";
 import type { TutorScheduleDay } from "@/types/jadwal";
 import { formatWeekRange, joinDays } from "@/features/jadwal/lib";
 import { formatTimeRange, formatWeekdayDate } from "@/lib/format";
@@ -72,7 +73,7 @@ function JadwalTutor() {
         <DataState
           state="error"
           title="Jadwal gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : data ? (

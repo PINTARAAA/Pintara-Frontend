@@ -29,10 +29,11 @@ import {
   toast,
 } from "@/components"
 import {
-  NotFoundError,
+  isNotFoundError,
   routineQuery,
   submitScheduleChange,
 } from "@/features/jadwal/api"
+import { getErrorMessage } from "@/lib/api"
 import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import type { ChangeRequest, RoutineDetail } from "@/types/jadwal"
 import {
@@ -112,7 +113,7 @@ function AjukanPerubahan() {
         {query.isPending ? (
           <DataState state="loading" loadingLabel="Memuat jadwal…" />
         ) : query.isError ? (
-          query.error instanceof NotFoundError ? (
+          isNotFoundError(query.error) ? (
             <DataState
               state="empty"
               title="Jadwal tidak ditemukan"
@@ -126,7 +127,7 @@ function AjukanPerubahan() {
             <DataState
               state="error"
               title="Jadwal gagal dimuat"
-              description="Periksa koneksi Anda, lalu coba lagi."
+              description={getErrorMessage(query.error)}
               action={{ label: "Coba lagi", onClick: () => query.refetch() }}
             />
           )
@@ -154,13 +155,33 @@ function AjukanPerubahan() {
 
 const FORM_FIELDS = ["scope", "day", "startTime", "reason"] as const
 
-function ChangeForm({
+/* Jadwal yang diubah; wali dari RoutineDetail, tutor dari detail sesi */
+export type ChangeFormRoutine = Pick<
+  RoutineDetail,
+  "id" | "subject" | "weekday" | "startTime" | "durationMinutes" | "nextSession"
+>
+
+/*
+ * Formulir pengajuan perubahan, dipakai wali (W4) dan tutor (T5).
+ * `audience` mengatur siapa pihak lain yang ikut menyetujui (tutor/wali).
+ */
+export function ChangeForm({
   routine,
   onSent,
+  audience = "wali",
+  submitChange = submitScheduleChange,
+  backLabel = "Detail Jadwal",
 }: {
-  routine: RoutineDetail
+  routine: ChangeFormRoutine
   onSent: (request: ChangeRequest) => void
+  audience?: "wali" | "tutor"
+  submitChange?: (
+    routineId: string,
+    values: ScheduleChangeInput
+  ) => Promise<ChangeRequest>
+  backLabel?: string
 }) {
+  const otherParty = audience === "wali" ? "tutor" : "wali"
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [attempted, setAttempted] = React.useState(false)
@@ -187,17 +208,16 @@ function ChangeForm({
 
   const submit = useMutation({
     mutationFn: (values: ScheduleChangeInput) =>
-      submitScheduleChange(routine.id, values),
+      submitChange(routine.id, values),
     networkMode: "always",
     onSuccess: (request) => {
       void queryClient.invalidateQueries({ queryKey: ["jadwal"] })
       window.scrollTo({ top: 0 })
       onSent(request)
     },
-    onError: () => {
+    onError: (error) => {
       toast.error("Pengajuan gagal dikirim", {
-        description:
-          "Data Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Data Anda tetap tersimpan di formulir.`,
       })
     },
   })
@@ -213,16 +233,23 @@ function ChangeForm({
   /* "Sesi Rabu, 25 Nov saja" · "Seterusnya, mulai 2 Des 2026" */
   const next = routine.nextSession
   const following = new Date(next.getTime() + 7 * 86_400_000)
-  const scopeOptions = [
-    {
-      value: "sekali",
-      label: `Sesi ${currentDay}, ${format(next, "d MMM", { locale: localeId })} saja`,
-    },
-    {
-      value: "seterusnya",
-      label: `Seterusnya, mulai ${format(following, "d MMM yyyy", { locale: localeId })}`,
-    },
-  ]
+  /* Tutor: BE menghitung tanggal berlaku dari hari tujuan, jadi tanpa tanggal */
+  const scopeOptions =
+    audience === "tutor"
+      ? [
+          { value: "sekali", label: "Satu sesi terdekat saja" },
+          { value: "seterusnya", label: "Seterusnya" },
+        ]
+      : [
+          {
+            value: "sekali",
+            label: `Sesi ${currentDay}, ${format(next, "d MMM", { locale: localeId })} saja`,
+          },
+          {
+            value: "seterusnya",
+            label: `Seterusnya, mulai ${format(following, "d MMM yyyy", { locale: localeId })}`,
+          },
+        ]
 
   const missing = FORM_FIELDS.filter((name) => errors[name])
   const bannerDescription =
@@ -238,7 +265,7 @@ function ChangeForm({
       title="Ajukan Perubahan"
       surface="default"
       desktopHeader="page"
-      backLabel="Detail Jadwal"
+      backLabel={backLabel}
       desktopWidth="wide"
       desktopActions="none"
       className="gap-ns-2xl lg:pt-ns-3xl"
@@ -392,7 +419,11 @@ function ChangeForm({
             <Textarea
               id="reason"
               maxLength={REASON_MAX}
-              placeholder={`Contoh: ada kegiatan sekolah di hari ${currentDay}`}
+              placeholder={
+                audience === "wali"
+                  ? `Contoh: ada kegiatan sekolah di hari ${currentDay}`
+                  : `Contoh: ada jadwal kuliah di hari ${currentDay}`
+              }
               aria-invalid={errors.reason ? true : undefined}
               aria-describedby={errors.reason ? "reason-error" : undefined}
               {...form.register("reason")}
@@ -406,7 +437,7 @@ function ChangeForm({
               </FieldError>
             ) : (
               <FieldDescription counter={`${reason.length}/${REASON_MAX}`}>
-                Dibaca Pengelola LBB dan tutor.
+                Dibaca Pengelola LBB dan {otherParty}.
               </FieldDescription>
             )}
           </Field>
@@ -425,7 +456,7 @@ function ChangeForm({
         <AlertBanner
           status="info"
           title="Belum langsung berlaku"
-          description="Jadwal lama tetap berjalan sampai Pengelola LBB dan tutor menyetujui perubahan."
+          description={`Jadwal lama tetap berjalan sampai Pengelola LBB dan ${otherParty} menyetujui perubahan.`}
         />
       </div>
     </DetailScreen>

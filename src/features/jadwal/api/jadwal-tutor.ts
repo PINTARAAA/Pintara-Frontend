@@ -1,13 +1,12 @@
 import { queryOptions } from "@tanstack/react-query"
-import { addDays, format, getDay, isValid, parse, startOfDay } from "date-fns"
+import { differenceInCalendarDays, format, getDay, startOfDay } from "date-fns"
 
-import { NotFoundError } from "@/features/jadwal/api/jadwal"
-import { findLastHeldSession } from "@/features/presensi/api"
-import { parseTime, WEEKDAYS } from "@/lib/data/jadwal"
-import { routines, WEEK_COUNT } from "@/lib/data/jadwal-tutor"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
-import { normalizePhone } from "@/lib/format"
+import type { ScheduleChangeInput } from "@/features/jadwal/schemas"
+import { parseTime } from "@/lib/data/jadwal"
+import { routines } from "@/lib/data/jadwal-tutor"
+import { httpClient } from "@/lib/api"
 import type {
+  ChangeRequest,
   TutorRoutine,
   TutorSchedule,
   TutorScheduleDetail,
@@ -17,12 +16,10 @@ import type {
 /*
  * Jadwal tutor · Figma PINTARA → UI Screen → Tutor → T5 · Jadwal
  *
- * TODO(backend):
- *   getTutorSchedule(minggu)    → httpClient.get("/tutor/jadwal", { params: { minggu } })
- *   getTutorScheduleSession(id) → httpClient.get(`/tutor/jadwal/${id}`)
- *
- * Selama backend belum ada (mode development) sesi dibentuk dari jadwal
- * rutin mingguan tutor di bawah.
+ * Sudah memakai BE: getTutorSchedule, getTutorScheduleSession,
+ * submitTutorScheduleChange.
+ * `tutorSessionsOn` (data mock `@/lib/data/jadwal-tutor`) masih dibaca mock
+ * pengingat notifikasi tutor sampai branch integrasinya.
  */
 
 /* ---------- Utilitas ---------- */
@@ -48,11 +45,6 @@ function toSession(routine: TutorRoutine, day: Date): TutorScheduleSession {
 }
 
 
-function weekRange(week: number, now = new Date()) {
-  const from = addDays(startOfDay(now), week * 7)
-  return { from, to: addDays(from, 6) }
-}
-
 /* Sesi terjadwal pada satu hari, urut jam (dipakai pengingat T7) */
 export function tutorSessionsOn(date: Date) {
   return routines
@@ -63,27 +55,12 @@ export function tutorSessionsOn(date: Date) {
 
 /* ---------- Daftar per minggu ---------- */
 
+/* 4 minggu ke depan (0 = minggu ini); hari kosong dikirim di freeDays */
 export async function getTutorSchedule(week = 0): Promise<TutorSchedule> {
-  assertMockAllowed()
-  await delay()
-
-  const active = Math.min(Math.max(Math.trunc(week) || 0, 0), WEEK_COUNT - 1)
-  const weeks = Array.from({ length: WEEK_COUNT }, (_, i) => weekRange(i))
-  const { from } = weeks[active]
-
-  const allDays = Array.from({ length: 7 }, (_, i) => {
-    const date = addDays(from, i)
-    return { date, sessions: tutorSessionsOn(date) }
+  const { data } = await httpClient.get<TutorSchedule>("/tutor/jadwal", {
+    params: { minggu: week },
   })
-
-  return {
-    week: active,
-    weeks,
-    days: allDays.filter((d) => d.sessions.length > 0),
-    freeDays: allDays
-      .filter((d) => d.sessions.length === 0)
-      .map((d) => WEEKDAYS[getDay(d.date)]),
-  }
+  return data
 }
 
 export const tutorScheduleQuery = (week = 0) =>
@@ -94,34 +71,35 @@ export const tutorScheduleQuery = (week = 0) =>
 
 /* ---------- Detail sesi ---------- */
 
+/* Jadwal mingguan BE mencakup 4 minggu (0 = 7 hari mulai hari ini) */
+const SCHEDULE_WEEKS = 4
+
+/*
+ * 404 bila sesi tidak ada atau bukan milik tutor ini. Bila BE belum mengirim
+ * routineId/kelas/alamat (temuan #23), lengkapi dari item jadwal mingguan.
+ */
 export async function getTutorScheduleSession(
   id: string
 ): Promise<TutorScheduleDetail> {
-  assertMockAllowed()
-  await delay(300)
+  const { data } = await httpClient.get<TutorScheduleDetail>(
+    `/tutor/jadwal/${encodeURIComponent(id)}`
+  )
+  if (data.routineId) return data
 
-  const [routineId, dateKey = ""] = id.split("_")
-  const routine = routines.find((r) => r.id === routineId)
-  const day = parse(dateKey, "yyyyMMdd", new Date())
-  if (!routine || !isValid(day) || getDay(day) !== routine.weekday) {
-    throw new NotFoundError("Jadwal")
-  }
-
-  const session = toSession(routine, day)
-  const last = findLastHeldSession(routine.student.name, session.start)
+  const week = Math.floor(
+    differenceInCalendarDays(data.start, new Date()) / 7
+  )
+  if (week < 0 || week >= SCHEDULE_WEEKS) return data
+  const schedule = await getTutorSchedule(week)
+  const item = schedule.days
+    .flatMap((day) => day.sessions)
+    .find((session) => session.id === data.id)
+  if (!item) return data
   return {
-    ...session,
-    parent: {
-      ...routine.parent,
-      /* "0813-5566-7788" → "6281355667788" (nomor kanonis untuk wa.me) */
-      whatsapp: normalizePhone(routine.parent.phone) ?? "",
-    },
-    previous: last && {
-      date: last.start,
-      subject: last.subject,
-      topic: last.record?.topic,
-      notes: last.record?.notes || undefined,
-    },
+    ...data,
+    routineId: item.routineId,
+    address: data.address ?? item.address,
+    student: { ...data.student, grade: data.student.grade ?? item.student.grade },
   }
 }
 
@@ -130,3 +108,26 @@ export const tutorScheduleSessionQuery = (id: string) =>
     queryKey: ["jadwal", "tutor", "sesi", id],
     queryFn: () => getTutorScheduleSession(id),
   })
+
+/* ---------- Ajukan perubahan (tutor) ---------- */
+
+/*
+ * routineId = ID pasangan tutor–siswa (routineId pada item jadwal tutor).
+ * Pengajuan masuk ke Pengelola (ditinjau_pengelola), sama seperti dari wali.
+ */
+export async function submitTutorScheduleChange(
+  routineId: string,
+  input: ScheduleChangeInput
+): Promise<ChangeRequest> {
+  const { data } = await httpClient.post<ChangeRequest>(
+    "/tutor/pengajuan-jadwal",
+    {
+      routineId,
+      scope: input.scope,
+      day: input.day,
+      startTime: input.startTime,
+      reason: input.reason.trim(),
+    }
+  )
+  return data
+}

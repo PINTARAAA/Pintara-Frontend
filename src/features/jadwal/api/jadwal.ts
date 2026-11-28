@@ -1,17 +1,15 @@
 import { queryOptions } from "@tanstack/react-query"
-import { addDays, startOfDay } from "date-fns"
+import { addDays } from "date-fns"
 
 import type { ScheduleChangeInput } from "@/features/jadwal/schemas"
-import { addNotification } from "@/features/notifikasi/api"
 import { STUDENTS } from "@/lib/data/dashboard"
 import {
   changeRequests,
   nextSessionStart,
   OPEN_STATUSES,
   routines,
-  WEEKDAYS,
 } from "@/lib/data/jadwal"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { httpClient, isApiError } from "@/lib/api"
 import type {
   ChangeRequest,
   ChangeRequestForReview,
@@ -22,14 +20,9 @@ import type {
 /*
  * Jadwal Les & Perubahan Jadwal · Figma PINTARA → UI Screen → Wali Murid → W4
  *
- * TODO(backend):
- *   getWaliSchedule(siswa)   → httpClient.get("/wali/jadwal", { params: { siswa } })
- *   getRoutine(id)           → httpClient.get(`/wali/jadwal/${id}`)
- *   getChangeRequest(id)     → httpClient.get(`/wali/pengajuan-jadwal/${id}`)
- *   submitScheduleChange()   → httpClient.post("/wali/pengajuan-jadwal", input)
- *
- * Selama backend belum ada (mode development) data disimpan di memori:
- * pengajuan yang dikirim langsung tampil di daftar "Pengajuan perubahan".
+ * Semua endpoint jadwal wali sudah memakai BE. Data mock `@/lib/data/jadwal`
+ * masih dibaca helper di bawah untuk modul riwayat les (absensi) dan
+ * notifikasi pengelola sampai branch integrasinya.
  */
 
 export const isOpenRequest = (r: ChangeRequest) =>
@@ -53,42 +46,12 @@ export function countUpcomingSessions(studentId: string, until: Date) {
 
 /* ---------- Daftar jadwal ---------- */
 
+/* Jadwal minggu ini, jadwal rutin, dan pengajuan terbuka untuk satu anak */
 export async function getWaliSchedule(studentId?: string): Promise<WaliSchedule> {
-  assertMockAllowed()
-  await delay()
-
-  const student = STUDENTS.find((s) => s.id === studentId) ?? STUDENTS[0]
-  const own = routines.filter((r) => r.studentId === student.id)
-
-  /* "Minggu ini" = 7 hari mulai hari ini */
-  const now = new Date()
-  const from = startOfDay(now)
-  const to = addDays(from, 6)
-  const sessions = own
-    .map((r) => {
-      const start = nextSessionStart(r.weekday, r.startTime, now)
-      return {
-        id: `${r.id}-${start.getTime()}`,
-        routineId: r.id,
-        subject: r.subject,
-        start,
-        end: new Date(start.getTime() + r.durationMinutes * 60_000),
-        tutorName: r.tutor.name,
-      }
-    })
-    .filter((s) => s.start < addDays(to, 1))
-    .sort((a, b) => a.start.getTime() - b.start.getTime())
-
-  return {
-    students: STUDENTS,
-    activeStudentId: student.id,
-    pendingRequests: changeRequests.filter(
-      (r) => r.studentId === student.id && isOpenRequest(r)
-    ),
-    week: { from, to, sessions },
-    routines: own.sort((a, b) => a.weekday - b.weekday),
-    unreadNotifications: student.id === "s1" ? 2 : 0,
-  }
+  const { data } = await httpClient.get<WaliSchedule>("/wali/jadwal", {
+    params: studentId ? { siswa: studentId } : undefined,
+  })
+  return data
 }
 
 export const waliScheduleQuery = (studentId?: string) =>
@@ -99,28 +62,16 @@ export const waliScheduleQuery = (studentId?: string) =>
 
 /* ---------- Detail jadwal rutin ---------- */
 
-export class NotFoundError extends Error {
-  constructor(what: string) {
-    super(`${what} tidak ditemukan.`)
-    this.name = "NotFoundError"
-  }
-}
+/* 404 dari BE: jadwal/pengajuan tidak ada atau bukan milik pengguna ini */
+export const isNotFoundError = (error: unknown) =>
+  isApiError(error) && error.code === "not_found"
 
+/* Jadwal rutin + sesi berikutnya + pengajuan terbuka; 404 bila bukan milik wali */
 export async function getRoutine(id: string): Promise<RoutineDetail> {
-  assertMockAllowed()
-  await delay(300)
-
-  const routine = routines.find((r) => r.id === id)
-  if (!routine) throw new NotFoundError("Jadwal")
-  return {
-    ...routine,
-    studentName:
-      STUDENTS.find((s) => s.id === routine.studentId)?.name ?? "Siswa",
-    nextSession: nextSessionStart(routine.weekday, routine.startTime),
-    pendingRequest:
-      changeRequests.find((r) => r.routineId === id && isOpenRequest(r)) ??
-      null,
-  }
+  const { data } = await httpClient.get<RoutineDetail>(
+    `/wali/jadwal/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const routineQuery = (id: string) =>
@@ -132,12 +83,10 @@ export const routineQuery = (id: string) =>
 /* ---------- Pengajuan perubahan ---------- */
 
 export async function getChangeRequest(id: string): Promise<ChangeRequest> {
-  assertMockAllowed()
-  await delay(300)
-
-  const request = changeRequests.find((r) => r.id === id)
-  if (!request) throw new NotFoundError("Pengajuan")
-  return request
+  const { data } = await httpClient.get<ChangeRequest>(
+    `/wali/pengajuan-jadwal/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const changeRequestQuery = (id: string) =>
@@ -146,48 +95,22 @@ export const changeRequestQuery = (id: string) =>
     queryFn: () => getChangeRequest(id),
   })
 
+/* Pengajuan masuk ke Pengelola (status ditinjau_pengelola) */
 export async function submitScheduleChange(
   routineId: string,
   input: ScheduleChangeInput
 ): Promise<ChangeRequest> {
-  assertMockAllowed()
-  await delay(800)
-
-  if (!navigator.onLine) {
-    throw new Error("Tidak ada koneksi internet.")
-  }
-  const routine = routines.find((r) => r.id === routineId)
-  if (!routine) throw new NotFoundError("Jadwal")
-
-  const next = nextSessionStart(routine.weekday, routine.startTime)
-  const request: ChangeRequest = {
-    id: `pj-${Date.now()}`,
-    routineId,
-    studentId: routine.studentId,
-    subject: routine.subject,
-    tutor: routine.tutor,
-    durationMinutes: routine.durationMinutes,
-    from: { weekday: routine.weekday, startTime: routine.startTime },
-    to: {
-      weekday: WEEKDAYS.indexOf(input.day as (typeof WEEKDAYS)[number]),
+  const { data } = await httpClient.post<ChangeRequest>(
+    "/wali/pengajuan-jadwal",
+    {
+      routineId,
+      scope: input.scope,
+      day: input.day,
       startTime: input.startTime,
-    },
-    scope: input.scope as ChangeRequest["scope"],
-    effectiveDate: input.scope === "sekali" ? next : addDays(next, 7),
-    reason: input.reason.trim(),
-    status: "ditinjau_pengelola",
-    submittedAt: new Date(),
-  }
-  changeRequests.push(request)
-  const from = WEEKDAYS[request.from.weekday]
-  const to = WEEKDAYS[request.to.weekday]
-  addNotification({
-    kind: "jadwal",
-    title: "Pengajuan perubahan jadwal terkirim",
-    body: `${from === to ? from : `${from} → ${to}`}, ${request.to.startTime} · menunggu Pengelola`,
-    to: `/wali/jadwal/pengajuan/${request.id}`,
-  })
-  return request
+      reason: input.reason.trim(),
+    }
+  )
+  return data
 }
 
 /* ---------- P5 · Tinjau pengajuan (pengelola) ---------- */

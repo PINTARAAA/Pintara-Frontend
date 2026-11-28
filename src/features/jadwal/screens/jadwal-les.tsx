@@ -15,6 +15,7 @@ import {
 import { useUnreadNotifications } from "@/features/notifikasi/api"
 
 import { waliScheduleQuery } from "@/features/jadwal/api"
+import { getErrorMessage } from "@/lib/api"
 import { formatTimeSlot, WEEKDAYS } from "@/lib/data/jadwal"
 import { CHANGE_STATUS_LABEL, formatChangeTitle } from "@/features/jadwal/lib"
 import {
@@ -75,7 +76,7 @@ function JadwalLes() {
         <DataState
           state="error"
           title="Jadwal gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : data ? (
