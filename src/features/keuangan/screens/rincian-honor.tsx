@@ -17,7 +17,7 @@ import {
 import {
   honorDetailQuery,
   METHOD_LABEL,
-  HonorNotFoundError,
+  isHonorNotFoundError,
 } from "@/features/keuangan/api"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import {
@@ -74,7 +74,7 @@ function RincianHonor() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat rincian honor…" />
       ) : query.isError ? (
-        query.error instanceof HonorNotFoundError ? (
+        isHonorNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Rincian honor tidak ditemukan"

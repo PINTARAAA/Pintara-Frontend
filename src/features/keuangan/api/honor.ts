@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import { format, startOfMonth } from "date-fns"
 
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { recaps } from "@/lib/data/keuangan"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
@@ -19,9 +19,9 @@ import type {
  * Sudah memakai BE:
  *   getHonorRecap(bulan)              → GET /pengelola/honor
  *   calculateHonor(bulan)             → POST /pengelola/honor/hitung
+ *   getHonorDetail(bulan, tutorId)    → GET /pengelola/honor/:bulan/:tutorId
  *
  * TODO(backend):
- *   getHonorDetail(bulan, tutorId)    → httpClient.get(`/pengelola/honor/${bulan}/${tutorId}`)
  *   recordHonorPayment(bulan, id, …)  → httpClient.post(`/pengelola/honor/${bulan}/${id}/bayar`, form)
  *
  * Honor = Σ (presensi terverifikasi final × tarif per sesi). Presensi final
@@ -80,6 +80,11 @@ export class HonorNotFoundError extends Error {
   }
 }
 
+/* 404 dari BE (rekap belum dihitung / tutor tidak ada di rekap), atau mock */
+export const isHonorNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof HonorNotFoundError
+
 function findHonor(monthParam: string, tutorId: string) {
   const recap = recaps.get(monthParam)
   const honor = recap?.honors.find((h) => h.tutorId === tutorId)
@@ -94,19 +99,15 @@ const statusOf = (h: TutorHonor): HonorDetail["status"] =>
       ? "lunas"
       : "sebagian"
 
+/* monthParam = "2026-11"; sessionList = presensi final tutor bulan tsb */
 export async function getHonorDetail(
   monthParam: string,
   tutorId: string
 ): Promise<HonorDetail> {
-  assertMockAllowed()
-  await delay(300)
-  const { recap, honor } = findHonor(monthParam, tutorId)
-  return structuredClone({
-    ...honor,
-    month: recap.month,
-    status: statusOf(honor),
-    sessionList: recap.sessionsByTutor[tutorId],
-  })
+  const { data } = await httpClient.get<HonorDetail>(
+    `/pengelola/honor/${encodeURIComponent(monthParam)}/${encodeURIComponent(tutorId)}`
+  )
+  return data
 }
 
 export const honorDetailQuery = (monthParam: string, tutorId: string) =>

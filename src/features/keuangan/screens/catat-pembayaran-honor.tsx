@@ -31,7 +31,7 @@ import {
 import {
   honorDetailQuery,
   METHOD_LABEL,
-  HonorNotFoundError,
+  isHonorNotFoundError,
   recordHonorPayment,
 } from "@/features/keuangan/api"
 import type { HonorDetail, HonorPaymentMethod } from "@/types/keuangan"
@@ -93,7 +93,7 @@ function CatatPembayaranHonor() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat honor…" />
-      ) : query.isError && !(query.error instanceof HonorNotFoundError) ? (
+      ) : query.isError && !isHonorNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Honor gagal dimuat"
