@@ -31,14 +31,15 @@ import type { Candidate, MatchingCandidates } from "@/types/pencocokan"
 import {
   AlreadyProcessedError,
   gradeLabel,
+  isNotFoundError,
   needsTutor,
-  NotFoundError,
 } from "@/features/verifikasi/api"
 import type { PengelolaRegistration } from "@/types/verifikasi"
 import {
   formatRequestedSchedule,
   formatShortAddress,
 } from "@/features/verifikasi/lib"
+import { getErrorMessage } from "@/lib/api"
 import { firstName, toWhatsAppUrl } from "@/lib/format"
 
 /*
@@ -79,11 +80,11 @@ function CocokkanTutor() {
     <DetailScreen title="Cocokkan Tutor" backLabel="Les" desktopHeader="page">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Mencari kandidat tutor…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Kandidat gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : (
