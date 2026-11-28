@@ -20,13 +20,9 @@ import type {
  *   getSession(id)           → GET /wali/presensi/:id
  *   approveSession(id)       → POST /wali/presensi/:id/setujui
  *   submitObjection(id, …)   → POST /wali/presensi/:id/keberatan
+ *   submitReview(id, …)      → POST /wali/presensi/:id/ulasan
  *
- * TODO(backend):
- *   submitReview(id, …)      → httpClient.post(`/wali/presensi/${id}/ulasan`, …)
- *
- * Selama backend belum ada (mode development) data disimpan di memori:
- * menyetujui, mengajukan keberatan dan memberi ulasan langsung mengubah
- * daftar "Perlu Validasi" / "Riwayat" sampai halaman dimuat ulang.
+ * Riwayat les (W7) masih memakai data mock, lihat getLessonHistory().
  */
 
 /* ---------- Daftar ---------- */
@@ -109,27 +105,13 @@ export const lessonHistoryQuery = (studentId?: string, month?: Date) =>
 
 /* ---------- Detail & aksi ---------- */
 
-export class NotFoundError extends Error {
-  constructor() {
-    super("Sesi tidak ditemukan.")
-    this.name = "NotFoundError"
-  }
-}
-
 /*
- * 404 (sesi tidak ada) atau 403 (sesi milik wali lain) dari BE, atau dari
- * mock aksi. Keduanya ditampilkan "Sesi tidak ditemukan" agar tidak bocor.
+ * 404 (sesi tidak ada) atau 403 (sesi milik wali lain) dari BE.
+ * Keduanya ditampilkan "Sesi tidak ditemukan" agar data tidak bocor.
  */
 export const isNotFoundError = (error: unknown) =>
-  (isApiError(error) &&
-    (error.code === "not_found" || error.code === "forbidden")) ||
-  error instanceof NotFoundError
-
-function find(id: string) {
-  const session = sessions.find((s) => s.id === id)
-  if (!session) throw new NotFoundError()
-  return session
-}
+  isApiError(error) &&
+  (error.code === "not_found" || error.code === "forbidden")
 
 export async function getSession(id: string): Promise<AttendanceSession> {
   const { data } = await httpClient.get<AttendanceSession>(
@@ -143,10 +125,6 @@ export const sessionQuery = (id: string) =>
     queryKey: ["absensi", "sesi", id],
     queryFn: () => getSession(id),
   })
-
-function assertOnline() {
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-}
 
 /* 400 bila presensi belum diisi tutor */
 export async function approveSession(id: string): Promise<AttendanceSession> {
@@ -168,18 +146,15 @@ export async function submitObjection(
   return data
 }
 
+/* rating 1–5; komentar kosong tidak dikirim */
 export async function submitReview(
   id: string,
   review: { rating: number; comment: string }
-) {
-  assertMockAllowed()
-  await delay(600)
-  assertOnline()
-  const session = find(id)
-  session.review = {
-    rating: review.rating,
-    comment: review.comment.trim(),
-    submittedAt: new Date(),
-  }
-  return { ...session }
+): Promise<AttendanceSession> {
+  const comment = review.comment.trim()
+  const { data } = await httpClient.post<AttendanceSession>(
+    `/wali/presensi/${encodeURIComponent(id)}/ulasan`,
+    { rating: review.rating, ...(comment && { comment }) }
+  )
+  return data
 }

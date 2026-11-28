@@ -25,6 +25,7 @@ import {
 import type { AttendanceSession } from "@/types/absensi"
 import { formatSessionTitle, RATING_LABELS } from "@/features/absensi/lib"
 import { InitialsAvatar } from "@/features/dashboard/components"
+import { getErrorMessage } from "@/lib/api"
 
 /*
  * W5 · Validasi Absensi / Rating & ulasan ("Beri Ulasan")
@@ -103,9 +104,9 @@ function ReviewForm({ session }: { session: AttendanceSession }) {
       })
       navigate("/wali/absensi", { replace: true })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Ulasan gagal dikirim", {
-        description: "Periksa koneksi lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 
