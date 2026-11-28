@@ -29,9 +29,9 @@ import {
 } from "@/components"
 import { FormGroup, SummaryRow } from "@/features/pendaftaran/components"
 import {
-  AttendanceError,
+  attendanceErrorCode,
   DOC_ACCEPT,
-  NotFoundError,
+  isNotFoundError,
   submitAttendance,
   tutorSessionQuery,
   uploadDocumentation,
@@ -40,6 +40,7 @@ import {
 import type { AttendanceInput, TutorSession } from "@/types/presensi"
 import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
 import { firstName, formatDateTime, formatTimeRange } from "@/lib/format"
+import { getErrorMessage } from "@/lib/api"
 
 /*
  * T2 · Isi Presensi · Figma "Presensi / Form - Terlaksana", "- Tidak
@@ -97,7 +98,7 @@ function IsiPresensi() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Sesi tidak ditemukan"
@@ -111,7 +112,7 @@ function IsiPresensi() {
           <DataState
             state="error"
             title="Sesi gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )
@@ -211,8 +212,8 @@ function AttendanceForm({
     cancelUpload.current = uploadDocumentation(file, {
       onProgress: (progress) => setDoc((d) => ({ ...d, progress })),
       onDone: () => setDoc((d) => ({ ...d, status: "success", progress: 100 })),
-      onError: () => {
-        const message = "Unggahan gagal. Periksa koneksi lalu coba lagi."
+      onError: (reason) => {
+        const message = `Unggahan gagal. ${reason}`
         setDoc((d) => ({ ...d, status: "error", error: message }))
         setErrors((prev) => ({ ...prev, file: message }))
       },
@@ -251,16 +252,22 @@ function AttendanceForm({
       onSaved(updated)
     },
     onError: (error) => {
-      if (error instanceof AttendanceError && error.code === "already_filled") {
+      const code = attendanceErrorCode(error)
+      if (code === "already_filled") {
         void queryClient.invalidateQueries({ queryKey: ["presensi"] })
         toast.warning("Presensi sesi ini sudah diisi", {
           description: "Data terbaru sedang dimuat.",
         })
         return
       }
+      if (code === "not_started") {
+        toast.warning("Sesi belum dimulai", {
+          description: "Presensi bisa diisi setelah jam mulai sesi.",
+        })
+        return
+      }
       toast.error("Presensi gagal disimpan", {
-        description:
-          "Isian Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Isian Anda tetap tersimpan di formulir.`,
       })
     },
   })

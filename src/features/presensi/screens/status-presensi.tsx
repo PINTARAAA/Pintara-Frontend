@@ -17,6 +17,7 @@ import {
   DashboardSection,
 } from "@/features/dashboard/components"
 import { attendanceStatusQuery } from "@/features/presensi/api"
+import { getErrorMessage } from "@/lib/api"
 import type { AttendanceStatusOverview, TutorSession } from "@/types/presensi"
 import { sessionTitle } from "@/features/presensi/lib"
 import { formatDayMonth, formatWeekdayDate, parseMonth } from "@/lib/format"
@@ -79,7 +80,7 @@ function StatusPresensi() {
         <DataState
           state="error"
           title="Status presensi gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : data ? (

@@ -17,6 +17,7 @@ import {
 
 import { useTutorUnreadNotifications } from "@/features/notifikasi/api"
 import { tutorSessionsQuery } from "@/features/presensi/api"
+import { getErrorMessage } from "@/lib/api"
 import { formatToFill, sessionTitle } from "@/features/presensi/lib"
 import { formatTimeRange, formatWeekdayDate } from "@/lib/format"
 
@@ -54,7 +55,7 @@ function Presensi() {
         <DataState
           state="error"
           title="Sesi les gagal dimuat"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(query.error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       ) : data ? (

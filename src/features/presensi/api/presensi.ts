@@ -1,8 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
-import { isAfter, isSameMonth, isToday } from "date-fns"
+import { format, isSameMonth } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { getErrorMessage, httpClient, isApiError } from "@/lib/api"
 import type {
   AttendanceErrorCode,
   AttendanceInput,
@@ -11,44 +11,23 @@ import type {
   TutorHistory,
   TutorSession,
   TutorSessionList,
-  ValidationStatus,
 } from "@/types/presensi"
 
 /*
  * Presensi & Dokumentasi (tutor) · Figma PINTARA → UI Screen → Tutor → T2
  *
- * TODO(backend):
- *   getTutorSessions()        → httpClient.get("/tutor/presensi")
- *   getTutorSession(id)       → httpClient.get(`/tutor/presensi/${id}`)
- *   uploadDocumentation(file) → httpClient.post("/tutor/dokumentasi", form,
- *                               { onUploadProgress })
- *   submitAttendance(id, …)   → httpClient.post(`/tutor/presensi/${id}`, …)
- *   Petakan respons "presensi sudah ada" ke AttendanceError("already_filled").
- *
- * Selama backend belum ada (mode development) data disimpan di memori.
+ * Semua endpoint tutor (/tutor/presensi, /tutor/dokumentasi, /tutor/riwayat)
+ * sudah memakai BE. Data mock `@/lib/data/presensi` masih dibaca helper
+ * bagian P6/T7 di bawah (verifikasi presensi pengelola & notifikasi) sampai
+ * branch integrasinya.
  */
 
 /* ---------- Daftar ---------- */
 
+/* Perlu diisi · nanti hari ini · sudah diisi (urutan dari BE) */
 export async function getTutorSessions(): Promise<TutorSessionList> {
-  assertMockAllowed()
-  await delay()
-
-  const now = new Date()
-  const byStart = (a: TutorSession, b: TutorSession) =>
-    a.start.getTime() - b.start.getTime()
-
-  return {
-    toFill: sessions
-      .filter((s) => !s.record && !isAfter(s.start, now))
-      .sort(byStart),
-    laterToday: sessions
-      .filter((s) => !s.record && isAfter(s.start, now) && isToday(s.start))
-      .sort(byStart),
-    filled: sessions
-      .filter((s) => s.record)
-      .sort((a, b) => b.start.getTime() - a.start.getTime()),
-  }
+  const { data } = await httpClient.get<TutorSessionList>("/tutor/presensi")
+  return data
 }
 
 export const tutorSessionsQuery = () =>
@@ -56,36 +35,19 @@ export const tutorSessionsQuery = () =>
 
 /* ---------- T3 · Status presensi per bulan ---------- */
 
-const monthStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1)
+/* "2026-11" untuk query `bulan` */
+const monthParam = (month?: Date) =>
+  month ? { bulan: format(month, "yyyy-MM") } : undefined
 
-/* TODO(backend): httpClient.get("/tutor/presensi/status", { params: { bulan } }) */
+/* Sesi yang sudah dimulai pada bulan tsb, dikelompokkan per status validasi */
 export async function getAttendanceStatus(
   month?: Date
 ): Promise<AttendanceStatusOverview> {
-  assertMockAllowed()
-  await delay()
-
-  const now = new Date()
-  const current = monthStart(now)
-  const active = monthStart(month ?? current)
-  const keys = new Set([current.getTime(), active.getTime()])
-  sessions.forEach((s) => keys.add(monthStart(s.start).getTime()))
-  const months = [...keys].sort((a, b) => b - a).map((t) => new Date(t))
-  const started = sessions
-    .filter((s) => isSameMonth(s.start, active) && !isAfter(s.start, now))
-    .sort((a, b) => b.start.getTime() - a.start.getTime())
-  const withStatus = (status: ValidationStatus) =>
-    started.filter((s) => s.record?.validation === status)
-
-  return {
-    months,
-    month: active,
-    total: started.length,
-    disputed: withStatus("keberatan"),
-    waiting: withStatus("belum_divalidasi"),
-    notCollected: started.filter((s) => !s.record),
-    verified: withStatus("sudah_divalidasi"),
-  }
+  const { data } = await httpClient.get<AttendanceStatusOverview>(
+    "/tutor/presensi/status",
+    { params: monthParam(month) }
+  )
+  return data
 }
 
 export const attendanceStatusQuery = (month?: Date) =>
@@ -96,54 +58,15 @@ export const attendanceStatusQuery = (month?: Date) =>
 
 /* ---------- T4 · Riwayat les tutor ---------- */
 
-/* TODO(backend): httpClient.get("/tutor/riwayat", { params: { bulan, siswa } }) */
+/* Riwayat bulan tsb; `siswa` = nama siswa (sama dengan daftar `students`) */
 export async function getTutorHistory(
   month?: Date,
   student?: string | null
 ): Promise<TutorHistory> {
-  assertMockAllowed()
-  await delay()
-
-  const now = new Date()
-  const current = monthStart(now)
-  const active = monthStart(month ?? current)
-  const keys = new Set([current.getTime(), active.getTime()])
-  sessions.forEach((s) => keys.add(monthStart(s.start).getTime()))
-  const months = [...keys].sort((a, b) => b - a).map((t) => new Date(t))
-
-  const students = [...new Set(sessions.map((s) => s.student.name))].sort()
-  const selected = student && students.includes(student) ? student : null
-
-  const inMonth = sessions
-    .filter(
-      (s) =>
-        isSameMonth(s.start, active) &&
-        !isAfter(s.start, now) &&
-        (!selected || s.student.name === selected)
-    )
-    .sort((a, b) => b.start.getTime() - a.start.getTime())
-
-  const held = inMonth.filter((s) => s.record?.held)
-  const byStudent = new Map<string, number>()
-  held.forEach((s) =>
-    byStudent.set(s.student.name, (byStudent.get(s.student.name) ?? 0) + 1)
-  )
-
-  return {
-    months,
-    month: active,
-    students,
-    student: selected,
-    sessions: inMonth,
-    summary: {
-      held: held.length,
-      cancelled: inMonth.filter((s) => s.record && !s.record.held).length,
-      studentCount: new Set(inMonth.map((s) => s.student.name)).size,
-      byStudent: [...byStudent]
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
-    },
-  }
+  const { data } = await httpClient.get<TutorHistory>("/tutor/riwayat", {
+    params: { ...monthParam(month), ...(student && { siswa: student }) },
+  })
+  return data
 }
 
 export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
@@ -198,18 +121,6 @@ export function snapshotTutorSessions() {
   return structuredClone(sessions)
 }
 
-/* ---------- T5 · Pertemuan sebelumnya ---------- */
-
-/* Sesi terlaksana terakhir bersama siswa sebelum `before` (semua mapel) */
-export function findLastHeldSession(studentName: string, before: Date) {
-  const last = sessions
-    .filter(
-      (s) => s.student.name === studentName && s.record?.held && s.start < before
-    )
-    .sort((a, b) => b.start.getTime() - a.start.getTime())[0]
-  return last ? structuredClone(last) : null
-}
-
 /* ---------- Detail ---------- */
 
 export class NotFoundError extends Error {
@@ -218,6 +129,21 @@ export class NotFoundError extends Error {
     this.name = "NotFoundError"
   }
 }
+
+/* already_filled (409) / not_started (400) dari BE, atau dari mock pengelola */
+export function attendanceErrorCode(error: unknown): AttendanceErrorCode | null {
+  if (error instanceof AttendanceError) return error.code
+  if (!isApiError(error)) return null
+  return error.serverCode === "already_filled" ||
+    error.serverCode === "not_started"
+    ? error.serverCode
+    : null
+}
+
+/* 404 dari BE (sesi tidak ada / bukan milik tutor) atau dari mock pengelola */
+export const isNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof NotFoundError
 
 export class AttendanceError extends Error {
   code: AttendanceErrorCode
@@ -235,9 +161,10 @@ function find(id: string) {
 }
 
 export async function getTutorSession(id: string): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(find(id))
+  const { data } = await httpClient.get<TutorSession>(
+    `/tutor/presensi/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const tutorSessionQuery = (id: string) =>
@@ -260,44 +187,54 @@ export function validateDocumentation(file: File): string | null {
   return null
 }
 
-/* Simulasi unggah dengan progres; kembalikan fungsi pembatal */
+export type UploadedDocumentation = { name: string; size: number; url: string }
+
+/* Unggahan besar (maks. 5 MB) butuh waktu lebih lama dari batas umum 15 detik */
+const UPLOAD_TIMEOUT_MS = 120_000
+
+/*
+ * Unggah dokumentasi (multipart, field `file`) dengan progres.
+ * Kembalikan fungsi pembatal; unggahan yang dibatalkan tidak memanggil onError.
+ */
 export function uploadDocumentation(
   file: File,
-  handlers: { onProgress: (percent: number) => void; onDone: () => void; onError: () => void }
+  handlers: {
+    onProgress: (percent: number) => void
+    onDone: (uploaded: UploadedDocumentation) => void
+    onError: (message: string) => void
+  }
 ) {
-  let percent = 0
-  const timer = window.setInterval(() => {
-    if (!navigator.onLine) {
-      window.clearInterval(timer)
-      handlers.onError()
-      return
-    }
-    percent = Math.min(100, percent + 15 + Math.random() * 20)
-    handlers.onProgress(percent)
-    if (percent >= 100) {
-      window.clearInterval(timer)
-      handlers.onDone()
-    }
-  }, 180)
-  void file
-  return () => window.clearInterval(timer)
+  const controller = new AbortController()
+  const form = new FormData()
+  form.append("file", file)
+
+  httpClient
+    .post<UploadedDocumentation>("/tutor/dokumentasi", form, {
+      signal: controller.signal,
+      timeout: UPLOAD_TIMEOUT_MS,
+      onUploadProgress: (event) => {
+        if (event.total) {
+          handlers.onProgress(Math.round((event.loaded / event.total) * 100))
+        }
+      },
+    })
+    .then(({ data }) => handlers.onDone(data))
+    .catch((error: unknown) => {
+      if (isApiError(error) && error.code === "canceled") return
+      handlers.onError(getErrorMessage(error))
+    })
+
+  return () => controller.abort()
 }
 
 /* ---------- Simpan presensi ---------- */
 
+/* 409 already_filled bila sudah diisi; 400 not_started bila sesi belum mulai */
 export async function submitAttendance(
   id: string,
   input: AttendanceInput
 ): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(800)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-
-  const session = find(id)
-  if (session.record) throw new AttendanceError("already_filled")
-  if (isAfter(session.start, new Date())) throw new AttendanceError("not_started")
-
-  session.record = input.held
+  const body = input.held
     ? {
         held: true,
         actualStart: input.actualStart,
@@ -305,15 +242,12 @@ export async function submitAttendance(
         studentPresent: input.studentPresent,
         topic: input.topic.trim(),
         notes: input.notes.trim(),
-        attachment: input.attachment,
-        submittedAt: new Date(),
-        validation: "belum_divalidasi",
+        ...(input.attachment && { attachment: input.attachment }),
       }
-    : {
-        held: false,
-        cancelReason: input.cancelReason.trim(),
-        submittedAt: new Date(),
-        validation: "belum_divalidasi",
-      }
-  return structuredClone(session)
+    : { held: false, cancelReason: input.cancelReason.trim() }
+  const { data } = await httpClient.post<TutorSession>(
+    `/tutor/presensi/${encodeURIComponent(id)}`,
+    body
+  )
+  return data
 }
