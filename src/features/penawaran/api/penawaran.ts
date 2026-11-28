@@ -1,12 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { getOfferTutorInfo } from "@/features/pencocokan/api"
-import {
-  NotFoundError,
-  releaseMatch,
-  snapshotRegistrations,
-} from "@/features/verifikasi/api"
-import { formatRequestedSchedule, formatShortAddress } from "@/features/verifikasi/lib"
+import { NotFoundError, releaseMatch } from "@/features/verifikasi/api"
 import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { DECLINE_REASONS, offers } from "@/lib/data/penawaran"
@@ -17,16 +11,14 @@ import type {
   OfferDraft,
   OfferList,
 } from "@/types/penawaran"
-import type { PengelolaRegistration } from "@/types/verifikasi"
 
 /*
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P4 · Penawaran Tutor
  *
- * Sudah memakai BE: getOffers, getOfferDraft.
+ * Sudah memakai BE: getOffers, getOfferDraft, sendOffer.
  *
  * TODO(backend):
- *   sendOffer(regId, message)   → httpClient.post("/pengelola/penawaran", …)
  *   getOffer(id)                → httpClient.get(`/pengelola/penawaran/${id}`)
  *   recordAccepted(id)          → httpClient.post(`/pengelola/penawaran/${id}/diterima`)
  *   recordDeclined(id, input)   → httpClient.post(`/pengelola/penawaran/${id}/ditolak`, input)
@@ -95,42 +87,6 @@ export const offersQuery = () =>
 
 /* ---------- Buat penawaran ---------- */
 
-function buildDraft(registration: PengelolaRegistration): OfferDraft {
-  if (registration.status !== "terverifikasi" || !registration.match) {
-    throw new OfferError("no_match", "Belum ada tutor yang dipilih.")
-  }
-  const existing = offers.find(
-    (o) =>
-      o.registrationId === registration.id &&
-      o.tutor.id === registration.match?.tutorId &&
-      o.status !== "ditolak"
-  )
-  if (existing) {
-    throw new OfferError(
-      "already_sent",
-      "Penawaran sudah dikirim.",
-      existing.id
-    )
-  }
-  const tutor = getOfferTutorInfo(registration.match.tutorId, registration)
-  return {
-    registration,
-    registrationId: registration.id,
-    student: {
-      name: registration.student.name,
-      grade: registration.student.grade,
-      level: registration.student.level,
-    },
-    tutor: { id: tutor.id, name: tutor.name, shortName: tutor.shortName },
-    subjects: registration.needs.subjects,
-    schedule: formatRequestedSchedule(registration.needs),
-    location: formatShortAddress(registration.student.address).split(",")[0],
-    distanceKm: tutor.distanceKm,
-    rate: tutor.rate,
-    takenSlot: tutor.takenSlot,
-  }
-}
-
 export async function getOfferDraft(
   registrationId: string
 ): Promise<OfferDraft> {
@@ -148,48 +104,27 @@ export const offerDraftQuery = (registrationId: string) =>
     staleTime: 0,
   })
 
+/* 409 tutor_unavailable bila slot tutor sudah terisi jadwal lain */
 export async function sendOffer(
   registrationId: string,
   message: string
 ): Promise<Offer> {
-  assertMockAllowed()
-  await delay(800)
-  ensureOnline()
-  const registration = snapshotRegistrations().find(
-    (r) => r.id === registrationId
-  )
-  if (!registration) throw new NotFoundError()
-  const draft = buildDraft(registration)
-  if (draft.takenSlot) {
-    throw new OfferError(
-      "tutor_unavailable",
-      `${draft.tutor.shortName} tidak lagi tersedia.`
-    )
-  }
-
-  const offer: Offer = {
-    registrationId: draft.registrationId,
-    student: draft.student,
-    tutor: draft.tutor,
-    subjects: draft.subjects,
-    schedule: draft.schedule,
-    location: draft.location,
-    distanceKm: draft.distanceKm,
-    rate: draft.rate,
-    id: `pw-${Date.now()}`,
-    message: message.trim() || undefined,
-    sentAt: new Date(),
-    status: "menunggu_konfirmasi",
-  }
-  offers.push(offer)
-  return structuredClone(offer)
+  const { data } = await httpClient.post<Offer>("/pengelola/penawaran", {
+    registrationId,
+    ...(message.trim() && { message: message.trim() }),
+  })
+  return data
 }
 
-/* Tutor tidak tersedia: lepas pilihan agar bisa memilih tutor lain di P3 */
-export async function chooseAnotherTutor(registrationId: string) {
-  assertMockAllowed()
-  await delay(300)
-  return releaseMatch(registrationId)
+/*
+ * Tutor tidak tersedia → lepas pilihan tutor dan kembali ke kandidat P3.
+ * BE belum punya endpoint untuk melepas tutor terpilih (temuan #20 di
+ * api-docs), jadi untuk sementara aksi ini ditolak dengan pesan yang jelas.
+ */
+export async function chooseAnotherTutor(): Promise<never> {
+  throw new Error(
+    "Memilih tutor lain belum didukung server. Hubungi tim backend."
+  )
 }
 
 /* ---------- Detail & jawaban tutor ---------- */

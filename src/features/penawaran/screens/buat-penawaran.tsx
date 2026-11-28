@@ -17,7 +17,6 @@ import {
   alreadySentOfferId,
   chooseAnotherTutor,
   offerDraftQuery,
-  OfferError,
   offerErrorCode,
   offerQuery,
   sendOffer,
@@ -109,28 +108,27 @@ function OfferForm({ draft }: { draft: OfferDraft }) {
       navigate(`${LES}/penawaran/${offer.id}`, { replace: true })
     },
     onError: (error) => {
-      if (error instanceof OfferError && error.code === "tutor_unavailable") {
+      if (offerErrorCode(error) === "tutor_unavailable") {
         setUnavailable(draft.takenSlot ?? draft.schedule)
         return
       }
       toast.error("Penawaran gagal dikirim", {
-        description:
-          "Pesan Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Pesan Anda tetap tersimpan.`,
       })
     },
   })
 
   const pickAnother = useMutation({
-    mutationFn: () => chooseAnotherTutor(draft.registrationId),
+    mutationFn: () => chooseAnotherTutor(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["pencocokan"] })
       void queryClient.invalidateQueries({ queryKey: ["penawaran"] })
       void queryClient.invalidateQueries({ queryKey: ["verifikasi"] })
       navigate(`${LES}/pencocokan/${draft.registrationId}`, { replace: true })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Gagal kembali ke kandidat", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 
