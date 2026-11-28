@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
 import { addNotification } from "@/features/notifikasi/api"
+import { httpClient } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { bills, payments } from "@/lib/data/tagihan"
 import { formatRupiah } from "@/lib/format"
@@ -16,8 +17,10 @@ import type {
 /*
  * Tagihan & Pembayaran · Figma PINTARA → UI Screen → Wali Murid → W6
  *
+ * Sudah memakai BE:
+ *   getBills()               → GET /wali/tagihan
+ *
  * TODO(backend):
- *   getBills()               → httpClient.get("/wali/tagihan")
  *   getBill(id)              → httpClient.get(`/wali/tagihan/${id}`)
  *   getPayments()            → httpClient.get("/wali/pembayaran")
  *   createPayment(id, nominal) → httpClient.post(`/wali/tagihan/${id}/bayar`,
@@ -46,19 +49,10 @@ export const daysUntilDue = (bill: Pick<Bill, "dueDate">, now = new Date()) =>
 
 /* ---------- Daftar ---------- */
 
+/* Tagihan belum lunas semua anak, urut jatuh tempo terdekat (dari BE) */
 export async function getBills(): Promise<BillsOverview> {
-  assertMockAllowed()
-  await delay()
-
-  const open = bills
-    .filter((b) => statusOf(b) !== "lunas")
-    .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
-
-  return {
-    priority: open[0] ?? null,
-    others: open.slice(1),
-    unreadNotifications: 2,
-  }
+  const { data } = await httpClient.get<BillsOverview>("/wali/tagihan")
+  return data
 }
 
 export const billsQuery = () =>
