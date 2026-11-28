@@ -80,7 +80,8 @@ export type HonorPaymentInput = {
   method: HonorPaymentMethod
   paidAt: Date
   amount: number
-  proof: { name: string; size: number }
+  /* Dikirim sebagai file multipart `proof` */
+  proof: File
 }
 
 export type BillPaymentMethod =
