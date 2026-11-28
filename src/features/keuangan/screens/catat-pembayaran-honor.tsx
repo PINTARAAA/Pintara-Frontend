@@ -31,16 +31,13 @@ import {
 import {
   honorDetailQuery,
   METHOD_LABEL,
-  HonorNotFoundError,
+  isHonorNotFoundError,
   recordHonorPayment,
 } from "@/features/keuangan/api"
 import type { HonorDetail, HonorPaymentMethod } from "@/types/keuangan"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import {
-  DOC_ACCEPT,
-  uploadDocumentation,
-  validateDocumentation,
-} from "@/features/presensi/api"
+import { DOC_ACCEPT, validateDocumentation } from "@/features/presensi/api"
+import { getErrorMessage } from "@/lib/api"
 import { formatRupiah, formatDate } from "@/lib/format"
 
 /*
@@ -93,7 +90,7 @@ function CatatPembayaranHonor() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat honor…" />
-      ) : query.isError && !(query.error instanceof HonorNotFoundError) ? (
+      ) : query.isError && !isHonorNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Honor gagal dimuat"
@@ -134,31 +131,19 @@ function PaymentForm({
   const [amount, setAmount] = React.useState(remaining)
   const [doc, setDoc] = React.useState<DocState>(EMPTY_DOC)
   const [errors, setErrors] = React.useState<Errors>({})
-  const cancelUpload = React.useRef<(() => void) | null>(null)
-  React.useEffect(() => () => cancelUpload.current?.(), [])
 
   const clear = (key: keyof Errors) =>
     setErrors((e) => ({ ...e, [key]: undefined }))
 
+  /* File divalidasi di sini dan diunggah bersama data pembayaran saat simpan */
   const selectFile = (file: File) => {
-    cancelUpload.current?.()
     const invalid = validateDocumentation(file)
     if (invalid) {
       setDoc({ file, status: "error", progress: 0, error: invalid })
       return
     }
     clear("file")
-    setDoc({ file, status: "uploading", progress: 0, error: null })
-    cancelUpload.current = uploadDocumentation(file, {
-      onProgress: (progress) => setDoc((d) => ({ ...d, progress })),
-      onDone: () => setDoc((d) => ({ ...d, status: "success", progress: 100 })),
-      onError: () =>
-        setDoc((d) => ({
-          ...d,
-          status: "error",
-          error: "Unggahan gagal. Periksa koneksi lalu coba lagi.",
-        })),
-    })
+    setDoc({ file, status: "success", progress: 100, error: null })
   }
 
   const validate = () => {
@@ -178,23 +163,34 @@ function PaymentForm({
   }
 
   const save = useMutation({
-    mutationFn: () =>
-      recordHonorPayment(month, tutorId, {
-        method,
-        paidAt: paidAt ?? new Date(),
-        amount: amount + (honor.payment?.amount ?? 0),
-        proof: { name: doc.file?.name ?? "bukti", size: doc.file?.size ?? 0 },
-      }),
+    mutationFn: (proof: File) => {
+      /* Progres unggah bukti tampil di kotak file selama menyimpan */
+      setDoc((d) => ({ ...d, status: "uploading", progress: 0 }))
+      return recordHonorPayment(
+        month,
+        tutorId,
+        {
+          method,
+          paidAt: paidAt ?? new Date(),
+          amount: amount + (honor.payment?.amount ?? 0),
+          proof,
+        },
+        (progress) => setDoc((d) => ({ ...d, progress }))
+      )
+    },
     networkMode: "always",
     onSuccess: (updated) => {
       void queryClient.invalidateQueries({ queryKey: ["honor"] })
+      void queryClient.invalidateQueries({ queryKey: ["laporan-keuangan"] })
       onSaved(updated)
     },
-    onError: () =>
+    onError: (error) => {
+      setDoc((d) => ({ ...d, status: "success", progress: 100 }))
       toast.error("Pembayaran gagal dicatat", {
-        description:
-          "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
-      }),
+        /* Pesan BE tidak selalu diakhiri titik */
+        description: `${getErrorMessage(error).replace(/\.?$/, ".")} Isian Anda tetap tersimpan.`,
+      })
+    },
   })
 
   return (
@@ -216,7 +212,9 @@ function PaymentForm({
             Batal
           </Button>
           <Button
-            onClick={() => validate() && save.mutate()}
+            onClick={() => {
+              if (validate() && doc.file) save.mutate(doc.file)
+            }}
             disabled={save.isPending}
           >
             {save.isPending ? "Menyimpan…" : "Simpan Pembayaran"}
@@ -317,10 +315,7 @@ function PaymentForm({
             progress={doc.progress}
             error={doc.status === "error" ? doc.error : errors.file}
             onSelect={selectFile}
-            onRemove={() => {
-              cancelUpload.current?.()
-              setDoc(EMPTY_DOC)
-            }}
+            onRemove={() => setDoc(EMPTY_DOC)}
           />
 
           <AlertBanner

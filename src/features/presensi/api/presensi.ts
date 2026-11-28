@@ -74,12 +74,6 @@ export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
     queryFn: () => getTutorHistory(month, student),
   })
 
-/* ---------- P6 · Verifikasi final presensi (pengelola) ---------- */
-
-/* Presensi lengkap = sudah divalidasi wali (atau ditinjau Pengelola), belum final */
-export const isReadyForFinal = (s: TutorSession) =>
-  !!s.record && s.record.validation === "sudah_divalidasi" && !s.record.finalAt
-
 /* ---------- T7 · Sumber notifikasi tutor ---------- */
 
 /* Salinan semua sesi tutor (notifikasi presensi terlewat & keberatan) */

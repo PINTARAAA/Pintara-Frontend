@@ -30,23 +30,6 @@ export type TutorHonor = {
   payment?: HonorPayment
 }
 
-export type TutorProfile = {
-  id: string
-  name: string
-  shortName: string
-  rate: number | null
-  method: HonorPaymentMethod
-  methodNote?: string
-}
-
-export type Recap = {
-  month: Date
-  calculatedAt: Date
-  honors: TutorHonor[]
-  skipped: string[]
-  sessionsByTutor: Record<string, TutorSession[]>
-}
-
 export type HonorRecap =
   | {
       state: "belum_dihitung"
@@ -80,7 +63,8 @@ export type HonorPaymentInput = {
   method: HonorPaymentMethod
   paidAt: Date
   amount: number
-  proof: { name: string; size: number }
+  /* Dikirim sebagai file multipart `proof` */
+  proof: File
 }
 
 export type BillPaymentMethod =
