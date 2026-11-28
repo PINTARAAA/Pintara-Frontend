@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { addDays, startOfDay } from "date-fns"
+import { addDays } from "date-fns"
 
 import type { ScheduleChangeInput } from "@/features/jadwal/schemas"
 import { addNotification } from "@/features/notifikasi/api"
@@ -11,6 +11,7 @@ import {
   routines,
   WEEKDAYS,
 } from "@/lib/data/jadwal"
+import { httpClient } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   ChangeRequest,
@@ -22,8 +23,9 @@ import type {
 /*
  * Jadwal Les & Perubahan Jadwal · Figma PINTARA → UI Screen → Wali Murid → W4
  *
+ * Sudah memakai BE: getWaliSchedule.
+ *
  * TODO(backend):
- *   getWaliSchedule(siswa)   → httpClient.get("/wali/jadwal", { params: { siswa } })
  *   getRoutine(id)           → httpClient.get(`/wali/jadwal/${id}`)
  *   getChangeRequest(id)     → httpClient.get(`/wali/pengajuan-jadwal/${id}`)
  *   submitScheduleChange()   → httpClient.post("/wali/pengajuan-jadwal", input)
@@ -53,42 +55,12 @@ export function countUpcomingSessions(studentId: string, until: Date) {
 
 /* ---------- Daftar jadwal ---------- */
 
+/* Jadwal minggu ini, jadwal rutin, dan pengajuan terbuka untuk satu anak */
 export async function getWaliSchedule(studentId?: string): Promise<WaliSchedule> {
-  assertMockAllowed()
-  await delay()
-
-  const student = STUDENTS.find((s) => s.id === studentId) ?? STUDENTS[0]
-  const own = routines.filter((r) => r.studentId === student.id)
-
-  /* "Minggu ini" = 7 hari mulai hari ini */
-  const now = new Date()
-  const from = startOfDay(now)
-  const to = addDays(from, 6)
-  const sessions = own
-    .map((r) => {
-      const start = nextSessionStart(r.weekday, r.startTime, now)
-      return {
-        id: `${r.id}-${start.getTime()}`,
-        routineId: r.id,
-        subject: r.subject,
-        start,
-        end: new Date(start.getTime() + r.durationMinutes * 60_000),
-        tutorName: r.tutor.name,
-      }
-    })
-    .filter((s) => s.start < addDays(to, 1))
-    .sort((a, b) => a.start.getTime() - b.start.getTime())
-
-  return {
-    students: STUDENTS,
-    activeStudentId: student.id,
-    pendingRequests: changeRequests.filter(
-      (r) => r.studentId === student.id && isOpenRequest(r)
-    ),
-    week: { from, to, sessions },
-    routines: own.sort((a, b) => a.weekday - b.weekday),
-    unreadNotifications: student.id === "s1" ? 2 : 0,
-  }
+  const { data } = await httpClient.get<WaliSchedule>("/wali/jadwal", {
+    params: studentId ? { siswa: studentId } : undefined,
+  })
+  return data
 }
 
 export const waliScheduleQuery = (studentId?: string) =>
