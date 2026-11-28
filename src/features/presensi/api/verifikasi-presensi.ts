@@ -7,15 +7,12 @@ import {
   subMonths,
 } from "date-fns"
 
-import { addNotification } from "@/features/notifikasi/api"
 import {
   isReadyForFinal,
-  resolveObjection,
   snapshotTutorSessions,
 } from "@/features/presensi/api/presensi"
 import { httpClient } from "@/lib/api"
 import { otherTutors } from "@/lib/data/presensi"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   Counts,
   FinalByTutor,
@@ -32,9 +29,7 @@ import type {
  *   getFinalOverview(bulan)       → GET /pengelola/presensi
  *   finalizeAttendance(bulan)     → POST /pengelola/presensi/final
  *   getObjection(sessionId)       → GET /pengelola/presensi/:id/keberatan
- *
- * TODO(backend):
- *   reviewObjection(sessionId, …) → httpClient.post(`/pengelola/presensi/${id}/keberatan`, …)
+ *   reviewObjection(sessionId, …) → POST /pengelola/presensi/:id/keberatan
  *
  * Selama backend belum ada (mode development): presensi Kak Budi diambil
  * dari data presensi tutor (T2–T4, termasuk keberatan Aisyah), tutor lain
@@ -159,23 +154,27 @@ export const objectionQuery = (sessionId: string) =>
     queryFn: () => getObjection(sessionId),
   })
 
+/*
+ * Presensi kembali sudah_divalidasi (siap difinalkan); wali mendapat
+ * notifikasi dari BE. 409 already_filled bila keberatan sudah ditinjau.
+ */
 export async function reviewObjection(
   sessionId: string,
   input: ObjectionResolution
 ): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(800)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const session = resolveObjection(sessionId, input)
-  addNotification({
-    kind: "validasi",
-    title: "Keberatan presensi sudah ditinjau",
-    body: input.corrected
-      ? `${session.subject} · waktu dikoreksi ${input.actualStart}–${input.actualEnd}`
-      : `${session.subject} · data tutor dinyatakan sesuai`,
-    to: "/wali/riwayat",
-  })
-  return session
+  const body = input.corrected
+    ? {
+        corrected: true,
+        actualStart: input.actualStart,
+        actualEnd: input.actualEnd,
+        note: input.note.trim(),
+      }
+    : { corrected: false, note: input.note.trim() }
+  const { data } = await httpClient.post<TutorSession>(
+    `/pengelola/presensi/${encodeURIComponent(sessionId)}/keberatan`,
+    body
+  )
+  return data
 }
 
 /* ---------- P7 · Sumber rekap honor ---------- */

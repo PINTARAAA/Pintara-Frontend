@@ -23,7 +23,7 @@ import {
 } from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
 import {
-  AttendanceError,
+  attendanceErrorCode,
   isNotFoundError,
   objectionQuery,
   reviewObjection,
@@ -32,6 +32,7 @@ import {
 import type { TutorSession } from "@/types/presensi"
 
 import { formatLongDate } from "@/features/presensi/lib"
+import { getErrorMessage } from "@/lib/api"
 import { formatTimeRange } from "@/lib/format"
 
 /*
@@ -134,7 +135,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
       navigate(BACK, { replace: true })
     },
     onError: (error) => {
-      if (error instanceof AttendanceError) {
+      if (attendanceErrorCode(error) === "already_filled") {
         toast.error("Keberatan sudah ditinjau", {
           description: "Status terbaru ditampilkan.",
         })
@@ -143,8 +144,7 @@ function ReviewForm({ session }: { session: TutorSession }) {
         return
       }
       toast.error("Hasil tinjauan gagal disimpan", {
-        description:
-          "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error).replace(/\.?$/, ".")} Isian Anda tetap tersimpan.`,
       })
     },
   })
