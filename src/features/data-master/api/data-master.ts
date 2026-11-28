@@ -8,7 +8,7 @@ import {
   students,
   tutors,
 } from "@/lib/data/data-master"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AccountStatus,
@@ -27,11 +27,11 @@ import type {
  *
  * Sudah memakai BE:
  *   getTutors(filter)            → GET /pengelola/tutor
+ *   saveTutor(input)             → POST /pengelola/tutor (tambah)
  *
  * TODO(backend):
  *   getTutor(id)                 → httpClient.get(`/pengelola/tutor/${id}`)
- *   saveTutor(input, id?)        → httpClient.post("/pengelola/tutor", input)
- *                                  / httpClient.put(`/pengelola/tutor/${id}`, input)
+ *   saveTutor(input, id)         → httpClient.put(`/pengelola/tutor/${id}`, input)
  *   setTutorStatus(id, status)   → httpClient.patch(`/pengelola/tutor/${id}/status`, { status })
  *                                  (409 bila masih ada jadwal les aktif)
  *   getStudents(filter)          → httpClient.get("/pengelola/siswa", { params: filter })
@@ -141,11 +141,38 @@ export class DuplicateEmailError extends Error {
   }
 }
 
+/* 409 duplicate_field (email) dari BE, atau dari mock ubah tutor */
+export const isDuplicateEmailError = (error: unknown) =>
+  error instanceof DuplicateEmailError ||
+  (isApiError(error) &&
+    error.serverCode === "duplicate_field" &&
+    (error.details as { field?: unknown } | undefined)?.field === "email")
+
+/* Body TutorInputDto; BE menambah "Kak " dan menurunkan kecamatan dari alamat */
+const tutorBody = (input: TutorInput) => ({
+  ...input,
+  name: input.name.trim(),
+  email: input.email.trim().toLowerCase(),
+  phone: input.phone.trim(),
+  address: input.address.trim(),
+})
+
 const districtOf = (address: string) =>
   DISTRICTS.find((d) => address.toLowerCase().includes(d.toLowerCase())) ??
   "Bangkalan"
 
+/*
+ * Tambah: BE membuat akun login tutor (password sementara) sekaligus profil.
+ * 409 duplicate_field bila email sudah dipakai akun lain.
+ */
 export async function saveTutor(input: TutorInput, id?: string): Promise<Tutor> {
+  if (!id) {
+    const { data } = await httpClient.post<Tutor>(
+      "/pengelola/tutor",
+      tutorBody(input)
+    )
+    return data
+  }
   assertMockAllowed()
   await delay(800)
   if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
@@ -156,21 +183,8 @@ export async function saveTutor(input: TutorInput, id?: string): Promise<Tutor> 
   const name = /^Kak\s/.test(input.name) ? input.name : `Kak ${input.name}`
   const fields = { ...input, name, email, district: districtOf(input.address) }
 
-  if (id) {
-    const tutor = findTutor(id)
-    Object.assign(tutor, fields)
-    return structuredClone(tutor)
-  }
-  const tutor: Tutor = {
-    ...fields,
-    id: `tt-${Date.now()}`,
-    pickup: "Transfer bank",
-    joinedAt: new Date(),
-    activeStudents: 0,
-    activeSchedules: 0,
-    status: "aktif",
-  }
-  tutors.push(tutor)
+  const tutor = findTutor(id)
+  Object.assign(tutor, fields)
   return structuredClone(tutor)
 }
 
