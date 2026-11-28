@@ -29,7 +29,7 @@ import {
 } from "@/components"
 import { FormGroup, SummaryRow } from "@/features/pendaftaran/components"
 import {
-  AttendanceError,
+  attendanceErrorCode,
   DOC_ACCEPT,
   isNotFoundError,
   submitAttendance,
@@ -252,16 +252,22 @@ function AttendanceForm({
       onSaved(updated)
     },
     onError: (error) => {
-      if (error instanceof AttendanceError && error.code === "already_filled") {
+      const code = attendanceErrorCode(error)
+      if (code === "already_filled") {
         void queryClient.invalidateQueries({ queryKey: ["presensi"] })
         toast.warning("Presensi sesi ini sudah diisi", {
           description: "Data terbaru sedang dimuat.",
         })
         return
       }
+      if (code === "not_started") {
+        toast.warning("Sesi belum dimulai", {
+          description: "Presensi bisa diisi setelah jam mulai sesi.",
+        })
+        return
+      }
       toast.error("Presensi gagal disimpan", {
-        description:
-          "Isian Anda tetap tersimpan di formulir. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Isian Anda tetap tersimpan di formulir.`,
       })
     },
   })

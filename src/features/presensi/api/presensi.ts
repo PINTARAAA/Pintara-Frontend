@@ -18,12 +18,10 @@ import type {
  * Presensi & Dokumentasi (tutor) · Figma PINTARA → UI Screen → Tutor → T2
  *
  * Sudah memakai BE: getTutorSessions, getAttendanceStatus, getTutorSession,
- * uploadDocumentation.
+ * uploadDocumentation, submitAttendance.
  *
  * TODO(backend):
  *   getTutorSession(id)       → httpClient.get(`/tutor/presensi/${id}`)
- *   submitAttendance(id, …)   → httpClient.post(`/tutor/presensi/${id}`, …)
- *   Petakan respons "presensi sudah ada" ke AttendanceError("already_filled").
  *
  * Selama backend belum ada (mode development) data disimpan di memori.
  */
@@ -189,6 +187,16 @@ export class NotFoundError extends Error {
   }
 }
 
+/* already_filled (409) / not_started (400) dari BE, atau dari mock pengelola */
+export function attendanceErrorCode(error: unknown): AttendanceErrorCode | null {
+  if (error instanceof AttendanceError) return error.code
+  if (!isApiError(error)) return null
+  return error.serverCode === "already_filled" ||
+    error.serverCode === "not_started"
+    ? error.serverCode
+    : null
+}
+
 /* 404 dari BE (sesi tidak ada / bukan milik tutor) atau dari mock pengelola */
 export const isNotFoundError = (error: unknown) =>
   (isApiError(error) && error.code === "not_found") ||
@@ -278,19 +286,12 @@ export function uploadDocumentation(
 
 /* ---------- Simpan presensi ---------- */
 
+/* 409 already_filled bila sudah diisi; 400 not_started bila sesi belum mulai */
 export async function submitAttendance(
   id: string,
   input: AttendanceInput
 ): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(800)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-
-  const session = find(id)
-  if (session.record) throw new AttendanceError("already_filled")
-  if (isAfter(session.start, new Date())) throw new AttendanceError("not_started")
-
-  session.record = input.held
+  const body = input.held
     ? {
         held: true,
         actualStart: input.actualStart,
@@ -298,15 +299,12 @@ export async function submitAttendance(
         studentPresent: input.studentPresent,
         topic: input.topic.trim(),
         notes: input.notes.trim(),
-        attachment: input.attachment,
-        submittedAt: new Date(),
-        validation: "belum_divalidasi",
+        ...(input.attachment && { attachment: input.attachment }),
       }
-    : {
-        held: false,
-        cancelReason: input.cancelReason.trim(),
-        submittedAt: new Date(),
-        validation: "belum_divalidasi",
-      }
-  return structuredClone(session)
+    : { held: false, cancelReason: input.cancelReason.trim() }
+  const { data } = await httpClient.post<TutorSession>(
+    `/tutor/presensi/${encodeURIComponent(id)}`,
+    body
+  )
+  return data
 }
