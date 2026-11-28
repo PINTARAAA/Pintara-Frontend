@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
 import { addNotification } from "@/features/notifikasi/api"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { bills, payments } from "@/lib/data/tagihan"
 import { formatRupiah } from "@/lib/format"
@@ -19,9 +19,9 @@ import type {
  *
  * Sudah memakai BE:
  *   getBills()               → GET /wali/tagihan
+ *   getBill(id)              → GET /wali/tagihan/:id
  *
  * TODO(backend):
- *   getBill(id)              → httpClient.get(`/wali/tagihan/${id}`)
  *   getPayments()            → httpClient.get("/wali/pembayaran")
  *   createPayment(id, nominal) → httpClient.post(`/wali/tagihan/${id}/bayar`,
  *                              { nominal }) lalu arahkan ke URL payment gateway
@@ -78,6 +78,14 @@ export class NotFoundError extends Error {
   }
 }
 
+/*
+ * 404 dari BE (tagihan tidak ada / milik wali lain), atau dari mock
+ * pembayaran.
+ */
+export const isNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof NotFoundError
+
 function findBill(id: string) {
   const bill = bills.find((b) => b.id === id)
   if (!bill) throw new NotFoundError()
@@ -85,9 +93,10 @@ function findBill(id: string) {
 }
 
 export async function getBill(id: string): Promise<Bill> {
-  assertMockAllowed()
-  await delay(300)
-  return { ...findBill(id) }
+  const { data } = await httpClient.get<Bill>(
+    `/wali/tagihan/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const billQuery = (id: string) =>

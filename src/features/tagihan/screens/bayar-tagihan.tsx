@@ -28,7 +28,7 @@ import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   billQuery,
   createPayment,
-  NotFoundError,
+  isNotFoundError,
   remainingOf,
   statusOf,
 } from "@/features/tagihan/api"
@@ -142,7 +142,7 @@ function BayarTagihan() {
     <DetailScreen title="Pembayaran">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat tagihan…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Tagihan gagal dimuat"
