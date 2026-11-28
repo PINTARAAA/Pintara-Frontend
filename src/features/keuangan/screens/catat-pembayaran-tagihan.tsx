@@ -169,11 +169,16 @@ function PaymentForm({ bill }: { bill: StudentBill }) {
       /* Kembali ke Rincian Tagihan (layar sebelumnya) */
       navigate(-1)
     },
-    onError: (error) =>
+    onError: (error) => {
+      /* Sisa tagihan mungkin sudah berubah (mis. 422 nominal tidak valid) */
+      void queryClient.invalidateQueries({
+        queryKey: studentBillQuery(bill.id).queryKey,
+      })
       toast.error("Pembayaran gagal dicatat", {
         /* Pesan BE tidak selalu diakhiri titik */
         description: `${getErrorMessage(error).replace(/\.?$/, ".")} Isian Anda tetap tersimpan.`,
-      }),
+      })
+    },
   })
 
   return (
