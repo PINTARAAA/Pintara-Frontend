@@ -28,9 +28,9 @@ import type {
  *   saveTutor(input, id?)        → POST /pengelola/tutor · PUT /pengelola/tutor/:id
  *   getTutor(id)                 → GET /pengelola/tutor/:id
  *   setTutorStatus(id, status)   → PATCH /pengelola/tutor/:id/status
+ *   getStudents(filter)          → GET /pengelola/siswa
  *
  * TODO(backend):
- *   getStudents(filter)          → httpClient.get("/pengelola/siswa", { params: filter })
  *   getStudent(id)               → httpClient.get(`/pengelola/siswa/${id}`)
  *   setStudentStatus(id, status) → httpClient.patch(`/pengelola/siswa/${id}/status`, { status })
  *
@@ -72,13 +72,6 @@ export const initialsOf = (name: string) =>
     .join("")
 
 /* ---------- Tutor ---------- */
-
-const matches = (text: string, query?: string) =>
-  !query?.trim() || text.toLowerCase().includes(query.trim().toLowerCase())
-
-/* Aktif dulu; urutan dalam status mengikuti data (terbaru ditambahkan di akhir) */
-const byStatus = <T extends { status: AccountStatus }>(a: T, b: T) =>
-  a.status === b.status ? 0 : a.status === "aktif" ? -1 : 1
 
 /* Parameter filter BE: query, subject, district, status (kosong = semua) */
 const filterParams = (filter: MasterFilter) => {
@@ -194,30 +187,14 @@ export async function setTutorStatus(
 
 /* ---------- Siswa ---------- */
 
+/* Pencarian `query` mencakup nama siswa dan nama wali; aktif dulu (BE) */
 export async function getStudents(
   filter: MasterFilter = {}
 ): Promise<StudentRow[]> {
-  assertMockAllowed()
-  await delay()
-  return students
-    .filter(
-      (s) =>
-        (matches(s.name, filter.query) ||
-          matches(s.guardian.name, filter.query)) &&
-        (!filter.subject || s.subjects.includes(filter.subject)) &&
-        (!filter.district || s.district === filter.district) &&
-        (!filter.status || s.status === filter.status)
-    )
-    .sort(byStatus)
-    .map((s) => ({
-      id: s.id,
-      name: s.name,
-      grade: s.grade,
-      subjects: s.subjects,
-      status: s.status,
-      endedAt: s.endedAt,
-      tutorNames: [...new Set(s.lessons.map((l) => l.tutorName))],
-    }))
+  const { data } = await httpClient.get<StudentRow[]>("/pengelola/siswa", {
+    params: filterParams(filter),
+  })
+  return data
 }
 
 export const studentsQuery = (filter: MasterFilter) =>
