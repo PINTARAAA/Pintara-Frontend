@@ -17,10 +17,11 @@ import {
   TimelineItem,
 } from "@/components"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { NotFoundError, tutorSessionQuery } from "@/features/presensi/api"
+import { isNotFoundError, tutorSessionQuery } from "@/features/presensi/api"
 import type { TutorSession } from "@/types/presensi"
 import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
 import { formatTimeRange } from "@/lib/format"
+import { getErrorMessage } from "@/lib/api"
 
 /*
  * T3 · Detail Presensi · Figma "Status Presensi / Detail - Keberatan" dan
@@ -76,7 +77,7 @@ function DetailPresensi() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat presensi…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Presensi tidak ditemukan"
@@ -91,7 +92,7 @@ function DetailPresensi() {
           <DataState
             state="error"
             title="Presensi gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )

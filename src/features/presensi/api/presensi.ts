@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { format, isAfter, isSameMonth } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AttendanceErrorCode,
@@ -17,7 +17,7 @@ import type {
 /*
  * Presensi & Dokumentasi (tutor) · Figma PINTARA → UI Screen → Tutor → T2
  *
- * Sudah memakai BE: getTutorSessions, getAttendanceStatus.
+ * Sudah memakai BE: getTutorSessions, getAttendanceStatus, getTutorSession.
  *
  * TODO(backend):
  *   getTutorSession(id)       → httpClient.get(`/tutor/presensi/${id}`)
@@ -190,6 +190,11 @@ export class NotFoundError extends Error {
   }
 }
 
+/* 404 dari BE (sesi tidak ada / bukan milik tutor) atau dari mock pengelola */
+export const isNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof NotFoundError
+
 export class AttendanceError extends Error {
   code: AttendanceErrorCode
   constructor(code: AttendanceErrorCode) {
@@ -206,9 +211,10 @@ function find(id: string) {
 }
 
 export async function getTutorSession(id: string): Promise<TutorSession> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(find(id))
+  const { data } = await httpClient.get<TutorSession>(
+    `/tutor/presensi/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const tutorSessionQuery = (id: string) =>

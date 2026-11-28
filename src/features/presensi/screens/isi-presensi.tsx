@@ -31,7 +31,7 @@ import { FormGroup, SummaryRow } from "@/features/pendaftaran/components"
 import {
   AttendanceError,
   DOC_ACCEPT,
-  NotFoundError,
+  isNotFoundError,
   submitAttendance,
   tutorSessionQuery,
   uploadDocumentation,
@@ -40,6 +40,7 @@ import {
 import type { AttendanceInput, TutorSession } from "@/types/presensi"
 import { formatLongDate, sessionTitle } from "@/features/presensi/lib"
 import { firstName, formatDateTime, formatTimeRange } from "@/lib/format"
+import { getErrorMessage } from "@/lib/api"
 
 /*
  * T2 · Isi Presensi · Figma "Presensi / Form - Terlaksana", "- Tidak
@@ -97,7 +98,7 @@ function IsiPresensi() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat sesi…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Sesi tidak ditemukan"
@@ -111,7 +112,7 @@ function IsiPresensi() {
           <DataState
             state="error"
             title="Sesi gagal dimuat"
-            description="Periksa koneksi Anda, lalu coba lagi."
+            description={getErrorMessage(query.error)}
             action={{ label: "Coba lagi", onClick: () => query.refetch() }}
           />
         )
