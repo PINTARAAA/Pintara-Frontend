@@ -9,7 +9,6 @@ import {
 
 import { addNotification } from "@/features/notifikasi/api"
 import {
-  finalizeReadySessions,
   isReadyForFinal,
   NotFoundError,
   resolveObjection,
@@ -32,9 +31,9 @@ import type {
  *
  * Sudah memakai BE:
  *   getFinalOverview(bulan)       → GET /pengelola/presensi
+ *   finalizeAttendance(bulan)     → POST /pengelola/presensi/final
  *
  * TODO(backend):
- *   finalizeAttendance(bulan)     → httpClient.post("/pengelola/presensi/final", { bulan })
  *   getObjection(sessionId)       → httpClient.get(`/pengelola/presensi/${id}/keberatan`)
  *   reviewObjection(sessionId, …) → httpClient.post(`/pengelola/presensi/${id}/keberatan`, …)
  *
@@ -138,19 +137,11 @@ export const finalOverviewQuery = (month?: Date) =>
 
 /* Verifikasi final semua presensi lengkap di bulan tsb; kembalikan jumlahnya */
 export async function finalizeAttendance(month: Date): Promise<number> {
-  assertMockAllowed()
-  await delay(900)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const isCurrent = isSameMonth(month, new Date())
-  let count = finalizeReadySessions(month)
-  if (isCurrent) {
-    otherTutors.forEach((t) => {
-      count += t.counts.ready
-      t.counts.final += t.counts.ready
-      t.counts.ready = 0
-    })
-  }
-  return count
+  const { data } = await httpClient.post<number>(
+    "/pengelola/presensi/final",
+    monthBody(month)
+  )
+  return data
 }
 
 /* ---------- Tinjau keberatan ---------- */

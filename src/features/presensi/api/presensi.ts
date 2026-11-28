@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { format, isSameMonth } from "date-fns"
+import { format } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
 import { getErrorMessage, httpClient, isApiError } from "@/lib/api"
@@ -80,18 +80,6 @@ export const tutorHistoryQuery = (month?: Date, student?: string | null) =>
 /* Presensi lengkap = sudah divalidasi wali (atau ditinjau Pengelola), belum final */
 export const isReadyForFinal = (s: TutorSession) =>
   !!s.record && s.record.validation === "sudah_divalidasi" && !s.record.finalAt
-
-/* Tandai final semua presensi lengkap pada bulan tsb; kembalikan jumlahnya */
-export function finalizeReadySessions(month: Date) {
-  const now = new Date()
-  const ready = sessions.filter(
-    (s) => isReadyForFinal(s) && isSameMonth(s.start, month)
-  )
-  ready.forEach((s) => {
-    if (s.record) s.record.finalAt = now
-  })
-  return ready.length
-}
 
 /* Tinjauan keberatan: presensi kembali lengkap (siap diverifikasi final) */
 export function resolveObjection(id: string, input: ObjectionResolution) {

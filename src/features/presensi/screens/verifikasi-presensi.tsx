@@ -35,6 +35,7 @@ import {
   tutorShortName,
 } from "@/features/presensi/api"
 import type { FinalOverview } from "@/types/presensi"
+import { getErrorMessage } from "@/lib/api"
 import { firstName, formatWeekdayDate, parseMonth } from "@/lib/format"
 import { cn } from "@/lib/styles"
 
@@ -96,9 +97,9 @@ function VerifikasiPresensi() {
         description: `Rekap honor ${monthName(data?.month ?? new Date())} siap dihitung.`,
       })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Verifikasi gagal", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 
