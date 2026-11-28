@@ -29,9 +29,9 @@ import type {
  *   getTutor(id)                 → GET /pengelola/tutor/:id
  *   setTutorStatus(id, status)   → PATCH /pengelola/tutor/:id/status
  *   getStudents(filter)          → GET /pengelola/siswa
+ *   getStudent(id)               → GET /pengelola/siswa/:id
  *
  * TODO(backend):
- *   getStudent(id)               → httpClient.get(`/pengelola/siswa/${id}`)
  *   setStudentStatus(id, status) → httpClient.patch(`/pengelola/siswa/${id}/status`, { status })
  *
  * Tutor/siswa tidak dihapus, hanya dinonaktifkan agar riwayat les, presensi,
@@ -209,10 +209,12 @@ function findStudent(id: string) {
   return student
 }
 
+/* Profil siswa + wali + jadwal les (semua pasangan tutor) */
 export async function getStudent(id: string): Promise<Student> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(findStudent(id))
+  const { data } = await httpClient.get<Student>(
+    `/pengelola/siswa/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const studentQuery = (id: string) =>
