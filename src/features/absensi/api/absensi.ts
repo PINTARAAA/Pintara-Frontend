@@ -1,11 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
-import { endOfMonth, isSameMonth } from "date-fns"
+import { format } from "date-fns"
 
-import { countUpcomingSessions } from "@/features/jadwal/api"
 import { httpClient, isApiError } from "@/lib/api"
-import { sessions } from "@/lib/data/absensi"
-import { STUDENTS } from "@/lib/data/dashboard"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AttendanceOverview,
   AttendanceSession,
@@ -21,14 +17,10 @@ import type {
  *   approveSession(id)       → POST /wali/presensi/:id/setujui
  *   submitObjection(id, …)   → POST /wali/presensi/:id/keberatan
  *   submitReview(id, …)      → POST /wali/presensi/:id/ulasan
- *
- * Riwayat les (W7) masih memakai data mock, lihat getLessonHistory().
+ *   getLessonHistory(…)      → GET /wali/riwayat-les
  */
 
 /* ---------- Daftar ---------- */
-
-const byNewest = (a: AttendanceSession, b: AttendanceSession) =>
-  b.start.getTime() - a.start.getTime()
 
 /*
  * Sesi yang sudah dimulai dan diisi tutor (sesi batal tidak ikut).
@@ -48,53 +40,22 @@ export const attendanceQuery = () =>
 
 /* ---------- W7 · Riwayat Les ---------- */
 
-const monthStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1)
-
 /*
- * TODO(backend): httpClient.get("/wali/riwayat-les", { params: { siswa, bulan } })
+ * Riwayat les satu anak pada satu bulan (`siswa` = id siswa, `bulan` =
+ * "YYYY-MM"). Tanpa parameter: anak pertama dan bulan berjalan.
+ * `sessions` memuat semua sesi bulan tsb termasuk yang belum berlangsung.
  */
 export async function getLessonHistory(
   studentId?: string,
   month?: Date
 ): Promise<LessonHistory> {
-  assertMockAllowed()
-  await delay()
-
-  const student = STUDENTS.find((s) => s.id === studentId) ?? STUDENTS[0]
-  const own = sessions.filter((s) => s.studentId === student.id)
-  const current = monthStart(new Date())
-
-  const monthKeys = new Set([current.getTime()])
-  own.forEach((s) => monthKeys.add(monthStart(s.start).getTime()))
-  const months = [...monthKeys].sort((a, b) => b - a).map((t) => new Date(t))
-
-  const active = monthStart(month ?? current)
-  const inMonth = own
-    .filter((s) => isSameMonth(s.start, active))
-    .sort(byNewest)
-  const held = inMonth.filter((s) => !s.cancelReason)
-
-  const bySubject = new Map<string, number>()
-  held.forEach((s) => bySubject.set(s.subject, (bySubject.get(s.subject) ?? 0) + 1))
-
-  return {
-    students: STUDENTS.map((s) => ({ id: s.id, name: s.name })),
-    studentId: student.id,
-    months,
-    month: active,
-    sessions: inMonth,
-    summary: {
-      held: held.length,
-      cancelled: inMonth.length - held.length,
-      upcoming: isSameMonth(active, current)
-        ? countUpcomingSessions(student.id, endOfMonth(active))
-        : 0,
-      /* Mapel dengan sesi terbanyak dulu */
-      bySubject: [...bySubject]
-        .map(([subject, count]) => ({ subject, count }))
-        .sort((a, b) => b.count - a.count || a.subject.localeCompare(b.subject)),
+  const { data } = await httpClient.get<LessonHistory>("/wali/riwayat-les", {
+    params: {
+      ...(studentId && { siswa: studentId }),
+      ...(month && { bulan: format(month, "yyyy-MM") }),
     },
-  }
+  })
+  return data
 }
 
 export const lessonHistoryQuery = (studentId?: string, month?: Date) =>
