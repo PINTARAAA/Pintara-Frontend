@@ -18,10 +18,7 @@ import type {
  *   getBill(id)              → GET /wali/tagihan/:id
  *   createPayment(id, nominal) → POST /wali/tagihan/:id/bayar
  *   getPayments()            → GET /wali/pembayaran
- *
- * TODO(backend):
- *   getPaymentResult(trxId)  → httpClient.get(`/wali/pembayaran/${trxId}`)
- *                              (dipanggil saat kembali dari payment gateway)
+ *   getPaymentResult(trxId)  → GET /wali/pembayaran/:trxId
  *
  * Payment gateway disimulasikan BE. Tambahkan ?hasil=gagal pada halaman
  * bayar (mode development) untuk menguji "Pembayaran gagal".
@@ -94,3 +91,20 @@ export async function createPayment(
   )
   return data
 }
+
+/*
+ * Hasil transaksi (dipanggil saat kembali dari payment gateway / halaman
+ * hasil dimuat ulang). trxId = nomor TRX-…; 404 bila bukan milik wali.
+ */
+export async function getPaymentResult(trxId: string): Promise<PaymentResult> {
+  const { data } = await httpClient.get<PaymentResult>(
+    `/wali/pembayaran/${encodeURIComponent(trxId)}`
+  )
+  return data
+}
+
+export const paymentResultQuery = (trxId: string) =>
+  queryOptions({
+    queryKey: ["tagihan", "hasil", trxId],
+    queryFn: () => getPaymentResult(trxId),
+  })
