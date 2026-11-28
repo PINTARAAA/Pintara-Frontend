@@ -8,6 +8,7 @@ import {
   students,
   tutors,
 } from "@/lib/data/data-master"
+import { httpClient } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AccountStatus,
@@ -24,8 +25,10 @@ import type {
  * Data Tutor & Siswa · Figma PINTARA → UI Screen → Pengelola LBB →
  * P9 · Data Tutor & Siswa
  *
+ * Sudah memakai BE:
+ *   getTutors(filter)            → GET /pengelola/tutor
+ *
  * TODO(backend):
- *   getTutors(filter)            → httpClient.get("/pengelola/tutor", { params: filter })
  *   getTutor(id)                 → httpClient.get(`/pengelola/tutor/${id}`)
  *   saveTutor(input, id?)        → httpClient.post("/pengelola/tutor", input)
  *                                  / httpClient.put(`/pengelola/tutor/${id}`, input)
@@ -81,27 +84,23 @@ const matches = (text: string, query?: string) =>
 const byStatus = <T extends { status: AccountStatus }>(a: T, b: T) =>
   a.status === b.status ? 0 : a.status === "aktif" ? -1 : 1
 
+/* Parameter filter BE: query, subject, district, status (kosong = semua) */
+const filterParams = (filter: MasterFilter) => {
+  const query = filter.query?.trim()
+  return {
+    ...(query && { query }),
+    ...(filter.subject && { subject: filter.subject }),
+    ...(filter.district && { district: filter.district }),
+    ...(filter.status && { status: filter.status }),
+  }
+}
+
+/* Tutor aktif dulu (urutan dari BE) */
 export async function getTutors(filter: MasterFilter = {}): Promise<TutorRow[]> {
-  assertMockAllowed()
-  await delay()
-  return tutors
-    .filter(
-      (t) =>
-        matches(t.name, filter.query) &&
-        (!filter.subject || t.subjects.includes(filter.subject)) &&
-        (!filter.district || t.district === filter.district) &&
-        (!filter.status || t.status === filter.status)
-    )
-    .sort(byStatus)
-    .map(({ id, name, subjects, levels, district, rate, status }) => ({
-      id,
-      name,
-      subjects,
-      levels,
-      district,
-      rate,
-      status,
-    }))
+  const { data } = await httpClient.get<TutorRow[]>("/pengelola/tutor", {
+    params: filterParams(filter),
+  })
+  return data
 }
 
 export const tutorsQuery = (filter: MasterFilter) =>
