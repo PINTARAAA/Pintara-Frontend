@@ -7,7 +7,7 @@ import {
   snapshotRegistrations,
 } from "@/features/verifikasi/api"
 import { formatRequestedSchedule, formatShortAddress } from "@/features/verifikasi/lib"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import { DECLINE_REASONS, offers } from "@/lib/data/penawaran"
 import type {
@@ -23,10 +23,9 @@ import type { PengelolaRegistration } from "@/types/verifikasi"
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P4 · Penawaran Tutor
  *
- * Sudah memakai BE: getOffers (GET /pengelola/penawaran).
+ * Sudah memakai BE: getOffers, getOfferDraft.
  *
  * TODO(backend):
- *   getOfferDraft(regId)        → httpClient.get(`/pengelola/penawaran/draf/${regId}`)
  *   sendOffer(regId, message)   → httpClient.post("/pengelola/penawaran", …)
  *   getOffer(id)                → httpClient.get(`/pengelola/penawaran/${id}`)
  *   recordAccepted(id)          → httpClient.post(`/pengelola/penawaran/${id}/diterima`)
@@ -52,6 +51,31 @@ export class OfferError extends Error {
     this.code = code
     this.offerId = offerId
   }
+}
+
+const OFFER_ERROR_CODES: readonly OfferError["code"][] = [
+  "tutor_unavailable",
+  "already_answered",
+  "no_match",
+  "already_sent",
+]
+
+/* Kode error penawaran dari BE (409) atau dari mock */
+export function offerErrorCode(error: unknown): OfferError["code"] | null {
+  if (error instanceof OfferError) return error.code
+  if (!isApiError(error)) return null
+  const code = error.serverCode as OfferError["code"] | undefined
+  return code && OFFER_ERROR_CODES.includes(code) ? code : null
+}
+
+/* 409 already_sent → ID penawaran yang sudah ada (details.offerId) */
+export function alreadySentOfferId(error: unknown): string | null {
+  if (offerErrorCode(error) !== "already_sent") return null
+  if (error instanceof OfferError) return error.offerId ?? null
+  const id = isApiError(error)
+    ? (error.details as { offerId?: unknown } | undefined)?.offerId
+    : undefined
+  return typeof id === "string" ? id : null
 }
 
 function ensureOnline() {
@@ -110,13 +134,10 @@ function buildDraft(registration: PengelolaRegistration): OfferDraft {
 export async function getOfferDraft(
   registrationId: string
 ): Promise<OfferDraft> {
-  assertMockAllowed()
-  await delay(300)
-  const registration = snapshotRegistrations().find(
-    (r) => r.id === registrationId
+  const { data } = await httpClient.get<OfferDraft>(
+    `/pengelola/penawaran/draf/${encodeURIComponent(registrationId)}`
   )
-  if (!registration) throw new NotFoundError()
-  return buildDraft(registration)
+  return data
 }
 
 export const offerDraftQuery = (registrationId: string) =>

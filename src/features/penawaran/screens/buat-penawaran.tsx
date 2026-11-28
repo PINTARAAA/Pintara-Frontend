@@ -14,16 +14,19 @@ import {
   toast,
 } from "@/components"
 import {
+  alreadySentOfferId,
   chooseAnotherTutor,
   offerDraftQuery,
   OfferError,
+  offerErrorCode,
   offerQuery,
   sendOffer,
 } from "@/features/penawaran/api"
 import type { OfferDraft } from "@/types/penawaran"
 import { OfferSummaryCard } from "@/features/penawaran/components"
+import { getErrorMessage } from "@/lib/api"
 import { firstName } from "@/lib/format"
-import { NotFoundError } from "@/features/verifikasi/api"
+import { isNotFoundError } from "@/features/verifikasi/api"
 
 /*
  * P4 · Buat Penawaran · Figma "Penawaran / Buat penawaran" dan
@@ -51,24 +54,20 @@ function BuatPenawaran() {
   }
 
   const error = query.error
-  if (
-    error instanceof OfferError &&
-    error.code === "already_sent" &&
-    error.offerId
-  ) {
-    return <Navigate to={`${LES}/penawaran/${error.offerId}`} replace />
+  const sentOfferId = alreadySentOfferId(error)
+  if (sentOfferId) {
+    return <Navigate to={`${LES}/penawaran/${sentOfferId}`} replace />
   }
 
   return (
     <DetailScreen title="Buat Penawaran" backLabel="Les" desktopHeader="page">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Menyiapkan penawaran…" />
-      ) : error instanceof NotFoundError ||
-        (error instanceof OfferError && error.code === "no_match") ? (
+      ) : isNotFoundError(error) || offerErrorCode(error) === "no_match" ? (
         <DataState
           state="empty"
           title={
-            error instanceof NotFoundError
+            isNotFoundError(error)
               ? "Pendaftaran tidak ditemukan"
               : "Belum ada tutor yang dipilih"
           }
@@ -82,7 +81,7 @@ function BuatPenawaran() {
         <DataState
           state="error"
           title="Penawaran gagal disiapkan"
-          description="Periksa koneksi Anda, lalu coba lagi."
+          description={getErrorMessage(error)}
           action={{ label: "Coba lagi", onClick: () => query.refetch() }}
         />
       )}
