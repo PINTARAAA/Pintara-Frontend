@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { httpClient, isApiError } from "@/lib/api"
 import { registrations } from "@/lib/data/verifikasi"
 import type {
   Level,
@@ -14,14 +14,9 @@ import type {
  * Verifikasi Pendaftaran (pengelola) · Figma PINTARA → UI Screen →
  * Pengelola LBB → P2 · Verifikasi Pendaftaran
  *
- * TODO(backend):
- *   getRegistrations()       → httpClient.get("/pengelola/pendaftaran")
- *   getRegistration(id)      → httpClient.get(`/pengelola/pendaftaran/${id}`)
- *   verifyRegistration(id)   → httpClient.post(`/pengelola/pendaftaran/${id}/verifikasi`)
- *   rejectRegistration(id,…) → httpClient.post(`/pengelola/pendaftaran/${id}/tolak`, input)
- *
- * Selama backend belum ada (mode development) data disimpan di memori:
- * hasil verifikasi/penolakan langsung memindahkan pendaftaran ke tab lain.
+ * Daftar, detail, verifikasi, dan tolak sudah memakai BE (`/pengelola/pendaftaran`).
+ * Bagian "P3 · Pencocokan Tutor" di bawah masih mock untuk modul pencocokan,
+ * penawaran, dan jadwal-les sampai branch integrasinya masing-masing.
  */
 
 /*
@@ -40,6 +35,17 @@ export const needsTutor = (r: PengelolaRegistration) =>
 export const gradeLabel = (s: PengelolaRegistration["student"]) =>
   `Kelas ${s.grade} ${s.level}`
 
+/* ---------- Error ---------- */
+
+export const isNotFoundError = (error: unknown) =>
+  (isApiError(error) && error.code === "not_found") ||
+  error instanceof NotFoundError
+
+/* 409 already_processed: sudah diverifikasi/ditolak (mis. oleh pengelola lain) */
+export const isAlreadyProcessedError = (error: unknown) =>
+  (isApiError(error) && error.serverCode === "already_processed") ||
+  error instanceof AlreadyProcessedError
+
 /* ---------- Daftar ---------- */
 
 export async function getRegistrations(filter: {
@@ -47,31 +53,18 @@ export async function getRegistrations(filter: {
   query?: string
   level?: Level
 }): Promise<RegistrationList> {
-  assertMockAllowed()
-  await delay()
-
-  const q = filter.query?.trim().toLowerCase() ?? ""
-  const matches = (r: PengelolaRegistration) =>
-    (!q ||
-      r.student.name.toLowerCase().includes(q) ||
-      r.parent.name.toLowerCase().includes(q)) &&
-    (!filter.level || r.student.level === filter.level)
-
-  const counts = { menunggu_verifikasi: 0, terverifikasi: 0, ditolak: 0 }
-  registrations.forEach((r) => counts[r.status]++)
-
-  /* Menunggu: paling lama menunggu dulu; tab lain: keputusan terbaru dulu */
-  const decidedAt = (r: PengelolaRegistration) =>
-    (r.verifiedAt ?? r.rejection?.at ?? r.submittedAt).getTime()
-  const items = registrations
-    .filter((r) => r.status === filter.status && matches(r))
-    .sort((a, b) =>
-      filter.status === "menunggu_verifikasi"
-        ? a.submittedAt.getTime() - b.submittedAt.getTime()
-        : decidedAt(b) - decidedAt(a)
-    )
-
-  return { counts, items: structuredClone(items) }
+  const q = filter.query?.trim()
+  const { data } = await httpClient.get<RegistrationList>(
+    "/pengelola/pendaftaran",
+    {
+      params: {
+        status: filter.status,
+        ...(q && { q }),
+        ...(filter.level && { level: filter.level }),
+      },
+    }
+  )
+  return data
 }
 
 export const registrationsQuery = (filter: {
@@ -92,33 +85,13 @@ export const registrationsQuery = (filter: {
 
 /* ---------- Detail ---------- */
 
-export class NotFoundError extends Error {
-  constructor() {
-    super("Pendaftaran tidak ditemukan.")
-    this.name = "NotFoundError"
-  }
-}
-
-/* Pendaftaran sudah diverifikasi/ditolak (mis. oleh pengelola lain) */
-export class AlreadyProcessedError extends Error {
-  constructor() {
-    super("Pendaftaran sudah diproses.")
-    this.name = "AlreadyProcessedError"
-  }
-}
-
-function find(id: string) {
-  const registration = registrations.find((r) => r.id === id)
-  if (!registration) throw new NotFoundError()
-  return registration
-}
-
 export async function getRegistration(
   id: string
 ): Promise<PengelolaRegistration> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(find(id))
+  const { data } = await httpClient.get<PengelolaRegistration>(
+    `/pengelola/pendaftaran/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const registrationQuery = (id: string) =>
@@ -129,49 +102,52 @@ export const registrationQuery = (id: string) =>
 
 /* ---------- Aksi ---------- */
 
-function ensureOnline() {
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-}
-
-function findPending(id: string) {
-  ensureOnline()
-  const registration = find(id)
-  if (registration.status !== "menunggu_verifikasi")
-    throw new AlreadyProcessedError()
-  return registration
-}
-
-/* Verifikasi: data siswa dibuat dan wali menerima notifikasi */
+/* Verifikasi: BE membuat data siswa dan mengirim notifikasi ke wali */
 export async function verifyRegistration(
   id: string
 ): Promise<PengelolaRegistration> {
-  assertMockAllowed()
-  await delay(800)
-  const registration = findPending(id)
-  registration.status = "terverifikasi"
-  registration.verifiedAt = new Date()
-  return structuredClone(registration)
+  const { data } = await httpClient.post<PengelolaRegistration>(
+    `/pengelola/pendaftaran/${encodeURIComponent(id)}/verifikasi`
+  )
+  return data
 }
 
 export async function rejectRegistration(
   id: string,
   input: RejectInput
 ): Promise<PengelolaRegistration> {
-  assertMockAllowed()
-  await delay(800)
-  ensureOnline()
-  const registration = find(id)
-  if (!canReject(registration)) throw new AlreadyProcessedError()
-  registration.status = "ditolak"
-  registration.rejection = {
-    reason: input.reason,
-    message: input.message.trim(),
-    at: new Date(),
-  }
-  return structuredClone(registration)
+  const { data } = await httpClient.post<PengelolaRegistration>(
+    `/pengelola/pendaftaran/${encodeURIComponent(id)}/tolak`,
+    { reason: input.reason, message: input.message.trim() }
+  )
+  return data
 }
 
-/* ---------- P3 · Pencocokan Tutor ---------- */
+/* ---------- P3 · Pencocokan Tutor (mock, sementara) ---------- */
+
+export class NotFoundError extends Error {
+  constructor() {
+    super("Pendaftaran tidak ditemukan.")
+    this.name = "NotFoundError"
+  }
+}
+
+export class AlreadyProcessedError extends Error {
+  constructor() {
+    super("Pendaftaran sudah diproses.")
+    this.name = "AlreadyProcessedError"
+  }
+}
+
+function ensureOnline() {
+  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
+}
+
+function find(id: string) {
+  const registration = registrations.find((r) => r.id === id)
+  if (!registration) throw new NotFoundError()
+  return registration
+}
 
 /* Salinan pendaftaran untuk modul pencocokan (dibaca tanpa jeda) */
 export function snapshotRegistrations() {

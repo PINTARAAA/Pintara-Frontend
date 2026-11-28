@@ -135,10 +135,12 @@ export function toApiError(error: unknown): ApiError {
 
     const code = codeFromStatus(response.status)
     const body = parseErrorBody(response.data)
+    /* Pesan teknis BE (mis. "ThrottlerException: …") diganti pesan bawaan */
+    const useDefaultMessage = code === "server" || code === "rate_limited"
 
     return new ApiError(code, {
       status: response.status,
-      message: code === "server" ? undefined : body.message,
+      message: useDefaultMessage ? undefined : body.message,
       fieldErrors: body.fieldErrors,
       serverCode: body.serverCode,
       details: body.details,
