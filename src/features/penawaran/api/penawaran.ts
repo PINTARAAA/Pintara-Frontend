@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 
 import { httpClient, isApiError } from "@/lib/api"
-import { DECLINE_REASONS, offers } from "@/lib/data/penawaran"
+import { DECLINE_REASONS } from "@/lib/data/penawaran"
 import type {
   DeclineInput,
   DeclineReason,
@@ -14,9 +14,7 @@ import type {
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P4 · Penawaran Tutor
  *
- * Semua endpoint /pengelola/penawaran sudah memakai BE. `snapshotOffers`
- * (data mock `@/lib/data/penawaran`) masih dibaca modul jadwal-les sampai
- * branch integrasinya.
+ * Semua endpoint /pengelola/penawaran sudah memakai BE.
  *
  * Alur: P3 memilih tutor (registration.match) → pengelola mengirim penawaran
  * → tutor menjawab di luar aplikasi → pengelola mencatat jawabannya di sini.
@@ -142,8 +140,3 @@ export async function recordDeclined(
 
 export const declineLabel = (reason: DeclineReason) =>
   DECLINE_REASONS.find((r) => r.value === reason)?.label ?? "Lainnya"
-
-/* Salinan semua penawaran (dibaca P5 · Atur Jadwal Les tanpa jeda) */
-export function snapshotOffers() {
-  return structuredClone(offers)
-}

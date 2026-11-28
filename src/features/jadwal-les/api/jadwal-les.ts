@@ -5,8 +5,7 @@ import {
   decideChangeRequest,
   findRequestForReview,
 } from "@/features/jadwal/api"
-import { snapshotOffers } from "@/features/penawaran/api"
-import { NotFoundError, snapshotRegistrations } from "@/features/verifikasi/api"
+import { NotFoundError } from "@/features/verifikasi/api"
 import { addMinutesToTime, parseTime, WEEKDAYS } from "@/lib/data/jadwal"
 import { pairs } from "@/lib/data/jadwal-les"
 import { httpClient } from "@/lib/api"
@@ -26,10 +25,9 @@ import type {
  * Atur Jadwal Les (pengelola) · Figma PINTARA → UI Screen → Pengelola LBB
  * → P5 · Atur Jadwal Les
  *
- * Sudah memakai BE: getScheduleBoard.
+ * Sudah memakai BE: getScheduleBoard, getScheduleDraft.
  *
  * TODO(backend):
- *   getScheduleDraft(offerId)   → httpClient.get(`/pengelola/jadwal/draf/${offerId}`)
  *   getPair(pairId)             → httpClient.get(`/pengelola/jadwal/${pairId}`)
  *   saveSchedule(input)         → httpClient.put("/pengelola/jadwal", input)
  *   reviewChangeRequest(id, ok) → httpClient.post(`/pengelola/pengajuan-jadwal/${id}`, …)
@@ -90,41 +88,14 @@ export const scheduleBoardQuery = () =>
 
 /* ---------- Form atur jadwal ---------- */
 
-/* Jadwal baru dari penawaran yang diterima */
+/* Jadwal baru dari penawaran yang diterima; 404 bila penawaran belum diterima */
 export async function getScheduleDraft(
   offerId: string
 ): Promise<ScheduleDraft> {
-  assertMockAllowed()
-  await delay(300)
-  const offer = snapshotOffers().find((o) => o.id === offerId)
-  if (!offer || offer.status !== "diterima") throw new NotFoundError()
-  const existing = pairs.find((p) => p.offerId === offerId)
-  if (existing) return draftFromPair(existing)
-
-  const registration = snapshotRegistrations().find(
-    (r) => r.id === offer.registrationId
+  const { data } = await httpClient.get<ScheduleDraft>(
+    `/pengelola/jadwal/draf/${encodeURIComponent(offerId)}`
   )
-  const needs = registration?.needs
-  const perWeek = needs?.perWeek ?? offer.subjects.length
-  const days = needs?.days ?? ["Senin"]
-  const start = needs?.startTime ?? "16.00"
-  const sessions = Array.from({ length: perWeek }, (_, i) => ({
-    subject: offer.subjects[i % offer.subjects.length],
-    day: days[i] ?? days[0],
-    start,
-    end: addMinutesToTime(start, SESSION_MINUTES),
-  }))
-
-  return {
-    offerId,
-    student: offer.student,
-    parentName: registration?.parent.name ?? "wali",
-    tutor: offer.tutor,
-    subjects: offer.subjects,
-    requested: needs && `${offer.schedule} · ${perWeek}× per minggu`,
-    sessions,
-    effectiveFrom: nextDate(sessions[0].day),
-  }
+  return data
 }
 
 export const scheduleDraftQuery = (offerId: string) =>
