@@ -18,9 +18,9 @@ import type {
  * Sudah memakai BE:
  *   getAttendance()          → GET /wali/presensi
  *   getSession(id)           → GET /wali/presensi/:id
+ *   approveSession(id)       → POST /wali/presensi/:id/setujui
  *
  * TODO(backend):
- *   approveSession(id)       → httpClient.post(`/wali/presensi/${id}/setujui`)
  *   submitObjection(id, …)   → httpClient.post(`/wali/presensi/${id}/keberatan`, …)
  *   submitReview(id, …)      → httpClient.post(`/wali/presensi/${id}/ulasan`, …)
  *
@@ -148,14 +148,12 @@ function assertOnline() {
   if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
 }
 
-export async function approveSession(id: string) {
-  assertMockAllowed()
-  await delay(600)
-  assertOnline()
-  const session = find(id)
-  session.status = "sudah_divalidasi"
-  session.validatedAt = new Date()
-  return { ...session }
+/* 400 bila presensi belum diisi tutor */
+export async function approveSession(id: string): Promise<AttendanceSession> {
+  const { data } = await httpClient.post<AttendanceSession>(
+    `/wali/presensi/${encodeURIComponent(id)}/setujui`
+  )
+  return data
 }
 
 export async function submitObjection(id: string, reason: string) {

@@ -23,6 +23,7 @@ import type { AttendanceSession } from "@/types/absensi"
 import { NotesCard, ReviewCard } from "@/features/absensi/components"
 import { formatSessionTitle } from "@/features/absensi/lib"
 import { SummaryRow } from "@/features/pendaftaran/components"
+import { getErrorMessage } from "@/lib/api"
 import { formatTimeRange } from "@/lib/format"
 
 /*
@@ -56,9 +57,9 @@ function DetailSesi() {
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] })
       navigate(`/wali/absensi/${sessionId}/ulasan`, { replace: true })
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Kehadiran gagal disetujui", {
-        description: "Periksa koneksi lalu coba lagi.",
+        description: getErrorMessage(error),
       }),
   })
 
