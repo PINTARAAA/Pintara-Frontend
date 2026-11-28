@@ -21,12 +21,15 @@ import {
   changeReviewQuery,
   formatRange,
   reviewChangeRequest,
-  ScheduleConflictError,
+  scheduleConflictOf,
   suggestFreeSlot,
 } from "@/features/jadwal-les/api"
 import type { ChangeReview } from "@/types/jadwal-les"
 import { SummaryRow } from "@/features/pendaftaran/components"
-import { isNotFoundError } from "@/features/verifikasi/api"
+import {
+  isAlreadyProcessedError,
+  isNotFoundError,
+} from "@/features/verifikasi/api"
 import { getErrorMessage } from "@/lib/api"
 import { firstName } from "@/lib/format"
 
@@ -125,7 +128,7 @@ function ReviewForm({ review }: { review: ChangeReview }) {
       navigate(LES_JADWAL, { replace: true })
     },
     onError: (error) => {
-      if (error instanceof ScheduleConflictError) {
+      if (scheduleConflictOf(error)) {
         toast.error("Jadwal baru bentrok", {
           description:
             "Ada jadwal lain yang baru tersimpan. Status terbaru ditampilkan.",
@@ -133,8 +136,16 @@ function ReviewForm({ review }: { review: ChangeReview }) {
         void queryClient.invalidateQueries({ queryKey: ["jadwal-les"] })
         return
       }
+      if (isAlreadyProcessedError(error)) {
+        toast.error("Pengajuan sudah diputuskan", {
+          description: "Status terbaru ditampilkan.",
+        })
+        void queryClient.invalidateQueries({ queryKey: ["jadwal-les"] })
+        navigate(LES_JADWAL, { replace: true })
+        return
+      }
       toast.error("Keputusan gagal disimpan", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       })
     },
   })

@@ -207,39 +207,3 @@ export function listRequestsForReview() {
     .map(withNames)
 }
 
-export function findRequestForReview(id: string) {
-  const request = changeRequests.find((r) => r.id === id)
-  if (!request) throw new NotFoundError("Pengajuan")
-  return withNames(request)
-}
-
-/*
- * Keputusan Pengelola. Disetujui + "seterusnya": jadwal rutin ikut pindah.
- * Wali menerima notifikasi (W9) dan statusnya tampil di W4.
- */
-export function decideChangeRequest(id: string, approved: boolean) {
-  const request = changeRequests.find((r) => r.id === id)
-  if (!request) throw new NotFoundError("Pengajuan")
-  if (request.status !== "ditinjau_pengelola") {
-    throw new Error("Pengajuan sudah diputuskan.")
-  }
-  request.status = approved ? "disetujui" : "ditolak"
-
-  const routine = routines.find((r) => r.id === request.routineId)
-  if (approved && request.scope === "seterusnya" && routine) {
-    routine.weekday = request.to.weekday
-    routine.startTime = request.to.startTime
-  }
-  const to = `${WEEKDAYS[request.to.weekday]}, ${request.to.startTime}`
-  addNotification({
-    kind: "jadwal",
-    title: approved
-      ? "Perubahan jadwal disetujui"
-      : "Pengajuan perubahan jadwal ditolak",
-    body: approved
-      ? `${request.subject} pindah ke ${to}`
-      : `${request.subject} tetap ${WEEKDAYS[request.from.weekday]}, ${request.from.startTime}`,
-    to: `/wali/jadwal/pengajuan/${request.id}`,
-  })
-  return withNames(request)
-}

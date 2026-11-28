@@ -1,14 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
 import { addDays, getDay, startOfDay } from "date-fns"
 
-import {
-  decideChangeRequest,
-  findRequestForReview,
-} from "@/features/jadwal/api"
-import { addMinutesToTime, parseTime, WEEKDAYS } from "@/lib/data/jadwal"
-import { pairs } from "@/lib/data/jadwal-les"
+import { parseTime, WEEKDAYS } from "@/lib/data/jadwal"
 import { httpClient, isApiError } from "@/lib/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type { ChangeRequestForReview } from "@/types/jadwal"
 import type {
   ChangeReview,
@@ -24,12 +18,8 @@ import type {
  * Atur Jadwal Les (pengelola) · Figma PINTARA → UI Screen → Pengelola LBB
  * → P5 · Atur Jadwal Les
  *
- * Sudah memakai BE: getScheduleBoard, getScheduleDraft, getPairDraft,
- * saveSchedule, getChangeReview.
- *
- * TODO(backend):
- *   reviewChangeRequest(id, ok) → httpClient.post(`/pengelola/pengajuan-jadwal/${id}`, …)
- *   Petakan respons bentrok ke ScheduleConflictError.
+ * Semua endpoint /pengelola/jadwal dan /pengelola/pengajuan-jadwal sudah
+ * memakai BE. Pemeriksaan bentrok dilakukan BE (409 schedule_conflict).
  *
  * "Perlu dijadwalkan" = penawaran yang sudah diterima tutor (P4) tetapi
  * belum punya jadwal. "Pengajuan perubahan" berasal dari wali (W4).
@@ -45,11 +35,6 @@ const minutes = (time: string) => {
   const { hours, minutes: m } = parseTime(time)
   return hours * 60 + m
 }
-
-const overlaps = (a: ScheduleSession, b: ScheduleSession) =>
-  a.day === b.day &&
-  minutes(a.start) < minutes(b.end) + BUFFER_MINUTES &&
-  minutes(b.start) < minutes(a.end) + BUFFER_MINUTES
 
 /* "16.00–17.30" */
 export const formatRange = (s: Pick<ScheduleSession, "start" | "end">) =>
@@ -118,56 +103,14 @@ export const pairDraftQuery = (pairId: string) =>
 
 /* ---------- Cek bentrok & simpan ---------- */
 
-export class ScheduleConflictError extends Error {
-  conflict: Conflict
-  constructor(conflict: Conflict) {
-    super("Jadwal bentrok.")
-    this.name = "ScheduleConflictError"
-    this.conflict = conflict
-  }
-}
-
-/* Detail bentrok dari 409 schedule_conflict (BE) atau dari mock */
+/* Detail bentrok dari 409 schedule_conflict (dihitung BE, jeda BUFFER_MINUTES) */
 export function scheduleConflictOf(error: unknown): Conflict | null {
-  if (error instanceof ScheduleConflictError) return error.conflict
   if (!isApiError(error) || error.serverCode !== "schedule_conflict") {
     return null
   }
   const conflict = (error.details as { conflict?: Conflict } | undefined)
     ?.conflict
   return conflict ?? null
-}
-
-export function findConflict(
-  draft: Pick<ScheduleDraft, "pairId" | "student" | "tutor">,
-  sessions: ScheduleSession[]
-): Conflict | null {
-  const others = pairs.filter((p) => p.id !== draft.pairId)
-  for (const [index, session] of sessions.entries()) {
-    const own = sessions.findIndex((s, i) => i < index && overlaps(s, session))
-    if (own >= 0) {
-      return { index, with: "sesi", other: sessions[own] }
-    }
-    for (const pair of others) {
-      const hit = pair.sessions.find((s) => overlaps(s, session))
-      if (!hit) continue
-      if (pair.tutor.id === draft.tutor.id) {
-        return {
-          index,
-          with: "tutor",
-          other: { ...hit, studentName: pair.student.name },
-        }
-      }
-      if (pair.student.name === draft.student.name) {
-        return {
-          index,
-          with: "siswa",
-          other: { ...hit, tutorName: pair.tutor.name },
-        }
-      }
-    }
-  }
-  return null
 }
 
 /* Saran slot kosong di sekitar sesi yang bentrok: "selesai paling lambat 18.15 atau mulai 20.15" */
@@ -192,54 +135,6 @@ export async function saveSchedule(input: SaveScheduleInput): Promise<Pair> {
 
 /* ---------- Tinjau pengajuan perubahan (W4 → P5) ---------- */
 
-function buildReview(request: ChangeRequestForReview): ChangeReview {
-  const pair = pairs.find(
-    (p) =>
-      p.student.name === request.studentName &&
-      p.tutor.name === request.tutor.name
-  )
-  const fromSession: ScheduleSession = {
-    subject: request.subject,
-    day: WEEKDAYS[request.from.weekday],
-    start: request.from.startTime,
-    end: addMinutesToTime(request.from.startTime, request.durationMinutes),
-  }
-  const toSession: ScheduleSession = {
-    subject: request.subject,
-    day: WEEKDAYS[request.to.weekday],
-    start: request.to.startTime,
-    end: addMinutesToTime(request.to.startTime, request.durationMinutes),
-  }
-  /* Cek bentrok dengan jadwal lain, tanpa sesi yang sedang dipindah */
-  const remaining =
-    pair?.sessions.filter(
-      (s) => !(s.day === fromSession.day && s.start === fromSession.start)
-    ) ?? []
-  const conflict = findConflict(
-    {
-      pairId: pair?.id,
-      student: pair?.student ?? {
-        name: request.studentName,
-        grade: "",
-        level: "",
-      },
-      tutor: pair?.tutor ?? {
-        id: "",
-        name: request.tutor.name,
-        shortName: request.tutor.shortName,
-      },
-    },
-    [...remaining, toSession]
-  )
-  return structuredClone({
-    request,
-    pair,
-    fromSession,
-    toSession,
-    conflict: conflict && { ...conflict, index: 0 },
-  })
-}
-
 /* Pengajuan + sesi asal/tujuan + bentrok (dihitung BE); 404 bila tidak ada */
 export async function getChangeReview(
   requestId: string
@@ -256,27 +151,17 @@ export const changeReviewQuery = (requestId: string) =>
     queryFn: () => getChangeReview(requestId),
   })
 
+/*
+ * Setujui/tolak pengajuan. 409 schedule_conflict bila jadwal baru bentrok,
+ * 409 already_processed bila sudah diputuskan.
+ */
 export async function reviewChangeRequest(
   requestId: string,
   approved: boolean
-) {
-  assertMockAllowed()
-  await delay(700)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const review = buildReview(findRequestForReview(requestId))
-  if (approved && review.conflict) {
-    throw new ScheduleConflictError(review.conflict)
-  }
-  const request = decideChangeRequest(requestId, approved)
-
-  /* Perubahan seterusnya: jadwal pasangan ikut pindah */
-  if (approved && request.scope === "seterusnya") {
-    const pair = pairs.find((p) => p.id === review.pair?.id)
-    const session = pair?.sessions.find(
-      (s) =>
-        s.day === review.fromSession.day && s.start === review.fromSession.start
-    )
-    if (session) Object.assign(session, review.toSession)
-  }
-  return request
+): Promise<ChangeRequestForReview> {
+  const { data } = await httpClient.post<ChangeRequestForReview>(
+    `/pengelola/pengajuan-jadwal/${encodeURIComponent(requestId)}`,
+    { approved }
+  )
+  return data
 }
