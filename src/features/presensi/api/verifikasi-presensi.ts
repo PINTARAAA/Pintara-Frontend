@@ -1,5 +1,11 @@
 import { queryOptions } from "@tanstack/react-query"
-import { isAfter, isSameMonth, startOfMonth, subMonths } from "date-fns"
+import {
+  format,
+  isAfter,
+  isSameMonth,
+  startOfMonth,
+  subMonths,
+} from "date-fns"
 
 import { addNotification } from "@/features/notifikasi/api"
 import {
@@ -9,6 +15,7 @@ import {
   resolveObjection,
   snapshotTutorSessions,
 } from "@/features/presensi/api/presensi"
+import { httpClient } from "@/lib/api"
 import { otherTutors } from "@/lib/data/presensi"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
@@ -23,8 +30,10 @@ import type {
  * Verifikasi Final Presensi (pengelola) · Figma PINTARA → UI Screen →
  * Pengelola LBB → P6 · Verifikasi Final Presensi
  *
+ * Sudah memakai BE:
+ *   getFinalOverview(bulan)       → GET /pengelola/presensi
+ *
  * TODO(backend):
- *   getFinalOverview(bulan)       → httpClient.get("/pengelola/presensi", { params: { bulan } })
  *   finalizeAttendance(bulan)     → httpClient.post("/pengelola/presensi/final", { bulan })
  *   getObjection(sessionId)       → httpClient.get(`/pengelola/presensi/${id}/keberatan`)
  *   reviewObjection(sessionId, …) → httpClient.post(`/pengelola/presensi/${id}/keberatan`, …)
@@ -35,10 +44,22 @@ import type {
  */
 export const BUDI = { name: "Kak Budi Santoso", shortName: "Kak Budi" }
 
+/* "Kak Budi" dari "Kak Budi Santoso"; null bila BE tidak mengirim tutor */
+export const tutorShortName = (s: TutorSession) =>
+  s.tutor ? s.tutor.name.split(" ").slice(0, 2).join(" ") : null
+
+/* "bulan" = "2026-11" */
+const monthBody = (month?: Date) =>
+  month ? { bulan: format(month, "yyyy-MM") } : {}
+
 const total = (c: Counts) => c.final + c.ready + c.waiting + c.notCollected
 
 /* ---------- Ringkasan per bulan ---------- */
 
+/*
+ * Mock ringkasan, hanya dipakai finalProgress() untuk rekap honor (P7)
+ * sampai branch keuangan.
+ */
 function buildOverview(month: Date): FinalOverview {
   const now = new Date()
   const current = startOfMonth(now)
@@ -94,10 +115,15 @@ function buildOverview(month: Date): FinalOverview {
   }
 }
 
+/*
+ * Presensi sesi yang sudah dimulai pada bulan tsb (default bulan berjalan):
+ * final, siap difinalkan, menunggu wali, keberatan, belum dikumpulkan.
+ */
 export async function getFinalOverview(month?: Date): Promise<FinalOverview> {
-  assertMockAllowed()
-  await delay()
-  return buildOverview(month ?? new Date())
+  const { data } = await httpClient.get<FinalOverview>("/pengelola/presensi", {
+    params: monthBody(month),
+  })
+  return data
 }
 
 export const finalOverviewQuery = (month?: Date) =>
