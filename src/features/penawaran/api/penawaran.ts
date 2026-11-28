@@ -16,10 +16,10 @@ import type {
  * Penawaran Tutor · Figma PINTARA → UI Screen → Pengelola LBB →
  * P4 · Penawaran Tutor
  *
- * Sudah memakai BE: getOffers, getOfferDraft, sendOffer, getOffer.
+ * Sudah memakai BE: getOffers, getOfferDraft, sendOffer, getOffer,
+ * recordAccepted.
  *
  * TODO(backend):
- *   recordAccepted(id)          → httpClient.post(`/pengelola/penawaran/${id}/diterima`)
  *   recordDeclined(id, input)   → httpClient.post(`/pengelola/penawaran/${id}/ditolak`, input)
  *   Petakan "slot tutor sudah terisi" ke OfferError("tutor_unavailable").
  *
@@ -156,13 +156,12 @@ function findWaiting(id: string) {
   return offer
 }
 
+/* 409 already_answered bila jawaban tutor sudah dicatat */
 export async function recordAccepted(id: string): Promise<Offer> {
-  assertMockAllowed()
-  await delay(600)
-  const offer = findWaiting(id)
-  offer.status = "diterima"
-  offer.answeredAt = new Date()
-  return structuredClone(offer)
+  const { data } = await httpClient.post<Offer>(
+    `/pengelola/penawaran/${encodeURIComponent(id)}/diterima`
+  )
+  return data
 }
 
 export async function recordDeclined(

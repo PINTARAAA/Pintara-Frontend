@@ -21,7 +21,7 @@ import {
 } from "@/components"
 import {
   declineLabel,
-  OfferError,
+  offerErrorCode,
   offerQuery,
   recordAccepted,
 } from "@/features/penawaran/api"
@@ -72,7 +72,7 @@ function DetailPenawaran() {
       setAccepted(updated)
     },
     onError: (error) => {
-      if (error instanceof OfferError && error.code === "already_answered") {
+      if (offerErrorCode(error) === "already_answered") {
         toast.error("Jawaban tutor sudah dicatat", {
           description: "Status terbaru ditampilkan.",
         })
@@ -80,7 +80,7 @@ function DetailPenawaran() {
         return
       }
       toast.error("Jawaban gagal dicatat", {
-        description: "Periksa koneksi Anda, lalu coba lagi.",
+        description: getErrorMessage(error),
       })
     },
   })
