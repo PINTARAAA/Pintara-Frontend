@@ -1,7 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
 import { addMonths, format, startOfMonth, subMonths } from "date-fns"
 
-import { getHonorRecap, monthKey } from "@/features/keuangan/api/honor"
+import { monthKey } from "@/features/keuangan/api/honor"
+import { httpClient } from "@/lib/api"
 import { bills } from "@/lib/data/keuangan"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type { BillStatus } from "@/types/tagihan"
@@ -20,8 +21,10 @@ import type {
  * Laporan Keuangan · Figma PINTARA → UI Screen → Pengelola LBB →
  * P8 · Laporan Keuangan
  *
+ * Sudah memakai BE:
+ *   getFinanceSummary(bulan)          → GET /pengelola/laporan-keuangan
+ *
  * TODO(backend):
- *   getFinanceSummary(bulan)          → httpClient.get("/pengelola/laporan-keuangan", { params: { bulan } })
  *   getStudentBills(bulan)            → httpClient.get("/pengelola/tagihan", { params: { bulan } })
  *   getStudentBill(id)                → httpClient.get(`/pengelola/tagihan/${id}`)
  *   recordManualPayment(id, form)     → httpClient.post(`/pengelola/tagihan/${id}/pembayaran`, form)
@@ -29,8 +32,6 @@ import type {
  *                                       (mengembalikan URL file)
  *
  * Bagian lembaga = total tagihan siswa − total honor tutor pada periode itu.
- * Honor diambil dari rekap P7 bila sudah dihitung; bila belum, dipakai
- * estimasi dari presensi berjalan (data contoh).
  * Tambahkan ?unduh=gagal pada layar laporan untuk menguji "Gagal dibuat".
  */
 
@@ -71,67 +72,17 @@ const billsOf = (month: Date) =>
 
 /* ---------- Ringkasan (layar Laporan Keuangan) ---------- */
 
-/* Estimasi honor bila rekap P7 bulan itu belum dihitung (data contoh) */
-const HONOR_ESTIMATE = {
-  total: 10_680_000,
-  sessions: 178,
-  tutors: 12,
-  paid: { amount: 3_420_000, tutors: 4 },
-}
-
+/*
+ * Ringkasan bulan tsb: tagihan & pembayaran siswa, honor tutor (dari rekap
+ * P7 bila sudah dihitung; bila belum, estimasi BE dari presensi final),
+ * bagian lembaga. state "kosong" bila belum ada tagihan.
+ */
 export async function getFinanceSummary(month?: Date): Promise<FinanceSummary> {
-  assertMockAllowed()
-  await delay()
-  const months = availableMonths()
-  const active = startOfMonth(month ?? new Date())
-  const list = billsOf(active)
-  if (list.length === 0) return { state: "kosong", months, month: active }
-
-  const statuses = list.map(billStatus)
-  const allPayments = list.flatMap((b) => b.payments)
-  const successful = allPayments.filter((p) => p.status === "berhasil")
-  const billsTotal = list.reduce((sum, b) => sum + billTotal(b), 0)
-
-  const recap = await getHonorRecap(active)
-  const honor =
-    recap.state === "dihitung"
-      ? {
-          total: recap.total,
-          sessions: recap.sessions,
-          tutors: recap.paidHonors.length + recap.unpaidHonors.length,
-          calculated: true,
-        }
-      : { ...HONOR_ESTIMATE, calculated: false }
-  const honorPaid =
-    recap.state === "dihitung"
-      ? recap.paid
-      : HONOR_ESTIMATE.paid
-
-  return {
-    state: "ada",
-    months,
-    month: active,
-    bills: {
-      total: billsTotal,
-      count: list.length,
-      lunas: statuses.filter((s) => s === "lunas").length,
-      sebagian: statuses.filter((s) => s === "sebagian").length,
-      belum: statuses.filter((s) => s === "belum_bayar").length,
-    },
-    payments: {
-      received: successful.reduce((sum, p) => sum + p.amount, 0),
-      transactions: successful.length,
-      failed: allPayments.filter((p) => p.status !== "berhasil").length,
-    },
-    honor: {
-      total: honor.total,
-      sessions: honor.sessions,
-      tutors: honor.tutors,
-      calculated: honor.calculated,
-    },
-    honorPaid,
-    institutionShare: billsTotal - honor.total,
-  }
+  const { data } = await httpClient.get<FinanceSummary>(
+    "/pengelola/laporan-keuangan",
+    { params: month ? { bulan: monthKey(month) } : undefined }
+  )
+  return data
 }
 
 export const financeSummaryQuery = (month?: Date) =>
