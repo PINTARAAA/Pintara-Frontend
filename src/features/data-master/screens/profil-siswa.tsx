@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from "react-router"
 import { DetailScreen, Button, DataState } from "@/components"
 import {
   initialsOf,
-  NotFoundError,
+  isNotFoundError,
   setStudentStatus,
   studentQuery,
 } from "@/features/data-master/api"
@@ -78,7 +78,7 @@ function ProfilSiswa() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat profil siswa…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Siswa tidak ditemukan"

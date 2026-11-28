@@ -2,13 +2,10 @@ import { queryOptions } from "@tanstack/react-query"
 
 import {
   DAYS,
-  DISTRICTS,
   LEVEL_GRADES,
   LEVELS,
-  students,
-  tutors,
 } from "@/lib/data/data-master"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
+import { httpClient, isApiError } from "@/lib/api"
 import type {
   AccountStatus,
   Level,
@@ -24,16 +21,14 @@ import type {
  * Data Tutor & Siswa · Figma PINTARA → UI Screen → Pengelola LBB →
  * P9 · Data Tutor & Siswa
  *
- * TODO(backend):
- *   getTutors(filter)            → httpClient.get("/pengelola/tutor", { params: filter })
- *   getTutor(id)                 → httpClient.get(`/pengelola/tutor/${id}`)
- *   saveTutor(input, id?)        → httpClient.post("/pengelola/tutor", input)
- *                                  / httpClient.put(`/pengelola/tutor/${id}`, input)
- *   setTutorStatus(id, status)   → httpClient.patch(`/pengelola/tutor/${id}/status`, { status })
- *                                  (409 bila masih ada jadwal les aktif)
- *   getStudents(filter)          → httpClient.get("/pengelola/siswa", { params: filter })
- *   getStudent(id)               → httpClient.get(`/pengelola/siswa/${id}`)
- *   setStudentStatus(id, status) → httpClient.patch(`/pengelola/siswa/${id}/status`, { status })
+ * Sudah memakai BE:
+ *   getTutors(filter)            → GET /pengelola/tutor
+ *   saveTutor(input, id?)        → POST /pengelola/tutor · PUT /pengelola/tutor/:id
+ *   getTutor(id)                 → GET /pengelola/tutor/:id
+ *   setTutorStatus(id, status)   → PATCH /pengelola/tutor/:id/status
+ *   getStudents(filter)          → GET /pengelola/siswa
+ *   getStudent(id)               → GET /pengelola/siswa/:id
+ *   setStudentStatus(id, status) → PATCH /pengelola/siswa/:id/status
  *
  * Tutor/siswa tidak dihapus, hanya dinonaktifkan agar riwayat les, presensi,
  * dan keuangan tetap utuh. Penonaktifan ditolak selama masih ada jadwal aktif.
@@ -74,34 +69,23 @@ export const initialsOf = (name: string) =>
 
 /* ---------- Tutor ---------- */
 
-const matches = (text: string, query?: string) =>
-  !query?.trim() || text.toLowerCase().includes(query.trim().toLowerCase())
+/* Parameter filter BE: query, subject, district, status (kosong = semua) */
+const filterParams = (filter: MasterFilter) => {
+  const query = filter.query?.trim()
+  return {
+    ...(query && { query }),
+    ...(filter.subject && { subject: filter.subject }),
+    ...(filter.district && { district: filter.district }),
+    ...(filter.status && { status: filter.status }),
+  }
+}
 
-/* Aktif dulu; urutan dalam status mengikuti data (terbaru ditambahkan di akhir) */
-const byStatus = <T extends { status: AccountStatus }>(a: T, b: T) =>
-  a.status === b.status ? 0 : a.status === "aktif" ? -1 : 1
-
+/* Tutor aktif dulu (urutan dari BE) */
 export async function getTutors(filter: MasterFilter = {}): Promise<TutorRow[]> {
-  assertMockAllowed()
-  await delay()
-  return tutors
-    .filter(
-      (t) =>
-        matches(t.name, filter.query) &&
-        (!filter.subject || t.subjects.includes(filter.subject)) &&
-        (!filter.district || t.district === filter.district) &&
-        (!filter.status || t.status === filter.status)
-    )
-    .sort(byStatus)
-    .map(({ id, name, subjects, levels, district, rate, status }) => ({
-      id,
-      name,
-      subjects,
-      levels,
-      district,
-      rate,
-      status,
-    }))
+  const { data } = await httpClient.get<TutorRow[]>("/pengelola/tutor", {
+    params: filterParams(filter),
+  })
+  return data
 }
 
 export const tutorsQuery = (filter: MasterFilter) =>
@@ -110,23 +94,16 @@ export const tutorsQuery = (filter: MasterFilter) =>
     queryFn: () => getTutors(filter),
   })
 
-export class NotFoundError extends Error {
-  constructor(what = "Data") {
-    super(`${what} tidak ditemukan.`)
-    this.name = "NotFoundError"
-  }
-}
+/* 404 dari BE (tutor/siswa tidak ada) */
+export const isNotFoundError = (error: unknown) =>
+  isApiError(error) && error.code === "not_found"
 
-function findTutor(id: string) {
-  const tutor = tutors.find((t) => t.id === id)
-  if (!tutor) throw new NotFoundError("Tutor")
-  return tutor
-}
-
+/* Profil lengkap + jumlah siswa & jadwal aktif */
 export async function getTutor(id: string): Promise<Tutor> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(findTutor(id))
+  const { data } = await httpClient.get<Tutor>(
+    `/pengelola/tutor/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const tutorQuery = (id: string) =>
@@ -135,96 +112,67 @@ export const tutorQuery = (id: string) =>
     queryFn: () => getTutor(id),
   })
 
-export class DuplicateEmailError extends Error {
-  constructor() {
-    super("Email sudah dipakai akun lain.")
-    this.name = "DuplicateEmailError"
-  }
-}
+/* 409 duplicate_field (email) dari BE */
+export const isDuplicateEmailError = (error: unknown) =>
+  isApiError(error) &&
+  error.serverCode === "duplicate_field" &&
+  (error.details as { field?: unknown } | undefined)?.field === "email"
 
-const districtOf = (address: string) =>
-  DISTRICTS.find((d) => address.toLowerCase().includes(d.toLowerCase())) ??
-  "Bangkalan"
+/* Body TutorInputDto; BE menambah "Kak " dan menurunkan kecamatan dari alamat */
+const tutorBody = (input: TutorInput) => ({
+  ...input,
+  name: input.name.trim(),
+  email: input.email.trim().toLowerCase(),
+  phone: input.phone.trim(),
+  address: input.address.trim(),
+})
 
+/*
+ * Tambah (POST) atau ubah (PUT). Tambah: BE membuat akun login tutor
+ * (password sementara) sekaligus profil. 409 duplicate_field bila email
+ * sudah dipakai akun lain.
+ */
 export async function saveTutor(input: TutorInput, id?: string): Promise<Tutor> {
-  assertMockAllowed()
-  await delay(800)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const email = input.email.trim().toLowerCase()
-  if (tutors.some((t) => t.id !== id && t.email.toLowerCase() === email)) {
-    throw new DuplicateEmailError()
-  }
-  const name = /^Kak\s/.test(input.name) ? input.name : `Kak ${input.name}`
-  const fields = { ...input, name, email, district: districtOf(input.address) }
-
-  if (id) {
-    const tutor = findTutor(id)
-    Object.assign(tutor, fields)
-    return structuredClone(tutor)
-  }
-  const tutor: Tutor = {
-    ...fields,
-    id: `tt-${Date.now()}`,
-    pickup: "Transfer bank",
-    joinedAt: new Date(),
-    activeStudents: 0,
-    activeSchedules: 0,
-    status: "aktif",
-  }
-  tutors.push(tutor)
-  return structuredClone(tutor)
+  const body = tutorBody(input)
+  const { data } = id
+    ? await httpClient.put<Tutor>(`/pengelola/tutor/${encodeURIComponent(id)}`, body)
+    : await httpClient.post<Tutor>("/pengelola/tutor", body)
+  return data
 }
 
-export class ActiveScheduleError extends Error {
-  readonly schedules: number
-  constructor(schedules: number) {
-    super(`Masih ada ${schedules} jadwal les aktif.`)
-    this.schedules = schedules
-    this.name = "ActiveScheduleError"
-  }
+/*
+ * Jumlah jadwal aktif dari 409 active_schedule (BE: details.schedules);
+ * null untuk error lain.
+ */
+export function activeSchedulesOf(error: unknown): number | null {
+  if (!isApiError(error) || error.serverCode !== "active_schedule") return null
+  const schedules = (error.details as { schedules?: unknown } | undefined)
+    ?.schedules
+  return typeof schedules === "number" ? schedules : 0
 }
 
+/* Menonaktifkan tutor juga menonaktifkan akun loginnya (BE) */
 export async function setTutorStatus(
   id: string,
   status: AccountStatus
 ): Promise<Tutor> {
-  assertMockAllowed()
-  await delay(600)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const tutor = findTutor(id)
-  if (status === "nonaktif" && tutor.activeSchedules > 0) {
-    throw new ActiveScheduleError(tutor.activeSchedules)
-  }
-  tutor.status = status
-  return structuredClone(tutor)
+  const { data } = await httpClient.patch<Tutor>(
+    `/pengelola/tutor/${encodeURIComponent(id)}/status`,
+    { status }
+  )
+  return data
 }
 
 /* ---------- Siswa ---------- */
 
+/* Pencarian `query` mencakup nama siswa dan nama wali; aktif dulu (BE) */
 export async function getStudents(
   filter: MasterFilter = {}
 ): Promise<StudentRow[]> {
-  assertMockAllowed()
-  await delay()
-  return students
-    .filter(
-      (s) =>
-        (matches(s.name, filter.query) ||
-          matches(s.guardian.name, filter.query)) &&
-        (!filter.subject || s.subjects.includes(filter.subject)) &&
-        (!filter.district || s.district === filter.district) &&
-        (!filter.status || s.status === filter.status)
-    )
-    .sort(byStatus)
-    .map((s) => ({
-      id: s.id,
-      name: s.name,
-      grade: s.grade,
-      subjects: s.subjects,
-      status: s.status,
-      endedAt: s.endedAt,
-      tutorNames: [...new Set(s.lessons.map((l) => l.tutorName))],
-    }))
+  const { data } = await httpClient.get<StudentRow[]>("/pengelola/siswa", {
+    params: filterParams(filter),
+  })
+  return data
 }
 
 export const studentsQuery = (filter: MasterFilter) =>
@@ -233,16 +181,12 @@ export const studentsQuery = (filter: MasterFilter) =>
     queryFn: () => getStudents(filter),
   })
 
-function findStudent(id: string) {
-  const student = students.find((s) => s.id === id)
-  if (!student) throw new NotFoundError("Siswa")
-  return student
-}
-
+/* Profil siswa + wali + jadwal les (semua pasangan tutor) */
 export async function getStudent(id: string): Promise<Student> {
-  assertMockAllowed()
-  await delay(300)
-  return structuredClone(findStudent(id))
+  const { data } = await httpClient.get<Student>(
+    `/pengelola/siswa/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const studentQuery = (id: string) =>
@@ -251,18 +195,14 @@ export const studentQuery = (id: string) =>
     queryFn: () => getStudent(id),
   })
 
+/* 409 active_schedule bila siswa masih punya jadwal les aktif */
 export async function setStudentStatus(
   id: string,
   status: AccountStatus
 ): Promise<Student> {
-  assertMockAllowed()
-  await delay(600)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-  const student = findStudent(id)
-  if (status === "nonaktif" && student.lessons.length > 0) {
-    throw new ActiveScheduleError(student.lessons.length)
-  }
-  student.status = status
-  student.endedAt = status === "nonaktif" ? new Date() : undefined
-  return structuredClone(student)
+  const { data } = await httpClient.patch<Student>(
+    `/pengelola/siswa/${encodeURIComponent(id)}/status`,
+    { status }
+  )
+  return data
 }

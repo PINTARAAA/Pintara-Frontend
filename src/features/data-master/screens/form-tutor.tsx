@@ -24,8 +24,8 @@ import {
   PhoneInput,
 } from "@/components"
 import {
-  DuplicateEmailError,
-  NotFoundError,
+  isDuplicateEmailError,
+  isNotFoundError,
   saveTutor,
   tutorQuery,
 } from "@/features/data-master/api"
@@ -37,6 +37,7 @@ import {
   type TutorFormInput,
 } from "@/features/data-master/schemas"
 import { FormGroup } from "@/features/pendaftaran/components"
+import { getErrorMessage } from "@/lib/api"
 import { formatPhone, formatRupiah } from "@/lib/format"
 
 /*
@@ -79,7 +80,7 @@ function FormTutor() {
     >
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat profil tutor…" />
-      ) : query.error instanceof NotFoundError ? (
+      ) : isNotFoundError(query.error) ? (
         <DataState
           state="empty"
           title="Tutor tidak ditemukan"
@@ -128,7 +129,7 @@ function TutorForm({ tutor }: { tutor?: Tutor }) {
       else navigate(`/pengelola/tutor/${saved.id}`, { replace: true })
     },
     onError: (error) => {
-      if (error instanceof DuplicateEmailError) {
+      if (isDuplicateEmailError(error)) {
         setError(
           "email",
           { message: "Email sudah dipakai akun lain. Gunakan email berbeda." },
@@ -136,8 +137,8 @@ function TutorForm({ tutor }: { tutor?: Tutor }) {
         )
       } else {
         toast.error("Tutor gagal disimpan", {
-          description:
-            "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+          /* Pesan BE tidak selalu diakhiri titik */
+          description: `${getErrorMessage(error).replace(/\.?$/, ".")} Isian Anda tetap tersimpan.`,
         })
       }
     },
