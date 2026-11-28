@@ -1,7 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
-import { isAfter, isSameMonth, isToday } from "date-fns"
+import { isAfter, isSameMonth } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
+import { httpClient } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type {
   AttendanceErrorCode,
@@ -17,8 +18,9 @@ import type {
 /*
  * Presensi & Dokumentasi (tutor) · Figma PINTARA → UI Screen → Tutor → T2
  *
+ * Sudah memakai BE: getTutorSessions.
+ *
  * TODO(backend):
- *   getTutorSessions()        → httpClient.get("/tutor/presensi")
  *   getTutorSession(id)       → httpClient.get(`/tutor/presensi/${id}`)
  *   uploadDocumentation(file) → httpClient.post("/tutor/dokumentasi", form,
  *                               { onUploadProgress })
@@ -30,25 +32,10 @@ import type {
 
 /* ---------- Daftar ---------- */
 
+/* Perlu diisi · nanti hari ini · sudah diisi (urutan dari BE) */
 export async function getTutorSessions(): Promise<TutorSessionList> {
-  assertMockAllowed()
-  await delay()
-
-  const now = new Date()
-  const byStart = (a: TutorSession, b: TutorSession) =>
-    a.start.getTime() - b.start.getTime()
-
-  return {
-    toFill: sessions
-      .filter((s) => !s.record && !isAfter(s.start, now))
-      .sort(byStart),
-    laterToday: sessions
-      .filter((s) => !s.record && isAfter(s.start, now) && isToday(s.start))
-      .sort(byStart),
-    filled: sessions
-      .filter((s) => s.record)
-      .sort((a, b) => b.start.getTime() - a.start.getTime()),
-  }
+  const { data } = await httpClient.get<TutorSessionList>("/tutor/presensi")
+  return data
 }
 
 export const tutorSessionsQuery = () =>
