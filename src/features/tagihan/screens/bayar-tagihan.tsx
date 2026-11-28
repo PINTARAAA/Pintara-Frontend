@@ -28,11 +28,13 @@ import { SummaryRow } from "@/features/pendaftaran/components"
 import {
   billQuery,
   createPayment,
-  NotFoundError,
+  isNotFoundError,
+  paymentResultQuery,
   remainingOf,
   statusOf,
 } from "@/features/tagihan/api"
 import { formatPeriod } from "@/features/tagihan/lib"
+import { getErrorMessage } from "@/lib/api"
 import { formatRupiah, formatDate, formatDateTime } from "@/lib/format"
 import type { Bill, PaymentResult } from "@/types/tagihan"
 
@@ -49,6 +51,9 @@ import type { Bill, PaymentResult } from "@/types/tagihan"
  * Batal + Lanjut di bawah garis) dan banner info di kolom samping 340px.
  * Memproses & hasil: Page header "Pembayaran" tanpa tautan kembali, isi
  * 560px di tengah, tombol hasil berukuran medium berdampingan.
+ *
+ * Nomor transaksi disimpan di URL (?trx=…) agar hasil tetap tampil saat
+ * halaman dimuat ulang atau kembali dari payment gateway.
  */
 const MIN_PARTIAL = 10_000
 
@@ -60,10 +65,32 @@ type Stage =
 function BayarTagihan() {
   const { billId = "" } = useParams()
   const navigate = useNavigate()
-  const [params] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const queryClient = useQueryClient()
   const query = useQuery(billQuery(billId))
   const [stage, setStage] = React.useState<Stage>({ name: "form" })
+
+  /* Hasil transaksi dari URL; diabaikan bila bukan untuk tagihan ini */
+  const trx = params.get("trx")
+  const restore = useQuery({
+    ...paymentResultQuery(trx ?? ""),
+    enabled: !!trx && stage.name === "form",
+    retry: false,
+  })
+  const restored =
+    stage.name === "form" && restore.data?.payment.billId === billId
+      ? restore.data
+      : null
+  const setTrx = (value: string | null) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value) next.set("trx", value)
+        else next.delete("trx")
+        return next
+      },
+      { replace: true }
+    )
 
   const pay = useMutation({
     mutationFn: (amount: number) =>
@@ -81,19 +108,24 @@ function BayarTagihan() {
       void queryClient.invalidateQueries({ queryKey: ["tagihan"] })
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] })
       setStage({ name: "result", result })
+      setTrx(result.payment.id)
     },
-    onError: () => {
+    onError: (error) => {
       setStage({ name: "form" })
+      /* Sisa tagihan mungkin sudah berubah (mis. 400 nominal tidak valid) */
+      void queryClient.invalidateQueries({ queryKey: billQuery(billId).queryKey })
       toast.error("Pembayaran gagal dimulai", {
-        description:
-          "Periksa koneksi lalu coba lagi. Tidak ada dana yang ditarik.",
+        /* Pesan BE tidak selalu diakhiri titik */
+        description: `${getErrorMessage(error).replace(/\.?$/, ".")} Tidak ada dana yang ditarik.`,
       })
     },
   })
 
   const backToBills = () => navigate("/wali/tagihan", { replace: true })
 
-  if (stage.name === "processing") {
+  const restoring = stage.name === "form" && !!trx && restore.isPending
+
+  if (stage.name === "processing" || restoring) {
     return (
       <div className="flex flex-1 flex-col bg-grayscale-surface-default">
         <PageHeader
@@ -115,11 +147,14 @@ function BayarTagihan() {
     )
   }
 
-  if (stage.name === "result") {
+  if (stage.name === "result" || restored) {
     return (
       <PaymentResultScreen
-        result={stage.result}
-        onRetry={() => setStage({ name: "form" })}
+        result={stage.name === "result" ? stage.result : restored!}
+        onRetry={() => {
+          setStage({ name: "form" })
+          setTrx(null)
+        }}
         onViewBill={() =>
           navigate(`/wali/tagihan/${billId}`, { replace: true })
         }
@@ -142,7 +177,7 @@ function BayarTagihan() {
     <DetailScreen title="Pembayaran">
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat tagihan…" />
-      ) : query.isError && !(query.error instanceof NotFoundError) ? (
+      ) : query.isError && !isNotFoundError(query.error) ? (
         <DataState
           state="error"
           title="Tagihan gagal dimuat"

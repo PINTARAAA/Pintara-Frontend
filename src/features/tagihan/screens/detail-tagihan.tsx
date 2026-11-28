@@ -14,7 +14,7 @@ import {
 } from "@/components"
 import {
   billQuery,
-  NotFoundError,
+  isNotFoundError,
   remainingOf,
   statusOf,
 } from "@/features/tagihan/api"
@@ -61,7 +61,7 @@ function DetailTagihan() {
       {query.isPending ? (
         <DataState state="loading" loadingLabel="Memuat tagihan…" />
       ) : query.isError ? (
-        query.error instanceof NotFoundError ? (
+        isNotFoundError(query.error) ? (
           <DataState
             state="empty"
             title="Tagihan tidak ditemukan"

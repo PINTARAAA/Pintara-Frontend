@@ -1,10 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import { differenceInCalendarDays, startOfDay } from "date-fns"
 
-import { addNotification } from "@/features/notifikasi/api"
-import { assertMockAllowed, delay } from "@/lib/data/mock"
-import { bills, payments } from "@/lib/data/tagihan"
-import { formatRupiah } from "@/lib/format"
+import { httpClient, isApiError } from "@/lib/api"
 import type {
   Bill,
   BillsOverview,
@@ -16,18 +13,15 @@ import type {
 /*
  * Tagihan & Pembayaran · Figma PINTARA → UI Screen → Wali Murid → W6
  *
- * TODO(backend):
- *   getBills()               → httpClient.get("/wali/tagihan")
- *   getBill(id)              → httpClient.get(`/wali/tagihan/${id}`)
- *   getPayments()            → httpClient.get("/wali/pembayaran")
- *   createPayment(id, nominal) → httpClient.post(`/wali/tagihan/${id}/bayar`,
- *                              { nominal }) lalu arahkan ke URL payment gateway
- *   getPaymentResult(trxId)  → httpClient.get(`/wali/pembayaran/${trxId}`)
- *                              (dipanggil saat kembali dari payment gateway)
+ * Sudah memakai BE:
+ *   getBills()               → GET /wali/tagihan
+ *   getBill(id)              → GET /wali/tagihan/:id
+ *   createPayment(id, nominal) → POST /wali/tagihan/:id/bayar
+ *   getPayments()            → GET /wali/pembayaran
+ *   getPaymentResult(trxId)  → GET /wali/pembayaran/:trxId
  *
- * Selama backend belum ada (mode development) data disimpan di memori dan
- * payment gateway disimulasikan (memproses ±2 detik, lalu berhasil).
- * Tambahkan ?hasil=gagal pada halaman bayar untuk menguji "Pembayaran gagal".
+ * Payment gateway disimulasikan BE. Tambahkan ?hasil=gagal pada halaman
+ * bayar (mode development) untuk menguji "Pembayaran gagal".
  */
 
 /* ---------- Turunan ---------- */
@@ -46,30 +40,19 @@ export const daysUntilDue = (bill: Pick<Bill, "dueDate">, now = new Date()) =>
 
 /* ---------- Daftar ---------- */
 
+/* Tagihan belum lunas semua anak, urut jatuh tempo terdekat (dari BE) */
 export async function getBills(): Promise<BillsOverview> {
-  assertMockAllowed()
-  await delay()
-
-  const open = bills
-    .filter((b) => statusOf(b) !== "lunas")
-    .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
-
-  return {
-    priority: open[0] ?? null,
-    others: open.slice(1),
-    unreadNotifications: 2,
-  }
+  const { data } = await httpClient.get<BillsOverview>("/wali/tagihan")
+  return data
 }
 
 export const billsQuery = () =>
   queryOptions({ queryKey: ["tagihan", "daftar"], queryFn: getBills })
 
+/* Riwayat transaksi semua tagihan wali, terbaru dulu (dari BE) */
 export async function getPayments(): Promise<Payment[]> {
-  assertMockAllowed()
-  await delay()
-  return [...payments].sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-  )
+  const { data } = await httpClient.get<Payment[]>("/wali/pembayaran")
+  return data
 }
 
 export const paymentsQuery = () =>
@@ -77,69 +60,51 @@ export const paymentsQuery = () =>
 
 /* ---------- Detail ---------- */
 
-export class NotFoundError extends Error {
-  constructor() {
-    super("Tagihan tidak ditemukan.")
-    this.name = "NotFoundError"
-  }
-}
-
-function findBill(id: string) {
-  const bill = bills.find((b) => b.id === id)
-  if (!bill) throw new NotFoundError()
-  return bill
-}
+/* 404 dari BE (tagihan tidak ada / milik wali lain) */
+export const isNotFoundError = (error: unknown) =>
+  isApiError(error) && error.code === "not_found"
 
 export async function getBill(id: string): Promise<Bill> {
-  assertMockAllowed()
-  await delay(300)
-  return { ...findBill(id) }
+  const { data } = await httpClient.get<Bill>(
+    `/wali/tagihan/${encodeURIComponent(id)}`
+  )
+  return data
 }
 
 export const billQuery = (id: string) =>
   queryOptions({ queryKey: ["tagihan", "detail", id], queryFn: () => getBill(id) })
 
-/* ---------- Pembayaran (payment gateway disimulasikan) ---------- */
+/* ---------- Pembayaran ---------- */
 
-let trxCounter = 8841
-
+/*
+ * Payment gateway disimulasikan BE: transaksi langsung berhasil, atau
+ * kedaluwarsa bila simulateFailure. 400 bila nominal ≤ 0 atau melebihi sisa.
+ */
 export async function createPayment(
   billId: string,
   amount: number,
   options: { simulateFailure?: boolean } = {}
 ): Promise<PaymentResult> {
-  assertMockAllowed()
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-
-  const bill = findBill(billId)
-  if (amount <= 0 || amount > remainingOf(bill)) {
-    throw new Error("Nominal pembayaran tidak valid.")
-  }
-
-  /* Waktu "memproses" di payment gateway */
-  await delay(2000)
-
-  const now = new Date()
-  const ymd = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`
-  const payment: Payment = {
-    id: `TRX-${ymd}-${trxCounter++}`,
-    billId,
-    billPeriod: bill.period,
-    amount,
-    method: amount === remainingOf(bill) ? "QRIS" : "Virtual Account BCA",
-    status: options.simulateFailure ? "kedaluwarsa" : "berhasil",
-    createdAt: now,
-  }
-  payments.push(payment)
-  if (payment.status === "berhasil") {
-    bill.paid += amount
-    addNotification({
-      kind: "pembayaran",
-      title: "Pembayaran berhasil",
-      body: `Tagihan ${bill.period.toLocaleDateString("id-ID", { month: "long" })} ${formatRupiah(amount)}`,
-      to: "/wali/tagihan?tab=riwayat",
-    })
-  }
-
-  return { payment, bill: { ...bill } }
+  const { data } = await httpClient.post<PaymentResult>(
+    `/wali/tagihan/${encodeURIComponent(billId)}/bayar`,
+    { nominal: amount, ...(options.simulateFailure && { simulateFailure: true }) }
+  )
+  return data
 }
+
+/*
+ * Hasil transaksi (dipanggil saat kembali dari payment gateway / halaman
+ * hasil dimuat ulang). trxId = nomor TRX-…; 404 bila bukan milik wali.
+ */
+export async function getPaymentResult(trxId: string): Promise<PaymentResult> {
+  const { data } = await httpClient.get<PaymentResult>(
+    `/wali/pembayaran/${encodeURIComponent(trxId)}`
+  )
+  return data
+}
+
+export const paymentResultQuery = (trxId: string) =>
+  queryOptions({
+    queryKey: ["tagihan", "hasil", trxId],
+    queryFn: () => getPaymentResult(trxId),
+  })
