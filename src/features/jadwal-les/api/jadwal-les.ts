@@ -7,7 +7,7 @@ import {
 } from "@/features/jadwal/api"
 import { addMinutesToTime, parseTime, WEEKDAYS } from "@/lib/data/jadwal"
 import { pairs } from "@/lib/data/jadwal-les"
-import { httpClient } from "@/lib/api"
+import { httpClient, isApiError } from "@/lib/api"
 import { assertMockAllowed, delay } from "@/lib/data/mock"
 import type { ChangeRequestForReview } from "@/types/jadwal"
 import type {
@@ -24,10 +24,10 @@ import type {
  * Atur Jadwal Les (pengelola) · Figma PINTARA → UI Screen → Pengelola LBB
  * → P5 · Atur Jadwal Les
  *
- * Sudah memakai BE: getScheduleBoard, getScheduleDraft, getPairDraft.
+ * Sudah memakai BE: getScheduleBoard, getScheduleDraft, getPairDraft,
+ * saveSchedule.
  *
  * TODO(backend):
- *   saveSchedule(input)         → httpClient.put("/pengelola/jadwal", input)
  *   reviewChangeRequest(id, ok) → httpClient.post(`/pengelola/pengajuan-jadwal/${id}`, …)
  *   Petakan respons bentrok ke ScheduleConflictError.
  *
@@ -127,6 +127,17 @@ export class ScheduleConflictError extends Error {
   }
 }
 
+/* Detail bentrok dari 409 schedule_conflict (BE) atau dari mock */
+export function scheduleConflictOf(error: unknown): Conflict | null {
+  if (error instanceof ScheduleConflictError) return error.conflict
+  if (!isApiError(error) || error.serverCode !== "schedule_conflict") {
+    return null
+  }
+  const conflict = (error.details as { conflict?: Conflict } | undefined)
+    ?.conflict
+  return conflict ?? null
+}
+
 export function findConflict(
   draft: Pick<ScheduleDraft, "pairId" | "student" | "tutor">,
   sessions: ScheduleSession[]
@@ -168,33 +179,15 @@ export function suggestFreeSlot(other: ScheduleSession) {
   return `selesai paling lambat ${fmt(latestEnd)} atau mulai ${fmt(earliestStart)}`
 }
 
+/* 409 schedule_conflict (details.conflict) bila bentrok dengan jadwal lain */
 export async function saveSchedule(input: SaveScheduleInput): Promise<Pair> {
-  assertMockAllowed()
-  await delay(800)
-  if (!navigator.onLine) throw new Error("Tidak ada koneksi internet.")
-
   const { draft, sessions, effectiveFrom } = input
-  const conflict = findConflict(draft, sessions)
-  if (conflict) throw new ScheduleConflictError(conflict)
-
-  const existing = pairs.find((p) => p.id === draft.pairId)
-  if (existing) {
-    existing.sessions = structuredClone(sessions)
-    existing.effectiveFrom = effectiveFrom
-    return structuredClone(existing)
-  }
-  const pair: Pair = {
-    id: `pr-${Date.now()}`,
-    student: draft.student,
-    parentName: draft.parentName,
-    tutor: draft.tutor,
-    subjects: draft.subjects,
-    sessions: structuredClone(sessions),
+  const { data } = await httpClient.put<Pair>("/pengelola/jadwal", {
+    draft,
+    sessions,
     effectiveFrom,
-    offerId: draft.offerId,
-  }
-  pairs.push(pair)
-  return structuredClone(pair)
+  })
+  return data
 }
 
 /* ---------- Tinjau pengajuan perubahan (W4 → P5) ---------- */

@@ -42,7 +42,7 @@ import {
   pairDraftQuery,
   saveSchedule,
   scheduleDraftQuery,
-  ScheduleConflictError,
+  scheduleConflictOf,
   SESSION_MINUTES,
   suggestFreeSlot,
 } from "@/features/jadwal-les/api"
@@ -191,14 +191,14 @@ function ScheduleForm({
       onSaved(pair)
     },
     onError: (error) => {
-      if (error instanceof ScheduleConflictError) {
-        setConflict(error.conflict)
+      const found = scheduleConflictOf(error)
+      if (found) {
+        setConflict(found)
         window.scrollTo({ top: 0, behavior: "smooth" })
         return
       }
       toast.error("Jadwal gagal disimpan", {
-        description:
-          "Isian Anda tetap tersimpan. Periksa koneksi lalu coba lagi.",
+        description: `${getErrorMessage(error)} Isian Anda tetap tersimpan.`,
       })
     },
   })
