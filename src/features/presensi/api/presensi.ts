@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { isAfter, isSameMonth } from "date-fns"
+import { format, isAfter, isSameMonth } from "date-fns"
 
 import { sessions } from "@/lib/data/presensi"
 import { httpClient } from "@/lib/api"
@@ -12,13 +12,12 @@ import type {
   TutorHistory,
   TutorSession,
   TutorSessionList,
-  ValidationStatus,
 } from "@/types/presensi"
 
 /*
  * Presensi & Dokumentasi (tutor) · Figma PINTARA → UI Screen → Tutor → T2
  *
- * Sudah memakai BE: getTutorSessions.
+ * Sudah memakai BE: getTutorSessions, getAttendanceStatus.
  *
  * TODO(backend):
  *   getTutorSession(id)       → httpClient.get(`/tutor/presensi/${id}`)
@@ -45,34 +44,19 @@ export const tutorSessionsQuery = () =>
 
 const monthStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1)
 
-/* TODO(backend): httpClient.get("/tutor/presensi/status", { params: { bulan } }) */
+/* "2026-11" untuk query `bulan` */
+const monthParam = (month?: Date) =>
+  month ? { bulan: format(month, "yyyy-MM") } : undefined
+
+/* Sesi yang sudah dimulai pada bulan tsb, dikelompokkan per status validasi */
 export async function getAttendanceStatus(
   month?: Date
 ): Promise<AttendanceStatusOverview> {
-  assertMockAllowed()
-  await delay()
-
-  const now = new Date()
-  const current = monthStart(now)
-  const active = monthStart(month ?? current)
-  const keys = new Set([current.getTime(), active.getTime()])
-  sessions.forEach((s) => keys.add(monthStart(s.start).getTime()))
-  const months = [...keys].sort((a, b) => b - a).map((t) => new Date(t))
-  const started = sessions
-    .filter((s) => isSameMonth(s.start, active) && !isAfter(s.start, now))
-    .sort((a, b) => b.start.getTime() - a.start.getTime())
-  const withStatus = (status: ValidationStatus) =>
-    started.filter((s) => s.record?.validation === status)
-
-  return {
-    months,
-    month: active,
-    total: started.length,
-    disputed: withStatus("keberatan"),
-    waiting: withStatus("belum_divalidasi"),
-    notCollected: started.filter((s) => !s.record),
-    verified: withStatus("sudah_divalidasi"),
-  }
+  const { data } = await httpClient.get<AttendanceStatusOverview>(
+    "/tutor/presensi/status",
+    { params: monthParam(month) }
+  )
+  return data
 }
 
 export const attendanceStatusQuery = (month?: Date) =>
